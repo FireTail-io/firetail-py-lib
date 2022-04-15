@@ -1,0 +1,6 @@
+# Install swagger-ui before pointsecio.
+pointsecio[swagger-ui]
+
+pointsecio>=2.2.0
+python-jose[cryptography]
+Flask>=0.10.1
