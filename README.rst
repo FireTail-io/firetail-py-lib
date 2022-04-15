@@ -53,17 +53,12 @@ PointSecIO
    :target: https://github.com/PointSec-io/pointsecio/blob/main/LICENSE.txt
    :alt: License
 
-PointSecIO is a framework based off of connexion that automagically handles HTTP requests based on `OpenAPI Specification`_
+PointSecIO (fork of Connexion_) is a framework that automagically handles HTTP requests based on `OpenAPI Specification`_
 (formerly known as Swagger Spec) of your API described in `YAML format`_. PointSecIO allows you to
 write an OpenAPI specification, then maps the endpoints to your Python functions; this makes it
 unique, as many tools generate the specification based on your Python code. You can describe your
 REST API in as much detail as you want; then PointSecIO guarantees that it will work as you
 specified.
-
-We built PointSecIO this way in order to:
-
-- simplify the development process
-- confirm expectations about what your API will look like
 
 PointSecIO Features:
 --------------------
@@ -91,15 +86,14 @@ single line of code.
 
 If multiple teams depend on your APIs, you can use PointSecIO to easily send them the documentation of your API. This guarantees that your API will follow the specification that you wrote. This is a different process from that offered by frameworks such as Hug_, which generates a specification *after* you've written the code. Some disadvantages of generating specifications based on code is that they often end up lacking details or mix your documentation with the code logic of your application.
 
-Other Sources/Mentions
-----------------------
+.. Other Sources/Mentions
+.. ----------------------
 
-- Zalando RESTful API guidelines with `API First`_
-- PointSecIO listed on Swagger_'s website
-- Blog post: `Crafting effective Microservices in Python`_
+.. - Zalando RESTful API guidelines with `API First`_
+.. - Blog post: `Crafting effective Microservices in Python`_
 
-New in PointSecIO 2.0:
-----------------------
+Whats in PointSecIO 1.0:
+------------------------
 - App and Api options must be provided through the "options" argument (``old_style_options`` have been removed).
 - You must specify a form content-type in 'consumes' in order to consume form data.
 - The `Operation` interface has been formalized in the `AbstractOperation` class.
