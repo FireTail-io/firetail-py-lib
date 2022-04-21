@@ -100,10 +100,11 @@ class ResolverErrorHandler(SecureOperation):
 class PointsecHandler(logging.Handler):
 
     def __init__(self,
+                 api_key,
                  token,
+                 url,
                  pointsec_type="python",
                  logs_drain_timeout=3,
-                 url="https://27rznp5fh5.execute-api.eu-west-2.amazonaws.com/dev/mock",
                  debug=False,
                  backup_logs=True,
                  network_timeout=10.0,
@@ -118,6 +119,7 @@ class PointsecHandler(logging.Handler):
         self.pointsec_sender = PointsecSender(
             token=token,
             url=url,
+            api_key=api_key,
             logs_drain_timeout=logs_drain_timeout,
             debug=debug,
             backup_logs=backup_logs,
@@ -187,10 +189,10 @@ class PointsecHandler(logging.Handler):
         except json.decoder.JSONDecodeError:
             return {'ignore': True}
 
-        requiredInBody = ['method']
-        for item in requiredInBody:
-            if item not in payload:
-                return {'ignore': True}
+        # requiredInBody = ['req', 'res']
+        # for item in requiredInBody:
+        #     if item not in payload:
+        #         return {'ignore': True}
 
         # return_json = payload
         return payload

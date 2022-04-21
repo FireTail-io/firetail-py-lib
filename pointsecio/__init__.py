@@ -39,4 +39,4 @@ App = FlaskApp
 Api = FlaskApi
 
 # This version is replaced during release process.
-__version__ = '2022.0.dev1'
+__version__ = '2022.4.dev1'

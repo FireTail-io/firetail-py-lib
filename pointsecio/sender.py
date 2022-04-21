@@ -12,11 +12,11 @@ import requests
 
 from .logger import get_stdout_logger
 
-loger4.basicConfig(filename="here.log",
-                            filemode='a',
-                            format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-                            datefmt='%H:%M:%S',
-                            level=loger4.DEBUG)
+# loger4.basicConfig(filename="here.log",
+#                             filemode='a',
+#                             format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+#                             datefmt='%H:%M:%S',
+#                             level=loger4.DEBUG)
 
 
 MAX_BULK_SIZE_IN_BYTES = 1 * 1024 * 1024  # 1 MB
@@ -32,7 +32,9 @@ def backup_logs(logs, logger):
 
 class PointsecSender:
     def __init__(self,
-                 token, url='https://ingest.eu-west-1.dev.platform.pointsec.io',
+                 token,
+                 api_key,
+                 url,
                  logs_drain_timeout=5,
                  debug=False,
                  backup_logs=True,
@@ -40,7 +42,8 @@ class PointsecSender:
                  number_of_retries=4,
                  retry_timeout=2):
         self.token = token
-        # self.url = '{}/?token={}'.format(url, token)
+        self.api_key = api_key
+        self.url = url
         self.logs_drain_timeout = logs_drain_timeout
         self.stdout_logger = get_stdout_logger(debug)
         self.backup_logs = backup_logs
@@ -114,7 +117,7 @@ class PointsecSender:
 
             should_backup_to_disk = True
             headers = {"Content-type": "text/plain",
-                       'x-api-key': 'IN2Oj3Wif32oixWUy2BdP3KUeR9nhJYPa6WGn6fq',
+                       'x-api-key': self.api_key,
                        'x-ps-api-key': self.token}
 
             for current_try in range(self.number_of_retries):
@@ -127,7 +130,7 @@ class PointsecSender:
                     # self.stdout_logger.info(str(response.status_code))
                     if response.status_code != 200:
                         if response.status_code == 400:
-                            self.stdout_logger.info(
+                            self.stdout_logger.debug(
                                 'Got 400 code from pointsec.io. This means that '
                                 'some of your logs are too big, or badly '
                                 'formatted. response: %s', response.text)
@@ -136,13 +139,13 @@ class PointsecSender:
                             break
 
                         if response.status_code == 401:
-                            self.stdout_logger.info(
+                            self.stdout_logger.debug(
                                 'You are not authorized with pointsec.io! Token '
                                 'OK? dropping logs...')
                             should_backup_to_disk = False
                             break
                         else:
-                            self.stdout_logger.info(
+                            self.stdout_logger.debug(
                                 'Got %s while sending logs to pointsec.io, '
                                 'Try (%s/%s). Response: %s',
                                 response.status_code,

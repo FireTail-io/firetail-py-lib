@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - dev
   pull_request:
 jobs:
   test:
@@ -22,6 +23,7 @@ jobs:
           pip install "tox<4" "tox-gh-actions<3" "setuptools<58" "coveralls<4"
       - name: Test with tox
         run: tox
+
     # - name: Coveralls
     #   run: coveralls --service github
     #   env:

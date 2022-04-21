@@ -189,16 +189,14 @@ def test_path_parameter_someint__bad(simple_app):
 def test_path_parameter_somefloat(simple_app, arg, result):
     assert isinstance(arg, str)  # sanity check
     app_client = simple_app.app.test_client()
-    # type: flask.Response
-    resp = app_client.get(f'/v1.0/test-float-path/{arg}')
+    resp = app_client.get(f'/v1.0/test-float-path/{arg}')  # type: flask.Response
     assert resp.data.decode('utf-8', 'replace') == f'"{result}"\n'
 
 
 def test_path_parameter_somefloat__bad(simple_app):
     # non-float values will not match Flask route
     app_client = simple_app.app.test_client()
-    # type: flask.Response
-    resp = app_client.get('/v1.0/test-float-path/123,45')
+    resp = app_client.get('/v1.0/test-float-path/123,45')  # type: flask.Response
     assert resp.status_code == 404
 
 

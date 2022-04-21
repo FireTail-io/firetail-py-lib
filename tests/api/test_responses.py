@@ -87,8 +87,7 @@ def test_produce_decorator(simple_app):
 def test_returning_flask_response_tuple(simple_app):
     app_client = simple_app.app.test_client()
 
-    # type: flask.Response
-    result = app_client.get('/v1.0/flask_response_tuple')
+    result = app_client.get('/v1.0/flask_response_tuple')  # type: flask.Response
     assert result.status_code == 201
     assert result.content_type == 'application/json'
     result_data = json.loads(result.data.decode('utf-8', 'replace'))

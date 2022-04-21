@@ -285,8 +285,7 @@ def test_resolve_method(simple_app):
 
 def test_resolve_classmethod(simple_app):
     app_client = simple_app.app.test_client()
-    # type: flask.Response
-    resp = app_client.get('/v1.0/resolver-test/classmethod')
+    resp = app_client.get('/v1.0/resolver-test/classmethod')  # type: flask.Response
     assert resp.data.decode('utf-8', 'replace') == '"DummyClass"\n'
 
 

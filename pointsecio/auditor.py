@@ -11,13 +11,15 @@ from .logger import get_stdout_logger
 
 class auditor:
     def __init__(self,
-                 url='https://ingest.eu-west-1.dev.platform.pointsec.io',
+                 url='https://ingest.eu-west-1.dev.platform.pointsec.io/ingest/request',
+                 api_key='5WqBxkOi3m6F1fDRryrR654xalAwz67815Rfe0ds',
                  debug=False,
                  backup_logs=True,
                  network_timeout=10.0,
                  number_of_retries=4,
                  retry_timeout=2,
                  logs_drain_timeout=5):
+        self.api_key = api_key
         self.startThread = True
         self.requests_session = requests.Session()
         self.url = url
@@ -46,9 +48,10 @@ class auditor:
                     'class': 'pointsecio.handlers.PointsecHandler',
                     'level': 'DEBUG',
                     'formatter': 'pointsecFormat',
-                    'token': '<<pointsec-TOKEN>>',
+                    'token': self.token,
                     'logs_drain_timeout': 5,
-                    'url': 'https://ingest.eu-west-1.dev.platform.pointsec.io/ingest/request',
+                    'url': self.url,
+                    'api_key': self.api_key,
                     'retries_no': 4,
                     'retry_timeout': 2,
                 }
@@ -62,6 +65,9 @@ class auditor:
             }
         }
 
+    def set_token(self, token_secret):
+        self.token = token_secret
+
     def create(self, response, token):
 
         self.token = token
@@ -70,31 +76,34 @@ class auditor:
             logging.config.dictConfig(self.LOGGING)
             self.logger = logging.getLogger('pointsecLogger')
 
-        jsonResponse = ['application/problem+json', 'application/json']
-        if response.content_type.lower() in jsonResponse:
-            body = response.get_json()
-        else:
-            body = response.response
         payload = {
-            'status_code': response.status_code,
-            'body': str(body),
-            'dateAdded': int((datetime.datetime.utcnow()).timestamp()),
-            'method': request.method,
-            'content_length': response.content_length,
-            'request_headers': dict(request.headers),
-            'response_headers': dict(response.headers),
-            'content_type': response.content_type,
-            'path': request.path,
-            'args': dict(request.args),
-            'full_path': request.full_path,
-            'url': request.url,
-            'pathParameters': request.view_args
+            "version": "1.1",
+            "dateCreated": int((datetime.datetime.utcnow()).timestamp() * 1000),
+            "req": {
+                "url": request.base_url,
+                "headers": dict(request.headers),
+                "path": request.path,
+                "method": request.method,
+                "oPath": request.url_rule.rule if request.url_rule is not None else "",
+                "fPath": request.full_path,
+                "args": dict(request.args),
+                "ip": request.remote_addr,
+                'pathParams': request.view_args
+
+            },
+            "resp": {
+                "status_code": response.status_code,
+                "content_len": response.content_length,
+                "content_enc": response.content_encoding,
+                "body": response.get_json() if response.is_json else response.response,
+                "headers": dict(response.headers),
+                "content_type": response.content_type
+            }
         }
-        print(request.__dir__())
         try:
-            self.logger.info(json.dumps(payload))
-        except Exception as e:
-            print(payload)
+            if self.token:
+                self.logger.info(json.dumps(payload))
+        except TypeError as e:
             print(str(e))
         print("created log")
 
