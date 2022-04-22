@@ -22,7 +22,7 @@ PointSecIO
 .. _werkzeug:  https://werkzeug.pocoo.org/
 .. _Connexion's Documentation Page:  https://connexion.readthedocs.org/en/latest/
 .. _Crafting effective Microservices in Python: https://jobs.zalando.com/tech/blog/crafting-effective-microservices-in-python/
-.. _issues where we are looking for contributions: https://github.com/zalando/connexion/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22
+.. _issues where we are looking for contributions: https://github.com/pointSec-io/pointsecio/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22
 .. _HTTP Methods work in Flask:  https://flask.pocoo.org/docs/1.0/quickstart/#http-methods
 
 .. .. image:: https://badges.gitter.im/zalando/connexion.svg

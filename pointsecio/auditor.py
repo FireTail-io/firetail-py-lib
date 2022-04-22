@@ -104,8 +104,9 @@ class auditor:
             if self.token:
                 self.logger.info(json.dumps(payload))
         except TypeError as e:
-            print(str(e))
-        print("created log")
+            pass
+            # print(str(e))
+        # print("created log")
 
 
 request_auditor = auditor()
