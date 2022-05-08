@@ -1,8 +1,10 @@
 import datetime
+import hashlib
 import json
 import logging
 import logging.config
 
+import jwt
 import requests
 from flask import request
 
@@ -14,16 +16,21 @@ class auditor:
                  url='https://ingest.eu-west-1.dev.platform.pointsec.io/ingest/request',
                  api_key='5WqBxkOi3m6F1fDRryrR654xalAwz67815Rfe0ds',
                  debug=False,
+                 token=None,
                  backup_logs=True,
                  network_timeout=10.0,
                  number_of_retries=4,
                  retry_timeout=2,
-                 logs_drain_timeout=5):
+                 logs_drain_timeout=5,
+                 scrub_headers=['set-cookie', 'cookie', 'authorization', 'x-api-key', 'token', 'api-token', 'api-key'],
+                 enrich_oauth=True
+                 ):
         self.api_key = api_key
         self.startThread = True
         self.requests_session = requests.Session()
         self.url = url
-        self.token = None
+        self.token = token
+        self.auth_token = None
         self.logs_drain_timeout = logs_drain_timeout
         self.stdout_logger = get_stdout_logger(debug)
         self.backup_logs = backup_logs
@@ -31,9 +38,10 @@ class auditor:
         self.requests_session = requests.Session()
         self.number_of_retries = number_of_retries
         self.retry_timeout = retry_timeout
+        self.oauth = False
         self.logger = None
-        # if not token:
-        #     raise Exception('Token must be provided')
+        self.enrich_oauth = enrich_oauth
+        self.scrub_headers = scrub_headers
         self.LOGGING = {
             'version': 1,
             'disable_existing_loggers': False,
@@ -68,8 +76,41 @@ class auditor:
     def set_token(self, token_secret):
         self.token = token_secret
 
-    def create(self, response, token):
+    def sha1_hash(self, value):
+        hash_object = hashlib.sha1(value.encode('utf-8'))
+        return "sha1:" + hash_object.hexdigest()
 
+    def clean_pii(self, payload):
+        clean_headers = self.scrub_headers
+        if 'req' in payload and 'headers' in payload['req']:
+            for k, v in payload['req']['headers'].items():
+                if k.lower() in clean_headers:
+                    if k.lower() == 'authorization' and 'bearer ' in v.lower():
+                        self.oauth = True
+                        v = v.split(" ")[1]
+                        self.auth_token = v
+                    payload['req']['headers'][k] = self.sha1_hash(v)
+        if 'res' in payload and 'headers' in payload['res']:
+            for k, v in payload['res']['headers'].items():
+                if k.lower() in clean_headers:
+                    payload['req']['headers'][k] = self.sha1_hash(v)
+
+        if self.oauth and self.enrich_oauth:
+            try:
+                jwt_decoded = jwt.decode(self.auth_token, options={"verify_signature": False})
+            except jwt.exceptions.DecodeError:
+                self.oauth = False
+            if self.oauth:
+                payload['oauth'] = {'sub': jwt_decoded['sub']}
+                if 'email' in jwt_decoded:
+                    payload['oauth']['email'] = jwt_decoded['email']
+        return payload
+
+    def create(self, response, token, scrub_headers=None, debug=False):
+        if debug:
+            self.stdout_logger = get_stdout_logger(True)
+        if scrub_headers and isinstance(scrub_headers, list):
+            self.scrub_headers = scrub_headers
         self.token = token
         if not self.logger:
             self.LOGGING['handlers']['pointsec']['token'] = token
@@ -100,13 +141,14 @@ class auditor:
                 "content_type": response.content_type
             }
         }
+
         try:
             if self.token:
-                self.logger.info(json.dumps(payload))
-        except TypeError as e:
+                print(json.dumps(self.clean_pii(payload)))
+                self.logger.info(json.dumps(self.clean_pii(payload)))
+        except TypeError:
             pass
-            # print(str(e))
-        # print("created log")
+        return payload
 
 
 request_auditor = auditor()

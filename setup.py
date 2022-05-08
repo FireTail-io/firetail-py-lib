@@ -24,6 +24,7 @@ install_requires = [
     'clickclick>=1.2,<21',
     'jsonschema>=2.5.1,<5',
     'PyYAML>=5.1,<7',
+    'PyJWT>=2.3.0',
     'requests>=2.27,<3',
     'inflection>=0.3.1,<0.6',
     'werkzeug>=2,<3',
