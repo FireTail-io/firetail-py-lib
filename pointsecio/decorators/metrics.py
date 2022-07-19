@@ -9,7 +9,7 @@ import time
 
 from werkzeug.exceptions import HTTPException
 
-from pointsecio.exceptions import ProblemException
+from firetail.exceptions import ProblemException
 
 try:
     import uwsgi_metrics
@@ -25,7 +25,7 @@ class UWSGIMetricsCollector:
         self.method = method
         swagger_path = path.strip('/').replace('/', '.').replace('<', '{').replace('>', '}')
         self.key_suffix = f'{method.upper()}.{swagger_path}'
-        self.prefix = os.getenv('HTTP_METRICS_PREFIX', 'pointsecio.response')
+        self.prefix = os.getenv('HTTP_METRICS_PREFIX', 'firetail.response')
 
     @staticmethod
     def is_available():

@@ -1,5 +1,5 @@
 import pytest
-from pointsecio.decorators.uri_parsing import (AlwaysMultiURIParser,
+from firetail.decorators.uri_parsing import (AlwaysMultiURIParser,
                                                FirstValueURIParser,
                                                OpenAPIURIParser,
                                                Swagger2URIParser)

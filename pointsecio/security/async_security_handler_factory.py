@@ -11,7 +11,7 @@ import logging
 from ..exceptions import OAuthProblem, OAuthResponseProblem, OAuthScopeProblem
 from .security_handler_factory import AbstractSecurityHandlerFactory
 
-logger = logging.getLogger('pointsecio.api.security')
+logger = logging.getLogger('firetail.api.security')
 
 
 class AbstractAsyncSecurityHandlerFactory(AbstractSecurityHandlerFactory):

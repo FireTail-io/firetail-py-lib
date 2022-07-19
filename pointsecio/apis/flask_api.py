@@ -1,6 +1,6 @@
 """
-This module defines a Flask PointSecIO API which implements translations between Flask and
-PointSecIO requests / responses.
+This module defines a Flask Firetail API which implements translations between Flask and
+Firetail requests / responses.
 """
 
 import logging
@@ -11,15 +11,15 @@ import flask
 import werkzeug.exceptions
 from werkzeug.local import LocalProxy
 
-from pointsecio.apis import flask_utils
-from pointsecio.apis.abstract import AbstractAPI
-from pointsecio.handlers import AuthErrorHandler
-from pointsecio.jsonifier import Jsonifier
-from pointsecio.lifecycle import PointSecIORequest, PointSecIOResponse
-from pointsecio.security import FlaskSecurityHandlerFactory
-from pointsecio.utils import is_json_mimetype
+from firetail.apis import flask_utils
+from firetail.apis.abstract import AbstractAPI
+from firetail.handlers import AuthErrorHandler
+from firetail.jsonifier import Jsonifier
+from firetail.lifecycle import FiretailRequest, FiretailResponse
+from firetail.security import FlaskSecurityHandlerFactory
+from firetail.utils import is_json_mimetype
 
-logger = logging.getLogger('pointsecio.apis.flask_api')
+logger = logging.getLogger('firetail.apis.flask_api')
 
 
 class FlaskApi(AbstractAPI):
@@ -65,7 +65,7 @@ class FlaskApi(AbstractAPI):
 
     @classmethod
     def get_response(cls, response, mimetype=None, request=None):
-        """Gets PointSecIOResponse instance for the operation handler
+        """Gets FiretailResponse instance for the operation handler
         result. Status Code and Headers for response.  If only body
         data is returned by the endpoint function, then the status
         code will be set to 200 and no headers will be added.
@@ -74,7 +74,7 @@ class FlaskApi(AbstractAPI):
         pass the information needed to recreate it.
 
         :type response: flask.Response | (flask.Response,) | (flask.Response, int) | (flask.Response, dict) | (flask.Response, int, dict)
-        :rtype: PointSecIOResponse
+        :rtype: FiretailResponse
         """
         return cls._get_response(response, mimetype=mimetype, extra_context={"url": flask.request.url})
 
@@ -84,9 +84,9 @@ class FlaskApi(AbstractAPI):
         return flask_utils.is_flask_response(response)
 
     @classmethod
-    def _framework_to_pointsecio_response(cls, response, mimetype):
-        """ Cast framework response class to PointSecIOResponse used for schema validation """
-        return PointSecIOResponse(
+    def _framework_to_firetail_response(cls, response, mimetype):
+        """ Cast framework response class to FiretailResponse used for schema validation """
+        return FiretailResponse(
             status_code=response.status_code,
             mimetype=response.mimetype,
             content_type=response.content_type,
@@ -96,8 +96,8 @@ class FlaskApi(AbstractAPI):
         )
 
     @classmethod
-    def _pointsecio_to_framework_response(cls, response, mimetype, extra_context=None):
-        """ Cast PointSecIOResponse to framework response class """
+    def _firetail_to_framework_response(cls, response, mimetype, extra_context=None):
+        """ Cast FiretailResponse to framework response class """
         flask_response = cls._build_response(
             mimetype=response.mimetype or mimetype,
             content_type=response.content_type,
@@ -149,8 +149,8 @@ class FlaskApi(AbstractAPI):
 
     @classmethod
     def get_request(cls, *args, **params):
-        # type: (*Any, **Any) -> PointSecIORequest
-        """Gets PointSecIORequest instance for the operation handler
+        # type: (*Any, **Any) -> FiretailRequest
+        """Gets FiretailRequest instance for the operation handler
         result. Status Code and Headers for response.  If only body
         data is returned by the endpoint function, then the status
         code will be set to 200 and no headers will be added.
@@ -158,13 +158,13 @@ class FlaskApi(AbstractAPI):
         If the returned object is a flask.Response then it will just
         pass the information needed to recreate it.
 
-        :rtype: PointSecIORequest
+        :rtype: FiretailRequest
         """
         context_dict = {}
         setattr(flask._request_ctx_stack.top,
-                'pointsecio_context', context_dict)
+                'firetail_context', context_dict)
         flask_request = flask.request
-        request = PointSecIORequest(
+        request = FiretailRequest(
             flask_request.url,
             flask_request.method,
             headers=flask_request.headers,
@@ -194,7 +194,7 @@ class FlaskApi(AbstractAPI):
 
 
 def _get_context():
-    return getattr(flask._request_ctx_stack.top, 'pointsecio_context')
+    return getattr(flask._request_ctx_stack.top, 'firetail_context')
 
 
 context = LocalProxy(_get_context)

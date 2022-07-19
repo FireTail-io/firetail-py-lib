@@ -4,9 +4,9 @@ import tempfile
 from unittest.mock import MagicMock
 
 import pytest
-from pointsecio import FlaskApi
-from pointsecio.exceptions import InvalidSpecification, ResolverError
-from pointsecio.spec import canonical_base_path
+from firetail import FlaskApi
+from firetail.exceptions import InvalidSpecification, ResolverError
+from firetail.spec import canonical_base_path
 from yaml import YAMLError
 
 TEST_FOLDER = pathlib.Path(__file__).parent
@@ -134,5 +134,5 @@ def test_validation_error_on_completely_invalid_swagger_spec():
 @pytest.fixture
 def mock_api_logger(monkeypatch):
     mocked_logger = MagicMock(name='mocked_logger')
-    monkeypatch.setattr('pointsecio.apis.abstract.logger', mocked_logger)
+    monkeypatch.setattr('firetail.apis.abstract.logger', mocked_logger)
     return mocked_logger

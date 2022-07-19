@@ -1,11 +1,11 @@
 """
-This module defines interfaces for requests and responses used in PointSecIO for authentication,
+This module defines interfaces for requests and responses used in Firetail for authentication,
 validation, serialization, etc.
 """
 
 
-class PointSecIORequest:
-    """PointSecIO interface for a request."""
+class FiretailRequest:
+    """Firetail interface for a request."""
 
     def __init__(self,
                  url,
@@ -38,8 +38,8 @@ class PointSecIORequest:
         return self._json
 
 
-class PointSecIOResponse:
-    """PointSecIO interface for a response."""
+class FiretailResponse:
+    """Firetail interface for a response."""
 
     def __init__(self,
                  status_code=200,

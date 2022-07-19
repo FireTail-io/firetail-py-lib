@@ -4,7 +4,7 @@ This module contains a Python interface for Problem Details for HTTP APIs
 to communicate distinct "problem types" to non-human consumers.
 """
 
-from .lifecycle import PointSecIOResponse
+from .lifecycle import FiretailResponse
 
 
 def problem(status, title, detail, type=None, instance=None, headers=None, ext=None):
@@ -31,7 +31,7 @@ def problem(status, title, detail, type=None, instance=None, headers=None, ext=N
     :param ext: Extension members to include in the body
     :type ext: dict | None
     :return: error response
-    :rtype: PointSecIOResponse
+    :rtype: FiretailResponse
     """
     if not type:
         type = 'about:blank'
@@ -44,6 +44,6 @@ def problem(status, title, detail, type=None, instance=None, headers=None, ext=N
         problem_response.update(ext)
 
     mimetype = content_type = 'application/problem+json'
-    return PointSecIOResponse(status, mimetype, content_type,
+    return FiretailResponse(status, mimetype, content_type,
                               body=problem_response,
                               headers=headers)

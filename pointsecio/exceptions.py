@@ -1,5 +1,5 @@
 """
-This module defines Exception classes used by PointSecIO to generate a proper response.
+This module defines Exception classes used by Firetail to generate a proper response.
 """
 
 import warnings
@@ -10,7 +10,7 @@ from werkzeug.exceptions import Forbidden, Unauthorized
 from .problem import problem
 
 
-class PointSecIOException(Exception):
+class FiretailException(Exception):
     pass
 
 
@@ -18,12 +18,12 @@ class PointsecException(Exception):
     pass
 
 
-class ProblemException(PointSecIOException):
+class ProblemException(FiretailException):
     def __init__(self, status=400, title=None, detail=None, type=None,
                  instance=None, headers=None, ext=None):
         """
         This exception holds arguments that are going to be passed to the
-        `pointsecio.problem` function to generate a proper response.
+        `firetail.problem` function to generate a proper response.
         """
         self.status = status
         self.title = title
@@ -36,7 +36,7 @@ class ProblemException(PointSecIOException):
     def to_problem(self):
         warnings.warn(
             "'to_problem' is planned to be removed in a future release. "
-            "Call pointsecio.problem.problem(..) instead to maintain the existing error response.", DeprecationWarning)
+            "Call firetail.problem.problem(..) instead to maintain the existing error response.", DeprecationWarning)
         return problem(status=self.status, title=self.title, detail=self.detail,
                        type=self.type, instance=self.instance, headers=self.headers,
                        ext=self.ext)
@@ -61,7 +61,7 @@ class ResolverError(LookupError):
         return f'<ResolverError: {self.reason}>'
 
 
-class InvalidSpecification(PointSecIOException, ValidationError):
+class InvalidSpecification(FiretailException, ValidationError):
     pass
 
 

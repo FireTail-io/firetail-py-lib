@@ -4,11 +4,11 @@ import typing as t
 from starlette.exceptions import ExceptionMiddleware
 from starlette.types import ASGIApp, Receive, Scope, Send
 
-from pointsecio.middleware.base import AppMiddleware
-from pointsecio.middleware.swagger_ui import SwaggerUIMiddleware
+from firetail.middleware.base import AppMiddleware
+from firetail.middleware.swagger_ui import SwaggerUIMiddleware
 
 
-class PointSecIOMiddleware:
+class FiretailMiddleware:
 
     default_middlewares = [
         ExceptionMiddleware,
@@ -20,7 +20,7 @@ class PointSecIOMiddleware:
             app: ASGIApp,
             middlewares: t.Optional[t.List[t.Type[ASGIApp]]] = None
     ):
-        """High level PointSecIO middleware that manages a list o middlewares wrapped around an
+        """High level Firetail middleware that manages a list o middlewares wrapped around an
         application.
 
         :param app: App to wrap middleware around.

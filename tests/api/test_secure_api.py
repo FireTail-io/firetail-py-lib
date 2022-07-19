@@ -92,14 +92,14 @@ def test_security(oauth_requests, secure_endpoint_app):
     assert get_bye_from_flask.data == b'Goodbye test-user (Secure!)'
 
     headers = {"Authorization": "Bearer 100"}
-    get_bye_from_pointsecio = app_client.get(
-        '/v1.0/byesecure-from-pointsecio', headers=headers)  # type: flask.Response
-    assert get_bye_from_pointsecio.data == b'Goodbye test-user (Secure!)'
+    get_bye_from_firetail = app_client.get(
+        '/v1.0/byesecure-from-firetail', headers=headers)  # type: flask.Response
+    assert get_bye_from_firetail.data == b'Goodbye test-user (Secure!)'
 
     headers = {"Authorization": "Bearer 100"}
-    get_bye_from_pointsecio = app_client.get(
+    get_bye_from_firetail = app_client.get(
         '/v1.0/byesecure-jwt/test-user', headers=headers)  # type: flask.Response
-    assert get_bye_from_pointsecio.data == b'Goodbye test-user (Secure: 100)'
+    assert get_bye_from_firetail.data == b'Goodbye test-user (Secure: 100)'
 
     # has optional auth
     response = app_client.get('/v1.0/optional-auth')  # type: flask.Response

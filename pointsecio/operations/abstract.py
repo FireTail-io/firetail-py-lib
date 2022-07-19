@@ -6,7 +6,7 @@ and functionality shared between Swagger 2 and OpenAPI 3 specifications.
 import abc
 import logging
 
-from pointsecio.operations.secure import SecureOperation
+from firetail.operations.secure import SecureOperation
 
 from ..decorators.metrics import UWSGIMetricsCollector
 from ..decorators.parameter import parameter_to_arg
@@ -15,7 +15,7 @@ from ..decorators.response import ResponseValidator
 from ..decorators.validation import ParameterValidator, RequestBodyValidator
 from ..utils import all_json, is_nullable
 
-logger = logging.getLogger('pointsecio.operations.abstract')
+logger = logging.getLogger('firetail.operations.abstract')
 
 DEFAULT_MIMETYPE = 'application/json'
 

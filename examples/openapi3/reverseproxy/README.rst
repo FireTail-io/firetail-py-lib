@@ -2,7 +2,7 @@
 Reverse Proxy Example
 =====================
 
-This example demonstrates how to run a pointsecio application behind a path-altering reverse proxy.
+This example demonstrates how to run a firetail application behind a path-altering reverse proxy.
 
 You can either set the path in your app, or set the ``X-Forwarded-Path`` header.
 
@@ -10,7 +10,7 @@ Running:
 
 .. code-block:: bash
 
-    $ sudo pip3 install --upgrade pointsecio[swagger-ui]  # install PointSecIO from PyPI
+    $ sudo pip3 install --upgrade firetail[swagger-ui]  # install Firetail from PyPI
     $ ./app.py
 
 Now open your browser and go to http://localhost:8080/reverse_proxied/ui/ to see the Swagger UI.

@@ -7,7 +7,7 @@ import logging
 
 from .decorator import BaseDecorator
 
-logger = logging.getLogger('pointsecio.decorators.produces')
+logger = logging.getLogger('firetail.decorators.produces')
 
 # special marker object to return empty content for any status code
 # e.g. in app method do "return NoContent, 201"

@@ -5,11 +5,11 @@ Basic example of a resource server
 
 import time
 
-import pointsecio
+import firetail
 from jose import JWTError, jwt
 from werkzeug.exceptions import Unauthorized
 
-JWT_ISSUER = 'io.pointsec.pointsecio'
+JWT_ISSUER = 'io.pointsec.firetail'
 JWT_SECRET = 'change_this'
 JWT_LIFETIME_SECONDS = 600
 JWT_ALGORITHM = 'HS256'
@@ -46,6 +46,6 @@ def _current_timestamp() -> int:
 
 
 if __name__ == '__main__':
-    app = pointsecio.FlaskApp(__name__)
+    app = firetail.FlaskApp(__name__)
     app.add_api('openapi.yaml')
     app.run(port=8080)

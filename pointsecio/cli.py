@@ -1,6 +1,6 @@
 """
 This module defines a command-line interface (CLI) that runs an OpenAPI specification to be a
-starting point for developing your API with PointSecIO.
+starting point for developing your API with Firetail.
 """
 
 import logging
@@ -10,10 +10,10 @@ from os import path
 import click
 from clickclick import AliasedGroup, fatal_error
 
-import pointsecio
-from pointsecio.mock import MockResolver
+import firetail
+from firetail.mock import MockResolver
 
-logger = logging.getLogger('pointsecio.cli')
+logger = logging.getLogger('firetail.cli')
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 FLASK_APP = 'flask'
 AVAILABLE_SERVERS = {
@@ -22,7 +22,7 @@ AVAILABLE_SERVERS = {
     'tornado': [FLASK_APP],
 }
 AVAILABLE_APPS = {
-    FLASK_APP: 'pointsecio.apps.flask_app.FlaskApp',
+    FLASK_APP: 'firetail.apps.flask_app.FlaskApp',
 }
 DEFAULT_SERVERS = {
     FLASK_APP: FLASK_APP,
@@ -47,7 +47,7 @@ def validate_server_requirements(ctx, param, value):
 def print_version(ctx, param, value):
     if not value or ctx.resilient_parsing:
         return
-    click.echo(f'PointSecIO {pointsecio.__version__}')
+    click.echo(f'Firetail {firetail.__version__}')
     ctx.exit()
 
 
@@ -173,7 +173,7 @@ def run(spec_file,
         resolver = MockResolver(mock_all=mock == 'all')
         api_extra_args['resolver'] = resolver
 
-    app_cls = pointsecio.utils.get_function_from_name(
+    app_cls = firetail.utils.get_function_from_name(
         AVAILABLE_APPS[app_framework]
     )
 

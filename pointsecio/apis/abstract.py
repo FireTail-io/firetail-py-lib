@@ -1,5 +1,5 @@
 """
-This module defines an AbstractAPI, which defines a standardized interface for a PointSecIO API.
+This module defines an AbstractAPI, which defines a standardized interface for a Firetail API.
 """
 
 import abc
@@ -13,16 +13,16 @@ from ..decorators.produces import NoContent
 from ..exceptions import ResolverError
 from ..http_facts import METHODS
 from ..jsonifier import Jsonifier
-from ..lifecycle import PointSecIOResponse
+from ..lifecycle import FiretailResponse
 from ..operations import make_operation
-from ..options import PointSecIOOptions
+from ..options import FiretailOptions
 from ..resolver import Resolver
 from ..spec import Specification
 
 MODULE_PATH = pathlib.Path(__file__).absolute().parent.parent
 SWAGGER_UI_URL = 'ui'
 
-logger = logging.getLogger('pointsecio.apis.abstract')
+logger = logging.getLogger('firetail.apis.abstract')
 
 
 class AbstractAPIMeta(abc.ABCMeta):
@@ -55,7 +55,7 @@ class AbstractSpecAPI(metaclass=AbstractAPIMeta):
 
         logger.debug('Read specification', extra={'spec': self.specification})
 
-        self.options = PointSecIOOptions(
+        self.options = FiretailOptions(
             options, oas_version=self.specification.version)
 
         logger.debug('Options Loaded',
@@ -160,7 +160,7 @@ class AbstractAPI(AbstractSpecAPI):
 
         logger.debug('Read specification', extra={'spec': self.specification})
 
-        self.options = PointSecIOOptions(
+        self.options = FiretailOptions(
             options, oas_version=self.specification.version)
 
         logger.debug('Options Loaded',
@@ -305,7 +305,7 @@ class AbstractAPI(AbstractSpecAPI):
     @abc.abstractmethod
     def get_request(self, *args, **kwargs):
         """
-        This method converts the user framework request to a PointSecIORequest.
+        This method converts the user framework request to a FiretailRequest.
         """
 
     @classmethod
@@ -324,8 +324,8 @@ class AbstractAPI(AbstractSpecAPI):
     def _get_response(cls, response, mimetype=None, extra_context=None):
         """
         This method converts a handler response to a framework response.
-        The response can be a PointSecIOResponse, an operation handler, a framework response or a tuple.
-        Other type than PointSecIOResponse are handled by `cls._response_from_handler`
+        The response can be a FiretailResponse, an operation handler, a framework response or a tuple.
+        Other type than FiretailResponse are handled by `cls._response_from_handler`
         :param response: A response to cast (tuple, framework response, etc).
         :param mimetype: The response mimetype.
         :type mimetype: Union[None, str]
@@ -341,8 +341,8 @@ class AbstractAPI(AbstractSpecAPI):
                          **extra_context
                      })
 
-        if isinstance(response, PointSecIOResponse):
-            framework_response = cls._pointsecio_to_framework_response(
+        if isinstance(response, FiretailResponse):
+            framework_response = cls._firetail_to_framework_response(
                 response, mimetype, extra_context)
         else:
             framework_response = cls._response_from_handler(
@@ -404,14 +404,14 @@ class AbstractAPI(AbstractSpecAPI):
             return cls._build_response(mimetype=mimetype, data=response, extra_context=extra_context)
 
     @classmethod
-    def get_pointsecio_response(cls, response, mimetype=None):
-        """ Cast framework dependent response to PointSecIOResponse used for schema validation """
-        if isinstance(response, PointSecIOResponse):
+    def get_firetail_response(cls, response, mimetype=None):
+        """ Cast framework dependent response to FiretailResponse used for schema validation """
+        if isinstance(response, FiretailResponse):
             return response
 
         if not cls._is_framework_response(response):
             response = cls._response_from_handler(response, mimetype)
-        return cls._framework_to_pointsecio_response(response=response, mimetype=mimetype)
+        return cls._framework_to_firetail_response(response=response, mimetype=mimetype)
 
     @classmethod
     @abc.abstractmethod
@@ -420,13 +420,13 @@ class AbstractAPI(AbstractSpecAPI):
 
     @classmethod
     @abc.abstractmethod
-    def _framework_to_pointsecio_response(cls, response, mimetype):
-        """ Cast framework response class to PointSecIOResponse used for schema validation """
+    def _framework_to_firetail_response(cls, response, mimetype):
+        """ Cast framework response class to FiretailResponse used for schema validation """
 
     @classmethod
     @abc.abstractmethod
-    def _pointsecio_to_framework_response(cls, response, mimetype, extra_context=None):
-        """ Cast PointSecIOResponse to framework response class """
+    def _firetail_to_framework_response(cls, response, mimetype, extra_context=None):
+        """ Cast FiretailResponse to framework response class """
 
     @classmethod
     @abc.abstractmethod

@@ -1,5 +1,5 @@
 """
-This module centralizes all functionality related to json encoding and decoding in PointSecIO.
+This module centralizes all functionality related to json encoding and decoding in Firetail.
 """
 
 import datetime
@@ -8,7 +8,7 @@ import uuid
 
 
 class JSONEncoder(json.JSONEncoder):
-    """The default PointSecIO JSON encoder. Handles extra types compared to the
+    """The default Firetail JSON encoder. Handles extra types compared to the
     built-in :class:`json.JSONEncoder`.
 
     -   :class:`datetime.datetime` and :class:`datetime.date` are
@@ -38,7 +38,7 @@ class JSONEncoder(json.JSONEncoder):
 
 class Jsonifier:
     """
-    Central point to serialize and deserialize to/from JSon in PointSecIO.
+    Central point to serialize and deserialize to/from JSon in Firetail.
     """
 
     def __init__(self, json_=json, **kwargs):
@@ -51,7 +51,7 @@ class Jsonifier:
 
     def dumps(self, data, **kwargs):
         """ Central point where JSON serialization happens inside
-        PointSecIO.
+        Firetail.
         """
         for k, v in self.dumps_args.items():
             kwargs.setdefault(k, v)
@@ -59,7 +59,7 @@ class Jsonifier:
 
     def loads(self, data):
         """ Central point where JSON deserialization happens inside
-        PointSecIO.
+        Firetail.
         """
         if isinstance(data, bytes):
             data = data.decode()

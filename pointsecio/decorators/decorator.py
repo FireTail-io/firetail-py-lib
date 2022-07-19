@@ -1,6 +1,6 @@
 """
 This module defines a BaseDecorator to wrap a user view function and a RequestResponseDecorator
-which manages the lifecycle of a request internally in PointSecIO.
+which manages the lifecycle of a request internally in Firetail.
 """
 
 import asyncio
@@ -9,7 +9,7 @@ import logging
 
 from ..utils import has_coroutine
 
-logger = logging.getLogger('pointsecio.decorators.decorator')
+logger = logging.getLogger('firetail.decorators.decorator')
 
 
 class BaseDecorator:
@@ -29,8 +29,8 @@ class BaseDecorator:
 
 
 class RequestResponseDecorator(BaseDecorator):
-    """Manages the lifecycle of the request internally in PointSecIO.
-    Filter the PointSecIORequest instance to return the corresponding
+    """Manages the lifecycle of the request internally in Firetail.
+    Filter the FiretailRequest instance to return the corresponding
     framework specific object.
     """
 
@@ -46,16 +46,16 @@ class RequestResponseDecorator(BaseDecorator):
         if has_coroutine(function, self.api):
             @functools.wraps(function)
             async def wrapper(*args, **kwargs):
-                pointsecio_request = self.api.get_request(*args, **kwargs)
-                while asyncio.iscoroutine(pointsecio_request):
-                    pointsecio_request = await pointsecio_request
+                firetail_request = self.api.get_request(*args, **kwargs)
+                while asyncio.iscoroutine(firetail_request):
+                    firetail_request = await firetail_request
 
-                pointsecio_response = function(pointsecio_request)
-                while asyncio.iscoroutine(pointsecio_response):
-                    pointsecio_response = await pointsecio_response
+                firetail_response = function(firetail_request)
+                while asyncio.iscoroutine(firetail_response):
+                    firetail_response = await firetail_response
 
-                framework_response = self.api.get_response(pointsecio_response, self.mimetype,
-                                                           pointsecio_request)
+                framework_response = self.api.get_response(firetail_response, self.mimetype,
+                                                           firetail_request)
                 while asyncio.iscoroutine(framework_response):
                     framework_response = await framework_response
 

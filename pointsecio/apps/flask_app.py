@@ -1,5 +1,5 @@
 """
-This module defines a FlaskApp, a PointSecIO application to wrap a Flask application.
+This module defines a FlaskApp, a Firetail application to wrap a Flask application.
 """
 
 import datetime
@@ -15,11 +15,11 @@ from flask import json, signals
 
 from ..apis.flask_api import FlaskApi
 from ..exceptions import ProblemException
-from ..middleware import PointSecIOMiddleware
+from ..middleware import FiretailMiddleware
 from ..problem import problem
 from .abstract import AbstractApp
 
-logger = logging.getLogger('pointsecio.app')
+logger = logging.getLogger('firetail.app')
 
 
 class FlaskApp(AbstractApp):
@@ -28,7 +28,7 @@ class FlaskApp(AbstractApp):
         :param extra_files: additional files to be watched by the reloader, defaults to the swagger specs of added apis
         :type extra_files: list[str | pathlib.Path], optional
 
-        See :class:`~pointsecio.AbstractApp` for additional parameters.
+        See :class:`~firetail.AbstractApp` for additional parameters.
         """
         self.extra_files = extra_files or []
 
@@ -42,9 +42,9 @@ class FlaskApp(AbstractApp):
         return app
 
     def _apply_middleware(self):
-        middlewares = [*PointSecIOMiddleware.default_middlewares,
+        middlewares = [*FiretailMiddleware.default_middlewares,
                        a2wsgi.WSGIMiddleware]
-        middleware = PointSecIOMiddleware(
+        middleware = FiretailMiddleware(
             self.app.wsgi_app, middlewares=middlewares)
 
         # Wrap with ASGI to WSGI middleware for usage with development server and test client

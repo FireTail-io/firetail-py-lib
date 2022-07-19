@@ -3,7 +3,7 @@ SQLAlchemy Example
 ==================
 
 A simple example of how one might use SQLAlchemy as a backing store for a 
-PointSecIO based application.
+Firetail based application.
 
 Running:
 

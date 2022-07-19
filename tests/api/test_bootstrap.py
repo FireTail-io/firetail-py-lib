@@ -4,10 +4,10 @@ from unittest import mock
 import jinja2
 import pytest
 import yaml
-from pointsecio import App
-from pointsecio.exceptions import InvalidSpecification
-from pointsecio.http_facts import METHODS
-from pointsecio.json_schema import ExtendedSafeLoader
+from firetail import App
+from firetail.exceptions import InvalidSpecification
+from firetail.http_facts import METHODS
+from firetail.json_schema import ExtendedSafeLoader
 
 from conftest import TEST_FOLDER, build_app_from_fixture
 
@@ -31,7 +31,7 @@ def test_app_with_relative_path(simple_api_spec_dir, spec):
 
 @pytest.mark.parametrize("spec", SPECS)
 def test_app_with_resolver(simple_api_spec_dir, spec):
-    from pointsecio.resolver import Resolver
+    from firetail.resolver import Resolver
     resolver = Resolver()
     app = App(__name__, port=5001,
               specification_dir='..' /
@@ -58,7 +58,7 @@ def test_app_with_different_server_option(simple_api_spec_dir, spec):
 
 
 def test_app_with_different_uri_parser(simple_api_spec_dir):
-    from pointsecio.decorators.uri_parsing import FirstValueURIParser
+    from firetail.decorators.uri_parsing import FirstValueURIParser
     app = App(__name__, port=5001,
               specification_dir='..' /
               simple_api_spec_dir.relative_to(TEST_FOLDER),
@@ -325,7 +325,7 @@ def test_handle_add_operation_error(simple_api_spec_dir):
 
 
 def test_using_all_fields_in_path_item(simple_api_spec_dir):
-    """Test that pointsecio will try to add an endpoint only on http methods.
+    """Test that firetail will try to add an endpoint only on http methods.
 
     test also that each http methods has its own endpoint.
     """

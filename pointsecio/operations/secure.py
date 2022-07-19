@@ -7,7 +7,7 @@ import logging
 
 from ..decorators.decorator import RequestResponseDecorator
 
-logger = logging.getLogger("pointsecio.operations.secure")
+logger = logging.getLogger("firetail.operations.secure")
 
 DEFAULT_MIMETYPE = 'application/json'
 
@@ -190,7 +190,7 @@ class SecureOperation:
         """
         Guarantees that instead of the internal representation of the
         operation handler response
-        (pointsecio.lifecycle.PointSecIORequest) a framework specific
+        (firetail.lifecycle.FiretailRequest) a framework specific
         object is returned.
         :rtype: types.FunctionType
         """

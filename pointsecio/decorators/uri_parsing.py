@@ -11,7 +11,7 @@ import re
 from .. import utils
 from .decorator import BaseDecorator
 
-logger = logging.getLogger('pointsecio.decorators.uri_parsing')
+logger = logging.getLogger('firetail.decorators.uri_parsing')
 
 QUERY_STRING_DELIMITERS = {
     'spaceDelimited': ' ',
@@ -329,7 +329,7 @@ class FirstValueURIParser(Swagger2URIParser):
 class AlwaysMultiURIParser(Swagger2URIParser):
     """
     Does not adhere to the Swagger2 spec, but is backwards compatible with
-    pointsecio behavior in version 1.4.2
+    firetail behavior in version 1.4.2
     """
 
     @staticmethod

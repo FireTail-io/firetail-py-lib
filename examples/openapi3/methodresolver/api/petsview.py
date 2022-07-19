@@ -2,7 +2,7 @@ import datetime
 
 from flask import request
 from flask.views import MethodView
-from pointsecio import NoContent
+from firetail import NoContent
 
 
 class PetsView(MethodView):

@@ -1,5 +1,5 @@
 """
-This module defines an AbstractApp, which defines a standardized user interface for a PointSecIO
+This module defines an AbstractApp, which defines a standardized user interface for a Firetail
 application.
 """
 
@@ -7,10 +7,10 @@ import abc
 import logging
 import pathlib
 
-from ..options import PointSecIOOptions
+from ..options import FiretailOptions
 from ..resolver import Resolver
 
-logger = logging.getLogger('pointsecio.app')
+logger = logging.getLogger('firetail.app')
 
 
 class AbstractApp(metaclass=abc.ABCMeta):
@@ -50,7 +50,7 @@ class AbstractApp(metaclass=abc.ABCMeta):
         # Options
         self.auth_all_paths = auth_all_paths
 
-        self.options = PointSecIOOptions(options)
+        self.options = FiretailOptions(options)
 
         self.server = server
         self.server_args = dict() if server_args is None else server_args
@@ -188,7 +188,7 @@ class AbstractApp(metaclass=abc.ABCMeta):
         return api
 
     def _resolver_error_handler(self, *args, **kwargs):
-        from pointsecio.handlers import ResolverErrorHandler
+        from firetail.handlers import ResolverErrorHandler
         return ResolverErrorHandler(self.api_cls, self.resolver_error, *args, **kwargs)
 
     def add_url_rule(self, rule, endpoint=None, view_func=None, **options):

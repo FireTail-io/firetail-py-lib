@@ -22,12 +22,12 @@ from ..exceptions import (BadRequestProblem, ExtraParameterProblem,
                           UnsupportedMediaTypeProblem)
 from ..http_facts import FORM_CONTENT_TYPES
 from ..json_schema import Draft4RequestValidator, Draft4ResponseValidator
-from ..lifecycle import PointSecIOResponse
+from ..lifecycle import FiretailResponse
 from ..utils import all_json, boolean, is_json_mimetype, is_null, is_nullable
 
 _jsonschema_3_or_newer = Version(version("jsonschema")) >= Version("3.0.0")
 
-logger = logging.getLogger('pointsecio.decorators.validation')
+logger = logging.getLogger('firetail.decorators.validation')
 
 TYPE_MAP = {
     'integer': int,
@@ -214,7 +214,7 @@ class RequestBodyValidator:
         return error_path_msg
 
     def validate_schema(self, data, url):
-        # type: (dict, AnyStr) -> Union[PointSecIOResponse, None]
+        # type: (dict, AnyStr) -> Union[FiretailResponse, None]
         if self.is_null_value_valid and is_null(data):
             return None
 
@@ -247,7 +247,7 @@ class ResponseBodyValidator:
             schema, format_checker=draft4_format_checker)
 
     def validate_schema(self, data, url):
-        # type: (dict, AnyStr) -> Union[PointSecIOResponse, None]
+        # type: (dict, AnyStr) -> Union[FiretailResponse, None]
         try:
             self.validator.validate(data)
         except ValidationError as exception:

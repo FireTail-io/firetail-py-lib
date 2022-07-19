@@ -1,17 +1,17 @@
 """
-This module defines an OpenAPIOperation class, a PointSecIO operation specific for OpenAPI 3 specs.
+This module defines an OpenAPIOperation class, a Firetail operation specific for OpenAPI 3 specs.
 """
 
 import logging
 import warnings
 from copy import copy, deepcopy
 
-from pointsecio.operations.abstract import AbstractOperation
+from firetail.operations.abstract import AbstractOperation
 
 from ..decorators.uri_parsing import OpenAPIURIParser
 from ..utils import deep_get, deep_merge, is_null, is_nullable, make_type
 
-logger = logging.getLogger("pointsecio.operations.openapi3")
+logger = logging.getLogger("firetail.operations.openapi3")
 
 
 class OpenAPIOperation(AbstractOperation):
@@ -284,7 +284,7 @@ class OpenAPIOperation(AbstractOperation):
         x_body_name = sanitize(self.request_body.get('x-body-name', None))
 
         if not x_body_name:
-            # x-body-name also accepted in the schema field for legacy pointsecio compat
+            # x-body-name also accepted in the schema field for legacy firetail compat
             warnings.warn('x-body-name within the requestBody schema will be deprecated in the '
                           'next major version. It should be provided directly under '
                           'the requestBody instead.', DeprecationWarning)

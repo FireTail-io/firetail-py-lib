@@ -1,5 +1,5 @@
 """
-This module defines PointSecIO Operation classes. A PointSecIO Operation implements an OpenAPI
+This module defines Firetail Operation classes. A Firetail Operation implements an OpenAPI
 operation, which describes a single API operation on a path. It wraps the view function linked to
 the operation with decorators to handle security, validation, serialization etc. based on the
 OpenAPI specification, and exposes the result to be registered as a route on the application.

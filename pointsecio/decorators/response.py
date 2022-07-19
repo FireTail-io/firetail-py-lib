@@ -14,7 +14,7 @@ from ..utils import all_json, has_coroutine
 from .decorator import BaseDecorator
 from .validation import ResponseBodyValidator
 
-logger = logging.getLogger('pointsecio.decorators.response')
+logger = logging.getLogger('firetail.decorators.response')
 
 
 class ResponseValidator(BaseDecorator):
@@ -86,12 +86,12 @@ class ResponseValidator(BaseDecorator):
         """
 
         def _wrapper(request, response):
-            pointsecio_response = \
-                self.operation.api.get_pointsecio_response(response, self.mimetype)
-            if not pointsecio_response.is_streamed:
+            firetail_response = \
+                self.operation.api.get_firetail_response(response, self.mimetype)
+            if not firetail_response.is_streamed:
                 self.validate_response(
-                    pointsecio_response.body, pointsecio_response.status_code,
-                    pointsecio_response.headers, request.url)
+                    firetail_response.body, firetail_response.status_code,
+                    firetail_response.headers, request.url)
             else:
                 logger.warning("Skipping response validation for streamed response.")
 

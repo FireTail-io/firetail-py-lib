@@ -1,8 +1,8 @@
-PointSecIO Cookbook
+Firetail Cookbook
 ==================
 
 This section aims to be a cookbook of possible solutions for specific
-use cases of PointSecIO.
+use cases of Firetail.
 
 Wildcard path parameters
 ------------------------
@@ -10,7 +10,7 @@ Wildcard path parameters
 Path parameters cannot contain slashes by default, but sometimes it's useful
 to have a path parameter which takes the full remainder of the HTTP path
 including slashes, e.g. to allow parsing "my/deep/path" from
-"/pages/my/deep/path". PointSecIO supports parsing such path remainders
+"/pages/my/deep/path". Firetail supports parsing such path remainders
 by using ``format: path``:
 
 .. code-block:: yaml
@@ -32,7 +32,7 @@ Custom type format
 ------------------
 
 It is possible to define custom type formats that are going to be used
-by the PointSecIO payload validation on request parameters and response
+by the Firetail payload validation on request parameters and response
 payloads of your API.
 
 Let's say your API deals with Products and you want to define a field
@@ -87,7 +87,7 @@ draft4 format checker decorator.
         ...
 
 This is all you need to have validation for that format in your
-PointSecIO application. Keep in mind that the format checkers should be
+Firetail application. Keep in mind that the format checkers should be
 defined and registered before you run your application server. A full
 example can be found at
 https://gist.github.com/rafaelcaricio/6e67286a522f747405a7299e6843cd93
@@ -96,15 +96,15 @@ https://gist.github.com/rafaelcaricio/6e67286a522f747405a7299e6843cd93
 CORS Support
 ------------
 
-CORS_ (Cross-origin resource sharing) is not built into PointSecIO, but you can use the `flask-cors`_ library
+CORS_ (Cross-origin resource sharing) is not built into Firetail, but you can use the `flask-cors`_ library
 to set CORS headers:
 
 .. code-block:: python
 
-    import pointsecio
+    import firetail
     from flask_cors import CORS
 
-    app = pointsecio.FlaskApp(__name__)
+    app = firetail.FlaskApp(__name__)
     app.add_api('swagger.yaml')
 
     # add CORS support
@@ -127,7 +127,7 @@ as possible when the program starts or you'll get the default configuration.
 
 .. code-block:: python
 
-    import pointsecio
+    import firetail
     from logging.config import dictConfig
 
 
@@ -142,7 +142,7 @@ as possible when the program starts or you'll get the default configuration.
            'handlers': ['syslog']
         }
     })
-    app = pointsecio.FlaskApp(__name__)
+    app = firetail.FlaskApp(__name__)
     app.app.logger.warn("I configured the flask logger!")
     app.add_api('swagger.yaml')
     app.run(port=8080)

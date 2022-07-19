@@ -4,7 +4,7 @@ import math
 from decimal import Decimal
 
 import pytest
-from pointsecio.apps.flask_app import FlaskJSONEncoder
+from firetail.apps.flask_app import FlaskJSONEncoder
 
 from conftest import build_app_from_fixture
 

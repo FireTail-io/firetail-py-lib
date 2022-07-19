@@ -14,10 +14,10 @@ import typing as t
 
 from ..decorators.parameter import inspect_function_arguments
 from ..exceptions import (OAuthProblem, OAuthResponseProblem,
-                          OAuthScopeProblem, PointSecIOException)
+                          OAuthScopeProblem, FiretailException)
 from ..utils import get_function_from_name
 
-logger = logging.getLogger('pointsecio.api.security')
+logger = logging.getLogger('firetail.api.security')
 
 
 class AbstractSecurityHandlerFactory(abc.ABC):
@@ -130,7 +130,7 @@ class AbstractSecurityHandlerFactory(abc.ABC):
         """
 
         def deny(*args, **kwargs):
-            raise PointSecIOException("Error in security definitions")
+            raise FiretailException("Error in security definitions")
 
         return deny
 

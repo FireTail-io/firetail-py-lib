@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 '''
-example of pointsecio running behind a path-altering reverse-proxy
+example of firetail running behind a path-altering reverse-proxy
 
 NOTE this demo is not secure by default!!
 You'll want to make sure these headers are coming from your proxy, and not
@@ -9,7 +9,7 @@ directly from users on the web!
 '''
 import logging
 
-import pointsecio
+import firetail
 
 
 # adapted from http://flask.pocoo.org/snippets/35/
@@ -69,7 +69,7 @@ def hello():
 
 
 if __name__ == '__main__':
-    app = pointsecio.FlaskApp(__name__)
+    app = firetail.FlaskApp(__name__)
     app.add_api('openapi.yaml')
     flask_app = app.app
     proxied = ReverseProxied(

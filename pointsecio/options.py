@@ -1,5 +1,5 @@
 """
-This module defines a PointSecIO specific options class to pass to the PointSecIO App or API.
+This module defines a Firetail specific options class to pass to the Firetail App or API.
 """
 
 import logging
@@ -10,18 +10,18 @@ try:
 except ImportError:
     swagger_ui_2_path = swagger_ui_3_path = None
 
-from pointsecio.decorators.uri_parsing import AbstractURIParser
+from firetail.decorators.uri_parsing import AbstractURIParser
 
 NO_UI_MSG = """The swagger_ui directory could not be found.
-    Please install pointsecio with extra install: pip install pointsecio[swagger-ui]
+    Please install firetail with extra install: pip install firetail[swagger-ui]
     or provide the path to your local installation by passing swagger_path=<your path>
 """
 
-logger = logging.getLogger("pointsecio.options")
+logger = logging.getLogger("firetail.options")
 
 
-class PointSecIOOptions:
-    """Class holding pointsecio specific options."""
+class FiretailOptions:
+    """Class holding firetail specific options."""
 
     def __init__(self, options=None, oas_version=(2,)):
         self._options = {}
@@ -37,9 +37,9 @@ class PointSecIOOptions:
             self._options.update(filter_values(options))
 
     def extend(self, new_values=None):
-        # type: (Optional[dict]) -> PointSecIOOptions
+        # type: (Optional[dict]) -> FiretailOptions
         """
-        Return a new instance of `PointSecIOOptions` using as default the currently
+        Return a new instance of `FiretailOptions` using as default the currently
         defined options.
         """
         if new_values is None:
@@ -47,7 +47,7 @@ class PointSecIOOptions:
 
         options = dict(self._options)
         options.update(filter_values(new_values))
-        return PointSecIOOptions(options, self.oas_version)
+        return FiretailOptions(options, self.oas_version)
 
     def as_dict(self):
         return self._options
@@ -108,10 +108,10 @@ class PointSecIOOptions:
     def openapi_console_ui_from_dir(self):
         # type: () -> str
         """
-        Custom OpenAPI Console UI directory from where PointSecIO will serve
+        Custom OpenAPI Console UI directory from where Firetail will serve
         the static files.
 
-        Default: PointSecIO's vendored version of the OpenAPI Console UI.
+        Default: Firetail's vendored version of the OpenAPI Console UI.
         """
         return self._options.get('swagger_path', self.swagger_ui_local_path)
 

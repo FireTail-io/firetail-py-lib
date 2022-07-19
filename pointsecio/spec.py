@@ -207,7 +207,7 @@ class Swagger2Specification(Specification):
     operation_cls = Swagger2Operation
 
     openapi_schema = json.loads(
-        pkgutil.get_data('pointsecio', 'resources/schemas/v2.0/schema.json')
+        pkgutil.get_data('firetail', 'resources/schemas/v2.0/schema.json')
     )
 
     @classmethod
@@ -260,7 +260,7 @@ class OpenAPISpecification(Specification):
     operation_cls = OpenAPIOperation
 
     openapi_schema = json.loads(
-        pkgutil.get_data('pointsecio', 'resources/schemas/v3.0/schema.json')
+        pkgutil.get_data('firetail', 'resources/schemas/v3.0/schema.json')
     )
 
     @classmethod

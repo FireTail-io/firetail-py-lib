@@ -13,7 +13,7 @@ from typing import Any
 import inflection
 
 from ..http_facts import FORM_CONTENT_TYPES
-from ..lifecycle import PointSecIORequest  # NOQA
+from ..lifecycle import FiretailRequest  # NOQA
 from ..utils import all_json
 
 logger = logging.getLogger(__name__)
@@ -53,9 +53,9 @@ def parameter_to_arg(operation, function, pythonic_params=False,
     """
     Pass query and body parameters as keyword arguments to handler function.
 
-    See (https://github.com/zalando/pointsecio/issues/59)
+    See (https://github.com/zalando/firetail/issues/59)
     :param operation: The operation being called
-    :type operation: pointsecio.operations.AbstractOperation
+    :type operation: firetail.operations.AbstractOperation
     :param pythonic_params: When True CamelCase parameters are converted to snake_case and an underscore is appended to
     any shadowed built-ins
     :type pythonic_params: bool
@@ -77,7 +77,7 @@ def parameter_to_arg(operation, function, pythonic_params=False,
 
     @functools.wraps(function)
     def wrapper(request):
-        # type: (PointSecIORequest) -> Any
+        # type: (FiretailRequest) -> Any
         logger.debug('Function Arguments: %s', arguments)
         kwargs = {}
 

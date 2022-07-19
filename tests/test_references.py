@@ -1,8 +1,8 @@
 from unittest import mock
 
 import pytest
-from pointsecio.apis.flask_api import Jsonifier
-from pointsecio.json_schema import RefResolutionError, resolve_refs
+from firetail.apis.flask_api import Jsonifier
+from firetail.json_schema import RefResolutionError, resolve_refs
 
 DEFINITIONS = {
     'new_stack': {

@@ -57,7 +57,7 @@ paths:
         '200':
           description: greeting response
           content:
-            application/x.pointsecio+json:
+            application/x.firetail+json:
               schema:
                 type: object
       parameters:
@@ -537,7 +537,7 @@ paths:
           in: query
           schema:
             type: string
-            default: pointsecio
+            default: firetail
       responses:
         '200':
           description: OK

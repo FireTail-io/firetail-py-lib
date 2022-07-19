@@ -53,7 +53,7 @@ class auditor:
             },
             'handlers': {
                 'pointsec': {
-                    'class': 'pointsecio.handlers.PointsecHandler',
+                    'class': 'firetail.handlers.PointsecHandler',
                     'level': 'DEBUG',
                     'formatter': 'pointsecFormat',
                     'token': self.token,

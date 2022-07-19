@@ -9,10 +9,10 @@ import sys
 
 from inflection import camelize
 
-import pointsecio.utils as utils
-from pointsecio.exceptions import ResolverError
+import firetail.utils as utils
+from firetail.exceptions import ResolverError
 
-logger = logging.getLogger('pointsecio.resolver')
+logger = logging.getLogger('firetail.resolver')
 
 
 class Resolution:
@@ -41,7 +41,7 @@ class Resolver:
         """
         Default operation resolver
 
-        :type operation: pointsecio.operations.AbstractOperation
+        :type operation: firetail.operations.AbstractOperation
         """
         operation_id = self.resolve_operation_id(operation)
         return Resolution(self.resolve_function_from_operation_id(operation_id), operation_id)
@@ -50,7 +50,7 @@ class Resolver:
         """
         Default operationId resolver
 
-        :type operation: pointsecio.operations.AbstractOperation
+        :type operation: firetail.operations.AbstractOperation
         """
         operation_id = operation.operation_id
         router_controller = operation.router_controller
@@ -98,7 +98,7 @@ class RelativeResolver(Resolver):
         x-swagger-router-controller or x-openapi-router-controller is specified.
 
         :param operation: The operation to resolve
-        :type operation: pointsecio.operations.AbstractOperation
+        :type operation: firetail.operations.AbstractOperation
         """
         operation_id = operation.operation_id
         router_controller = operation.router_controller
@@ -125,7 +125,7 @@ class RestyResolver(Resolver):
         """
         Resolves the operationId using REST semantics unless explicitly configured in the spec
 
-        :type operation: pointsecio.operations.AbstractOperation
+        :type operation: firetail.operations.AbstractOperation
         """
         if operation.operation_id:
             return super().resolve_operation_id(operation)
@@ -136,7 +136,7 @@ class RestyResolver(Resolver):
         """
         Resolves the operationId using REST semantics
 
-        :type operation: pointsecio.operations.AbstractOperation
+        :type operation: firetail.operations.AbstractOperation
         """
 
         # Split the path into components delimited by '/'
@@ -202,7 +202,7 @@ class MethodViewResolver(RestyResolver):
         Once resolved with REST semantics the view_name is capitalised and has 'View' added
         to it so it now matches the Class names of the MethodView
 
-        :type operation: pointsecio.operations.AbstractOperation
+        :type operation: firetail.operations.AbstractOperation
         """
         if operation.operation_id:
             # If operation_id is defined then use the higher level API to resolve

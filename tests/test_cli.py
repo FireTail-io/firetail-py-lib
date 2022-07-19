@@ -1,17 +1,17 @@
 import logging
 from unittest.mock import MagicMock
 
-import pointsecio
+import firetail
 import pytest
 from click.testing import CliRunner
-from pointsecio.cli import main
+from firetail.cli import main
 
 from conftest import FIXTURES_FOLDER
 
 
 @pytest.fixture()
 def mock_app_run(mock_get_function_from_name):
-    test_server = MagicMock(wraps=pointsecio.FlaskApp(__name__))
+    test_server = MagicMock(wraps=firetail.FlaskApp(__name__))
     test_server.run = MagicMock(return_value=True)
     test_app = MagicMock(return_value=test_server)
     mock_get_function_from_name.return_value = test_app
@@ -22,7 +22,7 @@ def mock_app_run(mock_get_function_from_name):
 def mock_get_function_from_name(monkeypatch):
     get_function_from_name = MagicMock()
     monkeypatch.setattr(
-        'pointsecio.cli.pointsecio.utils.get_function_from_name',
+        'firetail.cli.firetail.utils.get_function_from_name',
         get_function_from_name
     )
     return get_function_from_name
@@ -31,7 +31,7 @@ def mock_get_function_from_name(monkeypatch):
 @pytest.fixture()
 def expected_arguments():
     """
-    Default values arguments used to call `pointsecio.App` by cli.
+    Default values arguments used to call `firetail.App` by cli.
     """
     return {
         "options": {
@@ -53,7 +53,7 @@ def spec_file():
 def test_print_version():
     runner = CliRunner()
     result = runner.invoke(main, ['--version'], catch_exceptions=False)
-    assert f"PointSecIO {pointsecio.__version__}" in result.output
+    assert f"Firetail {firetail.__version__}" in result.output
 
 
 def test_run_missing_spec():
@@ -92,7 +92,7 @@ def test_run_spec_with_host(mock_app_run, spec_file):
 def test_run_no_options_all_default(mock_app_run, expected_arguments, spec_file):
     runner = CliRunner()
     runner.invoke(main, ['run', spec_file], catch_exceptions=False)
-    mock_app_run.assert_called_with('pointsecio.cli', **expected_arguments)
+    mock_app_run.assert_called_with('firetail.cli', **expected_arguments)
 
 
 def test_run_using_option_hide_spec(mock_app_run, expected_arguments,
@@ -102,7 +102,7 @@ def test_run_using_option_hide_spec(mock_app_run, expected_arguments,
                   catch_exceptions=False)
 
     expected_arguments['options']['serve_spec'] = False
-    mock_app_run.assert_called_with('pointsecio.cli', **expected_arguments)
+    mock_app_run.assert_called_with('firetail.cli', **expected_arguments)
 
 
 def test_run_using_option_hide_console_ui(mock_app_run, expected_arguments,
@@ -112,7 +112,7 @@ def test_run_using_option_hide_console_ui(mock_app_run, expected_arguments,
                   catch_exceptions=False)
 
     expected_arguments['options']['swagger_ui'] = False
-    mock_app_run.assert_called_with('pointsecio.cli', **expected_arguments)
+    mock_app_run.assert_called_with('firetail.cli', **expected_arguments)
 
 
 def test_run_using_option_console_ui_from(mock_app_run, expected_arguments,
@@ -123,7 +123,7 @@ def test_run_using_option_console_ui_from(mock_app_run, expected_arguments,
                   catch_exceptions=False)
 
     expected_arguments['options']['swagger_path'] = user_path
-    mock_app_run.assert_called_with('pointsecio.cli', **expected_arguments)
+    mock_app_run.assert_called_with('firetail.cli', **expected_arguments)
 
 
 def test_run_using_option_console_ui_url(mock_app_run, expected_arguments,
@@ -134,7 +134,7 @@ def test_run_using_option_console_ui_url(mock_app_run, expected_arguments,
                   catch_exceptions=False)
 
     expected_arguments['options']['swagger_url'] = user_url
-    mock_app_run.assert_called_with('pointsecio.cli', **expected_arguments)
+    mock_app_run.assert_called_with('firetail.cli', **expected_arguments)
 
 
 def test_run_using_option_auth_all_paths(mock_app_run, expected_arguments,
@@ -144,13 +144,13 @@ def test_run_using_option_auth_all_paths(mock_app_run, expected_arguments,
                   catch_exceptions=False)
 
     expected_arguments['auth_all_paths'] = True
-    mock_app_run.assert_called_with('pointsecio.cli', **expected_arguments)
+    mock_app_run.assert_called_with('firetail.cli', **expected_arguments)
 
 
 def test_run_in_debug_mode(mock_app_run, expected_arguments, spec_file,
                            monkeypatch):
-    logging_config = MagicMock(name='pointsecio.cli.logging.basicConfig')
-    monkeypatch.setattr('pointsecio.cli.logging.basicConfig',
+    logging_config = MagicMock(name='firetail.cli.logging.basicConfig')
+    monkeypatch.setattr('firetail.cli.logging.basicConfig',
                         logging_config)
 
     runner = CliRunner()
@@ -159,13 +159,13 @@ def test_run_in_debug_mode(mock_app_run, expected_arguments, spec_file,
     logging_config.assert_called_with(level=logging.DEBUG)
 
     expected_arguments['debug'] = True
-    mock_app_run.assert_called_with('pointsecio.cli', **expected_arguments)
+    mock_app_run.assert_called_with('firetail.cli', **expected_arguments)
 
 
 def test_run_in_very_verbose_mode(mock_app_run, expected_arguments, spec_file,
                                   monkeypatch):
-    logging_config = MagicMock(name='pointsecio.cli.logging.basicConfig')
-    monkeypatch.setattr('pointsecio.cli.logging.basicConfig',
+    logging_config = MagicMock(name='firetail.cli.logging.basicConfig')
+    monkeypatch.setattr('firetail.cli.logging.basicConfig',
                         logging_config)
 
     runner = CliRunner()
@@ -174,13 +174,13 @@ def test_run_in_very_verbose_mode(mock_app_run, expected_arguments, spec_file,
     logging_config.assert_called_with(level=logging.DEBUG)
 
     expected_arguments['debug'] = True
-    mock_app_run.assert_called_with('pointsecio.cli', **expected_arguments)
+    mock_app_run.assert_called_with('firetail.cli', **expected_arguments)
 
 
 def test_run_in_verbose_mode(mock_app_run, expected_arguments, spec_file,
                              monkeypatch):
-    logging_config = MagicMock(name='pointsecio.cli.logging.basicConfig')
-    monkeypatch.setattr('pointsecio.cli.logging.basicConfig',
+    logging_config = MagicMock(name='firetail.cli.logging.basicConfig')
+    monkeypatch.setattr('firetail.cli.logging.basicConfig',
                         logging_config)
 
     runner = CliRunner()
@@ -189,7 +189,7 @@ def test_run_in_verbose_mode(mock_app_run, expected_arguments, spec_file,
     logging_config.assert_called_with(level=logging.INFO)
 
     expected_arguments['debug'] = False
-    mock_app_run.assert_called_with('pointsecio.cli', **expected_arguments)
+    mock_app_run.assert_called_with('firetail.cli', **expected_arguments)
 
 
 def test_run_using_option_base_path(mock_app_run, expected_arguments,

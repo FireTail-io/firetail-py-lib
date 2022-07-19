@@ -205,7 +205,7 @@ def test_default_param(strict_app):
     resp = app_client.get('/v1.0/test-default-query-parameter')
     assert resp.status_code == 200
     response = json.loads(resp.data.decode('utf-8', 'replace'))
-    assert response['app_name'] == 'pointsecio'
+    assert response['app_name'] == 'firetail'
 
 
 def test_falsy_param(simple_app):

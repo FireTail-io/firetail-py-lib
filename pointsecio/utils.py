@@ -1,5 +1,5 @@
 """
-This module provides general utility functions used within PointSecIO.
+This module provides general utility functions used within Firetail.
 """
 
 import asyncio

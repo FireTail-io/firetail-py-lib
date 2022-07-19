@@ -3,7 +3,7 @@ import datetime
 import uuid
 
 from flask import jsonify, redirect, send_file
-from pointsecio import NoContent, ProblemException, context, request
+from firetail import NoContent, ProblemException, context, request
 
 
 class DummyClass:
@@ -86,7 +86,7 @@ def get_bye_secure_from_flask():
     return 'Goodbye {user} (Secure!)'.format(user=context['user'])
 
 
-def get_bye_secure_from_pointsecio(req_context):
+def get_bye_secure_from_firetail(req_context):
     return 'Goodbye {user} (Secure!)'.format(user=req_context['user'])
 
 

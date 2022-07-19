@@ -3,9 +3,9 @@ from unittest.mock import MagicMock
 
 import pytest
 import requests
-from pointsecio.exceptions import (BadRequestProblem, OAuthProblem,
+from firetail.exceptions import (BadRequestProblem, OAuthProblem,
                                    OAuthResponseProblem, OAuthScopeProblem,
-                                   PointSecIOException)
+                                   FiretailException)
 
 
 def test_get_tokeninfo_url(monkeypatch, security_handler_factory):
@@ -15,7 +15,7 @@ def test_get_tokeninfo_url(monkeypatch, security_handler_factory):
     monkeypatch.setattr('os.environ', env)
     logger = MagicMock()
     monkeypatch.setattr(
-        'pointsecio.security.security_handler_factory.logger', logger)
+        'firetail.security.security_handler_factory.logger', logger)
 
     security_def = {}
     assert security_handler_factory.get_tokeninfo_func(security_def) is None
@@ -69,7 +69,7 @@ def test_verify_oauth_scopes_remote(monkeypatch, security_handler_factory):
     session = MagicMock()
     session.get = get_tokeninfo_response
     monkeypatch.setattr(
-        'pointsecio.security.flask_security_handler_factory.session', session)
+        'firetail.security.flask_security_handler_factory.session', session)
 
     with pytest.raises(OAuthScopeProblem, match="Provided token doesn't have the required scope"):
         wrapped_func(request)
@@ -248,9 +248,9 @@ def test_verify_security_oauthproblem(security_handler_factory):
         ([OAuthProblem(), OAuthScopeProblem([], []),
          BadRequestProblem], OAuthScopeProblem),
         ([OAuthProblem(), OAuthScopeProblem([], []),
-         BadRequestProblem, PointSecIOException], OAuthScopeProblem),
-        ([BadRequestProblem(), PointSecIOException()], BadRequestProblem),
-        ([PointSecIOException()], PointSecIOException),
+         BadRequestProblem, FiretailException], OAuthScopeProblem),
+        ([BadRequestProblem(), FiretailException()], BadRequestProblem),
+        ([FiretailException()], FiretailException),
     ]
 )
 def test_raise_most_specific(errors, most_specific, security_handler_factory):

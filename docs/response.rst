@@ -6,19 +6,19 @@ Response Serialization
 If the endpoint returns a `Response` object this response will be used as is.
 
 Otherwise, and by default and if the specification defines that an endpoint
-produces only JSON, pointsecio will automatically serialize the return value
+produces only JSON, firetail will automatically serialize the return value
 for you and set the right content type in the HTTP header.
 
-If the endpoint produces a single non-JSON mimetype then PointSecIO will
+If the endpoint produces a single non-JSON mimetype then Firetail will
 automatically set the right content type in the HTTP header.
 
 Customizing JSON encoder
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-PointSecIO allows you to customize the `JSONEncoder` class in the Flask app
-instance `json_encoder` (`pointsecio.App:app`). If you wanna reuse the
-PointSecIO's date-time serialization, inherit your custom encoder from
-`pointsecio.apps.flask_app.FlaskJSONEncoder`.
+Firetail allows you to customize the `JSONEncoder` class in the Flask app
+instance `json_encoder` (`firetail.App:app`). If you wanna reuse the
+Firetail's date-time serialization, inherit your custom encoder from
+`firetail.apps.flask_app.FlaskJSONEncoder`.
 
 For more information on the `JSONEncoder`, see the `Flask documentation`_.
 
@@ -56,14 +56,14 @@ For example
 
 Response Validation
 -------------------
-While, by default PointSecIO doesn't validate the responses it's possible to
+While, by default Firetail doesn't validate the responses it's possible to
 do so by opting in when adding the API:
 
 .. code-block:: python
 
-    import pointsecio
+    import firetail
 
-    app = pointsecio.FlaskApp(__name__, specification_dir='swagger/')
+    app = firetail.FlaskApp(__name__, specification_dir='swagger/')
     app.add_api('my_api.yaml', validate_responses=True)
     app.run(port=8080)
 
@@ -75,7 +75,7 @@ Custom Validator
 -----------------
 
 By default, response body contents are validated against OpenAPI schema
-via ``pointsecio.decorators.response.ResponseValidator``, if you want to change
+via ``firetail.decorators.response.ResponseValidator``, if you want to change
 the validation, you can override the default class with:
 
 .. code-block:: python
@@ -83,15 +83,15 @@ the validation, you can override the default class with:
     validator_map = {
         'response': CustomResponseValidator
     }
-    app = pointsecio.FlaskApp(__name__)
+    app = firetail.FlaskApp(__name__)
     app.add_api('api.yaml', ..., validator_map=validator_map)
 
 
 Error Handling
 --------------
-By default pointsecio error messages are JSON serialized according to
+By default firetail error messages are JSON serialized according to
 `Problem Details for HTTP APIs`_
 
-Application can return errors using ``pointsecio.problem``.
+Application can return errors using ``firetail.problem``.
 
 .. _Problem Details for HTTP APIs: https://tools.ietf.org/html/draft-ietf-appsawg-http-problem-00

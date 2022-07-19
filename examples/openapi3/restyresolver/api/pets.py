@@ -1,6 +1,6 @@
 import datetime
 
-from pointsecio import NoContent
+from firetail import NoContent
 
 pets = {}
 

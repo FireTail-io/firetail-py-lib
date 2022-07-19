@@ -5,7 +5,7 @@ This module contains a mock resolver that returns mock functions for operations 
 import functools
 import logging
 
-from pointsecio.resolver import Resolution, Resolver, ResolverError
+from firetail.resolver import Resolution, Resolver, ResolverError
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ class MockResolver(Resolver):
         """
         Mock operation resolver
 
-        :type operation: pointsecio.operations.AbstractOperation
+        :type operation: firetail.operations.AbstractOperation
         """
         operation_id = self.resolve_operation_id(operation)
         if not operation_id:

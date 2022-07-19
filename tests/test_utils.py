@@ -1,9 +1,9 @@
 import math
 from unittest.mock import MagicMock
 
-import pointsecio.apps
+import firetail.apps
 import pytest
-from pointsecio import utils
+from firetail import utils
 
 
 def test_get_function_from_name():
@@ -25,15 +25,15 @@ def test_get_function_from_name_attr_error(monkeypatch):
     """
     deep_attr_mock = MagicMock()
     deep_attr_mock.side_effect = AttributeError
-    monkeypatch.setattr("pointsecio.utils.deep_getattr", deep_attr_mock)
+    monkeypatch.setattr("firetail.utils.deep_getattr", deep_attr_mock)
     with pytest.raises(AttributeError):
         utils.get_function_from_name('math.ceil')
 
 
 def test_get_function_from_name_for_class_method():
     function = utils.get_function_from_name(
-        'pointsecio.FlaskApp.common_error_handler')
-    assert function == pointsecio.FlaskApp.common_error_handler
+        'firetail.FlaskApp.common_error_handler')
+    assert function == firetail.FlaskApp.common_error_handler
 
 
 def test_boolean():

@@ -15,7 +15,7 @@ from .logger import get_stdout_logger
 from .operations.secure import SecureOperation
 from .sender import PointsecSender
 
-logger = logging.getLogger('pointsecio.handlers')
+logger = logging.getLogger('firetail.handlers')
 
 RESOLVER_ERROR_ENDPOINT_RANDOM_DIGITS = 6
 

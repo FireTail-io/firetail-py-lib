@@ -1,17 +1,17 @@
 """
-This module defines a Swagger2Operation class, a PointSecIO operation specific for Swagger 2 specs.
+This module defines a Swagger2Operation class, a Firetail operation specific for Swagger 2 specs.
 """
 
 import logging
 from copy import deepcopy
 
-from pointsecio.operations.abstract import AbstractOperation
+from firetail.operations.abstract import AbstractOperation
 
 from ..decorators.uri_parsing import Swagger2URIParser
 from ..exceptions import InvalidSpecification
 from ..utils import deep_get, is_null, is_nullable, make_type
 
-logger = logging.getLogger("pointsecio.operations.swagger2")
+logger = logging.getLogger("firetail.operations.swagger2")
 
 
 class Swagger2Operation(AbstractOperation):

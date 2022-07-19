@@ -11,13 +11,13 @@ from starlette.staticfiles import StaticFiles
 from starlette.templating import Jinja2Templates
 from starlette.types import ASGIApp, Receive, Scope, Send
 
-from pointsecio.apis import AbstractSwaggerUIAPI
-from pointsecio.jsonifier import JSONEncoder, Jsonifier
-from pointsecio.utils import yamldumper
+from firetail.apis import AbstractSwaggerUIAPI
+from firetail.jsonifier import JSONEncoder, Jsonifier
+from firetail.utils import yamldumper
 
 from .base import AppMiddleware
 
-logger = logging.getLogger('pointsecio.middleware.swagger_ui')
+logger = logging.getLogger('firetail.middleware.swagger_ui')
 
 
 _original_scope: ContextVar[Scope] = ContextVar('SCOPE')

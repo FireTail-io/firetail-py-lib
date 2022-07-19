@@ -1,6 +1,6 @@
 build
 dist
-pointsecio.egg-info
+firetail.egg-info
 __pycache__
 .coverage
 *.egg

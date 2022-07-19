@@ -1,5 +1,5 @@
-from pointsecio.operations import OpenAPIOperation
-from pointsecio.resolver import MethodViewResolver, Resolver
+from firetail.operations import OpenAPIOperation
+from firetail.resolver import MethodViewResolver, Resolver
 
 COMPONENTS = {'parameters': {'myparam': {
     'in': 'path', 'schema': {'type': 'integer'}}}}
