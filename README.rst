@@ -363,7 +363,7 @@ There are a handful of URI parsers included with connection.
 | default: OpenAPI 3.0 | parameter. Query parameters are parsed from left to right, so if a query  |
 |                      | parameter is defined twice, then the right-most definition will take      |
 |                      | precedence. For example, if you provided a URI with the query string      |
-|                      | ``?letters=a,b,c&letters=d,e,f``, and ``style: simple``, then firetail  |
+|                      | ``?letters=a,b,c&letters=d,e,f``, and ``style: simple``, then firetail    |
 |                      | will set ``letters = ['d', 'e', 'f']``. For additional information see    |
 |                      | `OpenAPI 3.0 Style Values`_.                                              |
 +----------------------+---------------------------------------------------------------------------+
@@ -373,14 +373,14 @@ There are a handful of URI parsers included with connection.
 |                      | if a query parameter is defined twice, then the right-most definition     |
 |                      | wins. For example, if you provided a URI with the query string            |
 |                      | ``?letters=a,b,c&letters=d,e,f``, and ``collectionFormat: csv``, then     |
-|                      | firetail will set ``letters = ['d', 'e', 'f']``                         |
+|                      | firetail will set ``letters = ['d', 'e', 'f']``                           |
 +----------------------+---------------------------------------------------------------------------+
 | FirstValueURIParser  | This parser behaves like the Swagger2URIParser, except that it prefers    |
 |                      | the first defined value. For example, if you provided a URI with the query|
 |                      | string ``?letters=a,b,c&letters=d,e,f`` and ``collectionFormat: csv``     |
-|                      | hen firetail will set ``letters = ['a', 'b', 'c']``                     |
+|                      | hen firetail will set ``letters = ['a', 'b', 'c']``                       |
 +----------------------+---------------------------------------------------------------------------+
-| AlwaysMultiURIParser | This parser is backwards compatible with Firetail 1.x. It joins together|
+| AlwaysMultiURIParser | This parser is backwards compatible with Firetail 1.x. It joins together  |
 |                      | multiple instances of the same query parameter.                           |
 +----------------------+---------------------------------------------------------------------------+
 

@@ -1,8 +1,8 @@
 import datetime
 
+from firetail import NoContent
 from flask import request
 from flask.views import MethodView
-from firetail import NoContent
 
 
 class PetsView(MethodView):

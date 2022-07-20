@@ -2,11 +2,11 @@ import json
 import pathlib
 
 import pytest
-from jsonschema.validators import _utils, extend
 from firetail import App
 from firetail.decorators.validation import RequestBodyValidator
 from firetail.json_schema import Draft4RequestValidator
 from firetail.spec import Specification
+from jsonschema.validators import _utils, extend
 
 from conftest import build_app_from_fixture
 

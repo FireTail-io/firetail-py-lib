@@ -45,5 +45,5 @@ def problem(status, title, detail, type=None, instance=None, headers=None, ext=N
 
     mimetype = content_type = 'application/problem+json'
     return FiretailResponse(status, mimetype, content_type,
-                              body=problem_response,
-                              headers=headers)
+                            body=problem_response,
+                            headers=headers)
