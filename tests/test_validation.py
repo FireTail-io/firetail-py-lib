@@ -2,9 +2,9 @@ from unittest.mock import MagicMock
 
 import flask
 import pytest
-from pointsecio.apis.flask_api import FlaskApi
-from pointsecio.decorators.validation import ParameterValidator
-from pointsecio.exceptions import BadRequestProblem
+from firetail.apis.flask_api import FlaskApi
+from firetail.decorators.validation import ParameterValidator
+from firetail.exceptions import BadRequestProblem
 
 
 def test_parameter_validator(monkeypatch):

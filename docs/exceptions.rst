@@ -2,12 +2,12 @@ Exception Handling
 ==================
 Rendering Exceptions through the Flask Handler
 ----------------------------------------------
-Flask by default contains an exception handler, which pointsecio's app can proxy
+Flask by default contains an exception handler, which firetail's app can proxy
 to with the ``add_error_handler`` method. You can hook either on status codes
 or on a specific exception type.
 
-PointSecIO is moving from returning flask responses on errors to throwing exceptions
-that are a subclass of ``pointsecio.problem``. So far exceptions thrown in the OAuth
+Firetail is moving from returning flask responses on errors to throwing exceptions
+that are a subclass of ``firetail.problem``. So far exceptions thrown in the OAuth
 decorator have been converted.
 
 Flask Error Handler Example
@@ -38,7 +38,7 @@ Firstly, it's possible to declare what Exception must be handled
 
 
     # init flask app
-    import pointsecio
+    import firetail
 
     def not_found_handler(error):
         return {
@@ -49,17 +49,17 @@ Firstly, it's possible to declare what Exception must be handled
 
     def create_app():
 
-        pointsecio_app = pointsecio.FlaskApp(
+        firetail_app = firetail.FlaskApp(
             __name__, specification_dir="../api/")
-        pointsecio_app.add_api(
+        firetail_app.add_api(
             "openapi.yaml", validate_responses=True,
             base_path="/")
 
         # Handle NotFoundException
-        pointsecio_app.add_error_handler(
+        firetail_app.add_error_handler(
             NotFoundException, not_found_handler)
 
-        app = pointsecio_app.app
+        app = firetail_app.app
         return app
 
 In this way, it's possible to raise anywhere the NotFoundException or its subclasses
@@ -88,12 +88,12 @@ and we know the API will return 404 status code.
 
 Default Exception Handling
 --------------------------
-By default pointsecio exceptions are JSON serialized according to
+By default firetail exceptions are JSON serialized according to
 `Problem Details for HTTP APIs`_
 
-Application can return errors using ``pointsecio.problem`` or exceptions that inherit from both
-``pointsecio.ProblemException`` and a ``werkzeug.exceptions.HttpException`` subclass (for example
-``werkzeug.exceptions.Forbidden``). An example of this is the ``pointsecio.exceptions.OAuthProblem``
+Application can return errors using ``firetail.problem`` or exceptions that inherit from both
+``firetail.ProblemException`` and a ``werkzeug.exceptions.HttpException`` subclass (for example
+``werkzeug.exceptions.Forbidden``). An example of this is the ``firetail.exceptions.OAuthProblem``
 exception
 
 .. code-block:: python
@@ -106,25 +106,25 @@ exception
 
 Examples of Custom Rendering Exceptions
 ---------------------------------------
-To custom render an exception when you boot your pointsecio application you can hook into a custom
+To custom render an exception when you boot your firetail application you can hook into a custom
 exception and render it in some sort of custom format. For example
 
 
 .. code-block:: python
 
     from flask import Response
-    import pointsecio
-    from pointsecio.exceptions import OAuthResponseProblem
+    import firetail
+    from firetail.exceptions import OAuthResponseProblem
 
     def render_unauthorized(exception):
         return Response(response=json.dumps({'error': 'There is an error in the oAuth token supplied'}), status=401, mimetype="application/json")
 
-    app = pointsecio.FlaskApp(__name__, specification_dir='./../swagger/', debug=False, swagger_ui=False)
+    app = firetail.FlaskApp(__name__, specification_dir='./../swagger/', debug=False, swagger_ui=False)
     app.add_error_handler(OAuthResponseProblem, render_unauthorized)
 
 Custom Exceptions
 -----------------
-There are several exception types in pointsecio that contain extra information to help you render appropriate
+There are several exception types in firetail that contain extra information to help you render appropriate
 messages to your user beyond the default description and status code:
 
 OAuthProblem

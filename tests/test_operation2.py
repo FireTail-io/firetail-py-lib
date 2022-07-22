@@ -6,11 +6,11 @@ import types
 from unittest import mock
 
 import pytest
-from pointsecio.apis.flask_api import Jsonifier
-from pointsecio.exceptions import InvalidSpecification
-from pointsecio.json_schema import resolve_refs
-from pointsecio.operations import Swagger2Operation
-from pointsecio.resolver import Resolver
+from firetail.apis.flask_api import Jsonifier
+from firetail.exceptions import InvalidSpecification
+from firetail.json_schema import resolve_refs
+from firetail.operations import Swagger2Operation
+from firetail.resolver import Resolver
 
 TEST_FOLDER = pathlib.Path(__file__).parent
 
@@ -536,7 +536,7 @@ def test_multiple_oauth_in_and(api, caplog):
     """Tests an operation with multiple oauth security schemes in AND fashion.
     These should be ignored and raise a warning.
     """
-    caplog.set_level(logging.WARNING, logger="pointsecio.operations.secure")
+    caplog.set_level(logging.WARNING, logger="firetail.operations.secure")
     verify_oauth = mock.MagicMock(return_value='verify_oauth_result')
     api.security_handler_factory.verify_oauth = verify_oauth
 

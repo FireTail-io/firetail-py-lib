@@ -1,6 +1,6 @@
-# Install swagger-ui before pointsecio.
-pointsecio[swagger-ui]
+# Install swagger-ui before firetail.
+firetail[swagger-ui]
 
-pointsecio>=2.2.0
+firetail>=2.2.0
 python-jose[cryptography]
 Flask>=0.10.1

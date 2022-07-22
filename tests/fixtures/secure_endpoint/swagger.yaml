@@ -68,11 +68,11 @@ paths:
           schema:
             type: string
 
-  /byesecure-from-pointsecio:
+  /byesecure-from-firetail:
     get:
       summary: Generate goodbye
       description: ""
-      operationId: fakeapi.hello.get_bye_secure_from_pointsecio
+      operationId: fakeapi.hello.get_bye_secure_from_firetail
       security:
         - oauth:
           - myscope
@@ -144,7 +144,7 @@ paths:
     get:
       summary: Test more than one scope
       description: |
-        Test that pointsecio handles scopes properly by verifying that user has
+        Test that firetail handles scopes properly by verifying that user has
         all scopes necessary to call the endpoint.
       operationId: fakeapi.hello.more_than_one_scope_defined
       security:
@@ -161,7 +161,7 @@ paths:
     get:
       summary: Test empty security definition
       description: |
-        Test that pointsecio handles an empty security definition correctly.
+        Test that firetail handles an empty security definition correctly.
         In case an empty definition is provided, the user is required to
         apply proper authentication and authorization techniques.
       operationId: fakeapi.hello.optional_auth

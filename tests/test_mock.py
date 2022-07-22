@@ -1,5 +1,5 @@
-from pointsecio.mock import MockResolver
-from pointsecio.operations import OpenAPIOperation, Swagger2Operation
+from firetail.mock import MockResolver
+from firetail.operations import OpenAPIOperation, Swagger2Operation
 
 
 def test_mock_resolver_default():

@@ -1,28 +1,28 @@
-import pointsecio.apps
+import firetail.apps
 import pytest
-from pointsecio.exceptions import ResolverError
-from pointsecio.operations import Swagger2Operation
-from pointsecio.resolver import RelativeResolver, Resolver, RestyResolver
+from firetail.exceptions import ResolverError
+from firetail.operations import Swagger2Operation
+from firetail.resolver import RelativeResolver, Resolver, RestyResolver
 
 PARAMETER_DEFINITIONS = {'myparam': {'in': 'path', 'type': 'integer'}}
 
 
 def test_standard_get_function():
     function = Resolver().resolve_function_from_operation_id(
-        'pointsecio.FlaskApp.common_error_handler')
-    assert function == pointsecio.FlaskApp.common_error_handler
+        'firetail.FlaskApp.common_error_handler')
+    assert function == firetail.FlaskApp.common_error_handler
 
 
 def test_relative_get_function():
-    function = RelativeResolver('pointsecio').resolve_function_from_operation_id(
-        'pointsecio.FlaskApp.common_error_handler')
-    assert function == pointsecio.FlaskApp.common_error_handler
+    function = RelativeResolver('firetail').resolve_function_from_operation_id(
+        'firetail.FlaskApp.common_error_handler')
+    assert function == firetail.FlaskApp.common_error_handler
 
 
 def test_resty_get_function():
-    function = RestyResolver('pointsecio').resolve_function_from_operation_id(
-        'pointsecio.FlaskApp.common_error_handler')
-    assert function == pointsecio.FlaskApp.common_error_handler
+    function = RestyResolver('firetail').resolve_function_from_operation_id(
+        'firetail.FlaskApp.common_error_handler')
+    assert function == firetail.FlaskApp.common_error_handler
 
 
 def test_missing_operation_id():
@@ -31,9 +31,9 @@ def test_missing_operation_id():
     with pytest.raises(ResolverError):
         Resolver().resolve_function_from_operation_id(None)
     with pytest.raises(ResolverError):
-        RelativeResolver('pointsecio').resolve_function_from_operation_id(None)
+        RelativeResolver('firetail').resolve_function_from_operation_id(None)
     with pytest.raises(ResolverError):
-        RestyResolver('pointsecio').resolve_function_from_operation_id(None)
+        RestyResolver('firetail').resolve_function_from_operation_id(None)
 
 
 def test_bad_operation_id():
@@ -42,10 +42,10 @@ def test_bad_operation_id():
     with pytest.raises(ResolverError):
         Resolver().resolve_function_from_operation_id('ohai.I.do.not.exist')
     with pytest.raises(ResolverError):
-        RelativeResolver('pointsecio').resolve_function_from_operation_id(
+        RelativeResolver('firetail').resolve_function_from_operation_id(
             'ohai.I.do.not.exist')
     with pytest.raises(ResolverError):
-        RestyResolver('pointsecio').resolve_function_from_operation_id(
+        RestyResolver('firetail').resolve_function_from_operation_id(
             'ohai.I.do.not.exist')
 
 

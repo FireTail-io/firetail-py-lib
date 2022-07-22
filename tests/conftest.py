@@ -4,8 +4,8 @@ import pathlib
 import sys
 
 import pytest
-from pointsecio import App
-from pointsecio.security import FlaskSecurityHandlerFactory
+from firetail import App
+from firetail.security import FlaskSecurityHandlerFactory
 from werkzeug.test import Client, EnvironBuilder
 
 logging.basicConfig(level=logging.DEBUG)
@@ -91,7 +91,7 @@ def oauth_requests(monkeypatch):
         return url
 
     monkeypatch.setattr(
-        'pointsecio.security.flask_security_handler_factory.session.get', fake_get)
+        'firetail.security.flask_security_handler_factory.session.get', fake_get)
 
 
 @pytest.fixture

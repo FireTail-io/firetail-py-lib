@@ -51,7 +51,7 @@ paths:
       description: Generates a greeting message with custom mimetype
       operationId: fakeapi.hello.get_greetings
       produces:
-        - application/x.pointsecio+json
+        - application/x.firetail+json
       responses:
         '200':
           description: greeting response
@@ -402,7 +402,7 @@ paths:
         - name: name
           in: query
           type: string
-          default: pointsecio
+          default: firetail
       responses:
         200:
           description: OK

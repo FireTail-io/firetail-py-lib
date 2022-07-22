@@ -2,8 +2,8 @@ from unittest.mock import MagicMock
 
 import flask
 import pytest
-from pointsecio.decorators.metrics import UWSGIMetricsCollector
-from pointsecio.exceptions import ProblemException
+from firetail.decorators.metrics import UWSGIMetricsCollector
+from firetail.exceptions import ProblemException
 
 
 def test_timer(monkeypatch):
@@ -17,8 +17,8 @@ def test_timer(monkeypatch):
     monkeypatch.setattr('flask.request', MagicMock())
     monkeypatch.setattr('flask.current_app', MagicMock(
         response_class=flask.Response))
-    monkeypatch.setattr('pointsecio.decorators.metrics.uwsgi_metrics', metrics)
+    monkeypatch.setattr('firetail.decorators.metrics.uwsgi_metrics', metrics)
     with pytest.raises(ProblemException) as exc:
         op(MagicMock())
-    assert metrics.timer.call_args[0][:2] == ('pointsecio.response',
+    assert metrics.timer.call_args[0][:2] == ('firetail.response',
                                               '418.GET.foo.bar.{param}')

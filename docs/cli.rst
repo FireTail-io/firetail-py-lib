@@ -1,30 +1,30 @@
 Command-Line Interface
 ======================
-For convenience PointSecIO provides a command-line interface
+For convenience Firetail provides a command-line interface
 (CLI). This interface aims to be a starting point in developing or
-testing OpenAPI specifications with PointSecIO.
+testing OpenAPI specifications with Firetail.
 
 The available commands are:
 
-- ``pointsecio run``
+- ``firetail run``
 
 All commands can run with -h or --help to list more information.
 
 Running an OpenAPI specification
 --------------------------------
 
-The subcommand ``run`` of PointSecIO's CLI makes it easy to run OpenAPI
+The subcommand ``run`` of Firetail's CLI makes it easy to run OpenAPI
 specifications directly even before any operation handler function gets
 implemented. This allows you to verify and inspect how your API will
-work with PointSecIO.
+work with Firetail.
 
 To run your specification, execute in your shell:
 
 .. code-block:: bash
 
-     $ pointsecio run your_api.yaml --stub --debug
+     $ firetail run your_api.yaml --stub --debug
 
-This command will tell PointSecIO to run the ``your_api.yaml``
+This command will tell Firetail to run the ``your_api.yaml``
 specification file attaching a stub operation (``--stub``) to the
 unavailable operations/functions of your API and in debug mode
 (``--debug``).
@@ -33,7 +33,7 @@ The basic usage of this command is:
 
 .. code-block:: bash
 
-    $ pointsecio run [OPTIONS] SPEC_FILE [BASE_MODULE_PATH]
+    $ firetail run [OPTIONS] SPEC_FILE [BASE_MODULE_PATH]
 
 Where:
 
@@ -47,7 +47,7 @@ list run:
 
 .. code-block:: bash
 
-     $ pointsecio run --help
+     $ firetail run --help
 
 Running a mock server
 ---------------------
@@ -58,4 +58,4 @@ Your API specification file is not required to have any ``operationId``.
 
 .. code-block:: bash
 
-    $ pointsecio run your_api.yaml --mock=all -v
+    $ firetail run your_api.yaml --mock=all -v

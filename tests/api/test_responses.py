@@ -2,7 +2,7 @@ import json
 from struct import unpack
 
 import yaml
-from pointsecio.apps.flask_app import FlaskJSONEncoder
+from firetail.apps.flask_app import FlaskJSONEncoder
 from werkzeug.test import Client, EnvironBuilder
 
 
@@ -118,7 +118,7 @@ def test_jsonifier(simple_app):
     get_greetings = app_client.get(
         '/v1.0/greetings/jsantos', data={})  # type: flask.Response
     assert get_greetings.status_code == 200
-    assert get_greetings.content_type == 'application/x.pointsecio+json'
+    assert get_greetings.content_type == 'application/x.firetail+json'
     greetings_reponse = json.loads(
         get_greetings.data.decode('utf-8', 'replace'))
     assert len(greetings_reponse) == 1

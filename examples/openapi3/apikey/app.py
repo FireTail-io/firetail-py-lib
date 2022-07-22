@@ -3,8 +3,8 @@
 Basic example of a resource server
 '''
 
-import pointsecio
-from pointsecio.exceptions import OAuthProblem
+import firetail
+from firetail.exceptions import OAuthProblem
 
 TOKEN_DB = {
     'asdf1234567890': {
@@ -27,6 +27,6 @@ def get_secret(user) -> str:
 
 
 if __name__ == '__main__':
-    app = pointsecio.FlaskApp(__name__)
+    app = firetail.FlaskApp(__name__)
     app.add_api('openapi.yaml')
     app.run(port=8080)

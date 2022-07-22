@@ -19,4 +19,4 @@
 Output of the commands:
 
 - `python --version`
-- `pip show pointsecio | grep "^Version\:"`
+- `pip show firetail | grep "^Version\:"`

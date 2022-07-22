@@ -18,7 +18,7 @@ def read_version(package):
                 return line.split()[-1].strip().strip("'")
 
 
-version = read_version('pointsecio')
+version = read_version('firetail')
 
 install_requires = [
     'clickclick>=1.2,<21',
@@ -61,7 +61,7 @@ class PyTest(TestCommand):
     def initialize_options(self):
         TestCommand.initialize_options(self)
         self.cov = None
-        self.pytest_args = ['--cov', 'pointsecio',
+        self.pytest_args = ['--cov', 'firetail',
                             '--cov-report', 'term-missing', '-v']
         self.cov_html = False
 
@@ -86,10 +86,10 @@ def readme():
 
 
 setup(
-    name='pointsecio',
+    name='firetail',
     packages=find_packages(),
     version=version,
-    description='PointSecIO - API first applications with OpenAPI/Swagger and Flask',
+    description='Firetail - API first applications with OpenAPI/Swagger and Flask',
     long_description=readme(),
     # long_description_content_type="text/x-rst",
     author='point security inc',
@@ -122,5 +122,5 @@ setup(
     ],
     # needed to include swagger-ui (see MANIFEST.in)
     include_package_data=True,
-    entry_points={'console_scripts': ['pointsecio = pointsecio.cli:main']}
+    entry_points={'console_scripts': ['Firetail = Firetail.cli:main']}
 )

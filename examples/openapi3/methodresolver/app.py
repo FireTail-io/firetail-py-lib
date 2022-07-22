@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 import logging
 
-import pointsecio
-from pointsecio.resolver import MethodViewResolver
+import firetail
+from firetail.resolver import MethodViewResolver
 
 logging.basicConfig(level=logging.INFO)
 
 if __name__ == '__main__':
-    app = pointsecio.FlaskApp(
+    app = firetail.FlaskApp(
         __name__, specification_dir='openapi/', debug=True)
 
     options = {"swagger_ui": True}

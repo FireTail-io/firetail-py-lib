@@ -1,11 +1,11 @@
 from unittest.mock import MagicMock
 
 import pytest
+from firetail.apis.flask_api import FlaskApi
+from firetail.decorators.validation import ParameterValidator
+from firetail.json_schema import (Draft4RequestValidator,
+                                  Draft4ResponseValidator)
 from jsonschema import ValidationError
-from pointsecio.apis.flask_api import FlaskApi
-from pointsecio.decorators.validation import ParameterValidator
-from pointsecio.json_schema import (Draft4RequestValidator,
-                                    Draft4ResponseValidator)
 
 
 def test_get_valid_parameter():
@@ -63,7 +63,7 @@ def test_get_valid_parameter_with_enum_array_header():
 
 def test_invalid_type(monkeypatch):
     logger = MagicMock()
-    monkeypatch.setattr('pointsecio.decorators.validation.logger', logger)
+    monkeypatch.setattr('firetail.decorators.validation.logger', logger)
     result = ParameterValidator.validate_parameter(
         'formdata', 20, {'type': 'string', 'name': 'foo'})
     expected_result = """20 is not of type 'string'
@@ -79,7 +79,7 @@ On instance:
 
 def test_invalid_type_value_error(monkeypatch):
     logger = MagicMock()
-    monkeypatch.setattr('pointsecio.decorators.validation.logger', logger)
+    monkeypatch.setattr('firetail.decorators.validation.logger', logger)
     value = {'test': 1, 'second': 2}
     result = ParameterValidator.validate_parameter(
         'formdata', value, {'type': 'boolean', 'name': 'foo'})
@@ -88,7 +88,7 @@ def test_invalid_type_value_error(monkeypatch):
 
 def test_enum_error(monkeypatch):
     logger = MagicMock()
-    monkeypatch.setattr('pointsecio.decorators.validation.logger', logger)
+    monkeypatch.setattr('firetail.decorators.validation.logger', logger)
     value = 'INVALID'
     param = {'schema': {'type': 'string', 'enum': ['valid']},
              'name': 'test_path_param'}
@@ -188,7 +188,7 @@ def test_writeonly_required_error():
 
 
 def test_formdata_extra_parameter_strict():
-    """Tests that pointsecio handles explicitly defined formData parameters well across Swagger 2
+    """Tests that firetail handles explicitly defined formData parameters well across Swagger 2
     and OpenApi 3. In Swagger 2, any formData parameter should be defined explicitly, while in
     OpenAPI 3 this is not allowed. See issues #1020 #1160 #1340 #1343."""
     request = MagicMock(form={'param': 'value', 'extra_param': 'extra_value'})

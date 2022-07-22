@@ -3,7 +3,7 @@
 Basic example of a resource server
 '''
 
-import pointsecio
+import firetail
 
 PASSWD = {
     'admin': 'secret',
@@ -23,6 +23,6 @@ def get_secret(user) -> str:
 
 
 if __name__ == '__main__':
-    app = pointsecio.FlaskApp(__name__)
+    app = firetail.FlaskApp(__name__)
     app.add_api('openapi.yaml')
     app.run(port=8080)

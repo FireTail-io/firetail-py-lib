@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 
-from pointsecio.decorators.parameter import parameter_to_arg
+from firetail.decorators.parameter import parameter_to_arg
 
 
 def test_injection():

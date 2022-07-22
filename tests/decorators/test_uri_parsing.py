@@ -1,8 +1,8 @@
 import pytest
-from pointsecio.decorators.uri_parsing import (AlwaysMultiURIParser,
-                                               FirstValueURIParser,
-                                               OpenAPIURIParser,
-                                               Swagger2URIParser)
+from firetail.decorators.uri_parsing import (AlwaysMultiURIParser,
+                                             FirstValueURIParser,
+                                             OpenAPIURIParser,
+                                             Swagger2URIParser)
 from werkzeug.datastructures import MultiDict
 
 QUERY1 = MultiDict([("letters", "a"), ("letters", "b,c"),

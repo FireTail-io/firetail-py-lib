@@ -1,6 +1,6 @@
+from firetail.apis.flask_api import FlaskApi
+from firetail.apps.flask_app import FlaskApp
 from flask import Flask
-from pointsecio.apis.flask_api import FlaskApi
-from pointsecio.apps.flask_app import FlaskApp
 
 
 def test_flask_app_default_params():

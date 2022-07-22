@@ -2,9 +2,9 @@
 import datetime
 import logging
 
+import firetail
 import orm
-import pointsecio
-from pointsecio import NoContent
+from firetail import NoContent
 
 db_session = None
 
@@ -48,7 +48,7 @@ def delete_pet(pet_id):
 
 logging.basicConfig(level=logging.INFO)
 db_session = orm.init_db('sqlite:///:memory:')
-app = pointsecio.FlaskApp(__name__)
+app = firetail.FlaskApp(__name__)
 app.add_api('openapi.yaml')
 
 application = app.app
