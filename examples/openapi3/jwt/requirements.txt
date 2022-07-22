@@ -1,6 +1,6 @@
 # Install swagger-ui before firetail.
 firetail[swagger-ui]
 
-firetail>=2.2.0
+firetail>=1.0.3
 python-jose[cryptography]
 Flask>=0.10.1

@@ -59,16 +59,16 @@ class cloud_logger(object):
             'version': 1,
             'disable_existing_loggers': False,
             'formatters': {
-                'pointsecFormat': {
+                'firetailFormat': {
                     'format': '{"additional_field": "value"}',
                     'validate': False
                 }
             },
             'handlers': {
-                'pointsec': {
-                    'class': 'firetail.handlers.PointsecHandler',
+                'firetail': {
+                    'class': 'firetail.handlers.FiretailHandler',
                     'level': 'DEBUG',
-                    'formatter': 'pointsecFormat',
+                    'formatter': 'firetailFormat',
                     'token': self.token,
                     'logs_drain_timeout': 5,
                     'url': self.url,
@@ -80,7 +80,7 @@ class cloud_logger(object):
             'loggers': {
                 '': {
                     'level': 'DEBUG',
-                    'handlers': ['pointsec'],
+                    'handlers': ['firetail'],
                     'propagate': True
                 }
             }
@@ -133,9 +133,9 @@ class cloud_logger(object):
             self.scrub_headers = scrub_headers
         self.token = token
         if not self.logger:
-            self.LOGGING['handlers']['pointsec']['token'] = token
+            self.LOGGING['handlers']['firetail']['token'] = token
             logging.config.dictConfig(self.LOGGING)
-            self.logger = logging.getLogger('pointsecLogger')
+            self.logger = logging.getLogger('firetailLogger')
 
         payload = {
             "version": "1.1",

@@ -14,7 +14,7 @@ class FiretailException(Exception):
     pass
 
 
-class PointsecException(Exception):
+class FiretailException(Exception):
     pass
 
 
