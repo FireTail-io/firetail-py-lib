@@ -14,9 +14,6 @@ class FiretailException(Exception):
     pass
 
 
-class FiretailException(Exception):
-    pass
-
 
 class ProblemException(FiretailException):
     def __init__(self, status=400, title=None, detail=None, type=None,
