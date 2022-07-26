@@ -10,22 +10,9 @@ from flask import request
 
 from .logger import get_stdout_logger
 
-DEFAULT_OPTIONS = dict(origins='*',
-                       methods=['GET', 'HEAD', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'],
-                       allow_headers='*',
-                       expose_headers=None,
-                       supports_credentials=False,
-                       max_age=None,
-                       send_wildcard=False,
-                       automatic_options=True,
-                       vary_header=True,
-                       resources=r'/*',
-                       intercept_exceptions=True,
-                       always_send=True)
 
-class cloud_logger(object):
+class auditor:
     def __init__(self,
-                 app,
                  url='https://ingest.eu-west-1.dev.platform.pointsec.io/ingest/request',
                  api_key='5WqBxkOi3m6F1fDRryrR654xalAwz67815Rfe0ds',
                  debug=False,
@@ -59,16 +46,16 @@ class cloud_logger(object):
             'version': 1,
             'disable_existing_loggers': False,
             'formatters': {
-                'pointsecFormat': {
+                'firetailFormat': {
                     'format': '{"additional_field": "value"}',
                     'validate': False
                 }
             },
             'handlers': {
-                'pointsec': {
-                    'class': 'firetail.handlers.PointsecHandler',
+                'firetail': {
+                    'class': 'firetail.handlers.FiretailHandler',
                     'level': 'DEBUG',
-                    'formatter': 'pointsecFormat',
+                    'formatter': 'firetailFormat',
                     'token': self.token,
                     'logs_drain_timeout': 5,
                     'url': self.url,
@@ -80,18 +67,11 @@ class cloud_logger(object):
             'loggers': {
                 '': {
                     'level': 'DEBUG',
-                    'handlers': ['pointsec'],
+                    'handlers': ['firetail'],
                     'propagate': True
                 }
             }
         }
-        if app:
-            self.init_app(app, token)
-    
-    def init_app(self, app, token):
-        create_after_request = make_after_request_function(self,token)
-        app.after_request(create_after_request)
-
 
     def set_token(self, token_secret):
         self.token = token_secret
@@ -133,9 +113,9 @@ class cloud_logger(object):
             self.scrub_headers = scrub_headers
         self.token = token
         if not self.logger:
-            self.LOGGING['handlers']['pointsec']['token'] = token
+            self.LOGGING['handlers']['firetail']['token'] = token
             logging.config.dictConfig(self.LOGGING)
-            self.logger = logging.getLogger('pointsecLogger')
+            self.logger = logging.getLogger('firetailLogger')
 
         payload = {
             "version": "1.1",
@@ -170,9 +150,5 @@ class cloud_logger(object):
             pass
         return payload
 
-def make_after_request_function(cl,token):
-    def logs_after_request(resp):
-        cl.create(resp, token)
-        return resp
-    return logs_after_request
 
+request_auditor = auditor()

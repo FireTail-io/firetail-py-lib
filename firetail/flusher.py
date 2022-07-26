@@ -2,7 +2,7 @@ import functools
 import logging
 
 
-class PointsecFlusher(logging.Logger):
+class FiretailFlusher(logging.Logger):
 
     def __init__(self, logger):
         self.logger = logger

@@ -1,4 +1,4 @@
-# This class is responsible for handling all asynchronous pointsec.io's
+# This class is responsible for handling all asynchronous firetail's
 # communication
 import json
 import logging as loger4
@@ -25,12 +25,12 @@ MAX_BULK_SIZE_IN_BYTES = 1 * 1024 * 1024  # 1 MB
 def backup_logs(logs, logger):
     timestamp = datetime.now().strftime('%d%m%Y-%H%M%S')
     logger.info(
-        'Backing up your logs to pointsec-failures-%s.txt', timestamp)
-    with open('pointsec-failures-{}.txt'.format(timestamp), 'a') as f:
+        'Backing up your logs to firetail-failures-%s.txt', timestamp)
+    with open('firetail-failures-{}.txt'.format(timestamp), 'a') as f:
         f.writelines('\n'.join(logs))
 
 
-class PointsecSender:
+class FiretailSender:
     def __init__(self,
                  token,
                  api_key,
@@ -68,7 +68,7 @@ class PointsecSender:
     def _initialize_sending_thread(self):
         self.sending_thread = Thread(target=self._drain_queue)
         self.sending_thread.daemon = False
-        self.sending_thread.name = 'pointsec-sending-thread'
+        self.sending_thread.name = 'firetail-sending-thread'
         self.sending_thread.start()
 
     def append(self, logs_message):
@@ -97,7 +97,7 @@ class PointsecSender:
                 self._flush_queue()
             except Exception as e:
                 self.stdout_logger.debug(
-                    'Unexpected exception while draining queue to pointsec.io, '
+                    'Unexpected exception while draining queue to firetail, '
                     'swallowing. Exception: %s', e)
 
             if not last_try:
@@ -109,7 +109,7 @@ class PointsecSender:
         while not self.queue.empty():
             logs_list = self._get_messages_up_to_max_allowed_size()
             self.stdout_logger.debug(
-                'Starting to drain %s logs to pointsec.io', len(logs_list))
+                'Starting to drain %s logs to firetail', len(logs_list))
 
             # Not configurable from the outside
             sleep_between_retries = self.retry_timeout
@@ -131,7 +131,7 @@ class PointsecSender:
                     if response.status_code != 200:
                         if response.status_code == 400:
                             self.stdout_logger.debug(
-                                'Got 400 code from pointsec.io. This means that '
+                                'Got 400 code from firetail. This means that '
                                 'some of your logs are too big, or badly '
                                 'formatted. response: %s', response.text)
                             should_backup_to_disk = False
@@ -140,13 +140,13 @@ class PointsecSender:
 
                         if response.status_code == 401:
                             self.stdout_logger.debug(
-                                'You are not authorized with pointsec.io! Token '
+                                'You are not authorized with firetail! Token '
                                 'OK? dropping logs...')
                             should_backup_to_disk = False
                             break
                         else:
                             self.stdout_logger.debug(
-                                'Got %s while sending logs to pointsec.io, '
+                                'Got %s while sending logs to firetail, '
                                 'Try (%s/%s). Response: %s',
                                 response.status_code,
                                 current_try + 1,
@@ -156,12 +156,12 @@ class PointsecSender:
                     else:
                         self.stdout_logger.debug(
                             'Successfully sent bulk of %s logs to '
-                            'pointsec.io!', len(logs_list))
+                            'firetail', len(logs_list))
                         should_backup_to_disk = False
                         break
                 except Exception as e:
                     self.stdout_logger.warning(
-                        'Got exception while sending logs to pointsec.io, '
+                        'Got exception while sending logs to firetail, '
                         'Try (%s/%s). Message: %s',
                         current_try + 1, self.number_of_retries, e)
                     should_retry = True
@@ -172,7 +172,7 @@ class PointsecSender:
             if should_backup_to_disk and self.backup_logs:
                 # Write to file
                 self.stdout_logger.error(
-                    'Could not send logs to pointsec.io after %s tries, '
+                    'Could not send logs to firetail after %s tries, '
                     'backing up to local file system', self.number_of_retries)
                 backup_logs(logs_list, self.stdout_logger)
 
