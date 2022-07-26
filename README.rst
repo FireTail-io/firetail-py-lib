@@ -50,7 +50,7 @@ Firetail
    :alt: Python Versions
 
 .. image:: https://img.shields.io/pypi/l/firetail.svg
-   :target: https://github.com/FireTail-io/firetail-py-lib/blob/main/LICENSE.txt
+   :target: https://raw.githubusercontent.com/FireTail-io/firetail-py-lib/main/LICENSE.txt
    :alt: License
 
 Firetail (fork of Connexion_) is a framework that automagically handles HTTP requests based on `OpenAPI Specification`_
