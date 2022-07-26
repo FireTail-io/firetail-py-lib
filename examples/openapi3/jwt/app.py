@@ -9,7 +9,7 @@ import firetail
 from jose import JWTError, jwt
 from werkzeug.exceptions import Unauthorized
 
-JWT_ISSUER = 'io.pointsec.firetail'
+JWT_ISSUER = 'io.firetail.firetail'
 JWT_SECRET = 'change_this'
 JWT_LIFETIME_SECONDS = 600
 JWT_ALGORITHM = 'HS256'

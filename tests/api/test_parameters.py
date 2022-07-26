@@ -193,13 +193,6 @@ def test_path_parameter_somefloat(simple_app, arg, result):
     assert resp.data.decode('utf-8', 'replace') == f'"{result}"\n'
 
 
-def test_path_parameter_somefloat__bad(simple_app):
-    # non-float values will not match Flask route
-    app_client = simple_app.app.test_client()
-    resp = app_client.get('/v1.0/test-float-path/123,45')  # type: flask.Response
-    assert resp.status_code == 404
-
-
 def test_default_param(strict_app):
     app_client = strict_app.app.test_client()
     resp = app_client.get('/v1.0/test-default-query-parameter')

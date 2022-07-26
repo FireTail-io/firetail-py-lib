@@ -1,6 +1,6 @@
 Firetail 
 ===========
-.. _Firetail's Documentation Page: https://pointsecio.readthedocs.org/en/latest/
+.. _Firetail's Documentation Page: https://firetail.readthedocs.org/en/latest/
 .. _Connexion: https://github.com/spec-first/connexion
 .. _Flask: https://flask.pocoo.org/
 .. _issues waffle board: https://waffle.io/zalando/connexion
@@ -22,35 +22,35 @@ Firetail
 .. _werkzeug:  https://werkzeug.pocoo.org/
 .. _Connexion's Documentation Page:  https://connexion.readthedocs.org/en/latest/
 .. _Crafting effective Microservices in Python: https://jobs.zalando.com/tech/blog/crafting-effective-microservices-in-python/
-.. _issues where we are looking for contributions: https://github.com/pointSec-io/pointsecio/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22
+.. _issues where we are looking for contributions: https://github.com/FireTail-io/firetail-py-lib/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22
 .. _HTTP Methods work in Flask:  https://flask.pocoo.org/docs/1.0/quickstart/#http-methods
 
 .. .. image:: https://badges.gitter.im/zalando/connexion.svg
 ..    :alt: Join the chat at https://gitter.im/zalando/connexion
 ..    :target: https://gitter.im/zalando/connexion?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
-.. image:: https://github.com/PointSec-io/pointsecio/actions/workflows/pipeline.yml/badge.svg
+.. image:: https://github.com/FireTail-io/firetail-py-lib/actions/workflows/pipeline.yml/badge.svg
    :alt: Build status
-   :target: https://github.com/PointSec-io/pointsecio/actions/workflows/pipeline.yml
+   :target: https://github.com/FireTail-io/firetail-py-lib/actions/workflows/pipeline.yml
 
 .. .. image:: https://coveralls.io/repos/github/zalando/connexion/badge.svg?branch=main
 ..    :target: https://coveralls.io/github/zalando/connexion?branch=main
 ..    :alt: Coveralls status
 
-.. image:: https://img.shields.io/pypi/v/pointsecio.svg
-   :target: https://pypi.python.org/pypi/pointsecio
+.. image:: https://img.shields.io/pypi/v/firetail.svg
+   :target: https://pypi.python.org/pypi/firetail
    :alt: Latest Version
 
-.. image:: https://img.shields.io/pypi/status/pointsecio.svg
-   :target: https://pypi.python.org/pypi/pointsecio
+.. image:: https://img.shields.io/pypi/status/firetail.svg
+   :target: https://pypi.python.org/pypi/firetail
    :alt: Development Status
 
-.. image:: https://img.shields.io/pypi/pyversions/pointsecio.svg
-   :target: https://pypi.python.org/pypi/pointsecio
+.. image:: https://img.shields.io/pypi/pyversions/firetail.svg
+   :target: https://pypi.python.org/pypi/firetail
    :alt: Python Versions
 
-.. image:: https://img.shields.io/pypi/l/pointsecio.svg
-   :target: https://github.com/PointSec-io/pointsecio/blob/main/LICENSE.txt
+.. image:: https://img.shields.io/pypi/l/firetail.svg
+   :target: https://raw.githubusercontent.com/FireTail-io/firetail-py-lib/main/LICENSE.txt
    :alt: License
 
 Firetail (fork of Connexion_) is a framework that automagically handles HTTP requests based on `OpenAPI Specification`_
@@ -582,7 +582,7 @@ Changes
 
 A full changelog is maintained on the `GitHub releases page`_.
 
-.. _GitHub releases page: https://github.com/PointSec-io/pointsecio/releases
+.. _GitHub releases page: https://github.com/FireTail-io/firetail-py-lib/releases
 
 Contributing to Firetail/TODOs
 ================================
@@ -592,7 +592,7 @@ usual/standard GitHub practices.
 
 Unless you explicitly state otherwise in advance, any non trivial
 contribution intentionally submitted for inclusion in this project by you
-to the steward of this repository (point security inc) shall be under the
+to the steward of this repository (Point Security Inc DBA FireTail (TM)) shall be under the
 terms and conditions of Lesser General Public License 2.0 written below, without any
 additional copyright information, terms or conditions.
 
@@ -604,7 +604,7 @@ TODOs
 License
 ===================
 
-Copyright 2022 point security inc
+Copyright 2022 Point Security Inc DBA FireTail (TM)
 
 Licensed under the Lesser General Public License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at  https://www.gnu.org/licenses/lgpl-3.0.txt.
 

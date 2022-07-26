@@ -9,11 +9,11 @@ import logging.handlers
 import sys
 import traceback
 
-from .exceptions import (AuthenticationProblem, PointsecException,
+from .exceptions import (AuthenticationProblem, FiretailException,
                          ResolverProblem)
 from .logger import get_stdout_logger
 from .operations.secure import SecureOperation
-from .sender import PointsecSender
+from .sender import FiretailSender
 
 logger = logging.getLogger('firetail.handlers')
 
@@ -97,13 +97,14 @@ class ResolverErrorHandler(SecureOperation):
         return {}
 
 
-class PointsecHandler(logging.Handler):
+class FiretailHandler(logging.Handler):
 
     def __init__(self,
                  api_key,
                  token,
                  url,
-                 pointsec_type="python",
+                 custom_backend=False,
+                 firetail_type="python",
                  logs_drain_timeout=3,
                  debug=False,
                  backup_logs=True,
@@ -111,12 +112,12 @@ class PointsecHandler(logging.Handler):
                  retries_no=4,
                  retry_timeout=2):
 
-        if not token:
-            raise PointsecException('pointsec.io Token must be provided')
+        if not token and not custom_backend:
+            raise FiretailException('firetail Token must be provided')
 
-        self.pointsec_type = pointsec_type
+        self.firetail_type = firetail_type
 
-        self.pointsec_sender = PointsecSender(
+        self.firetail_sender = FiretailSender(
             token=token,
             url=url,
             api_key=api_key,
@@ -129,7 +130,7 @@ class PointsecHandler(logging.Handler):
         logging.Handler.__init__(self)
 
     def __del__(self):
-        del self.pointsec_sender
+        del self.firetail_sender
 
     def extra_fields(self, message):
 
@@ -158,10 +159,10 @@ class PointsecHandler(logging.Handler):
         return extra_fields
 
     def flush(self):
-        self.pointsec_sender.flush()
+        self.firetail_sender.flush()
 
     def format(self, record):
-        message = super(PointsecHandler, self).format(record)
+        message = super(FiretailHandler, self).format(record)
         try:
             return json.loads(message)
         except (TypeError, ValueError):
@@ -180,7 +181,7 @@ class PointsecHandler(logging.Handler):
         #     'line_number': message.lineno,
         #     'path_name': message.pathname,
         #     'log_level': message.levelname,
-        #     'type': self.pointsec_type,
+        #     'type': self.firetail_type,
         #     'message': message.getMessage(),
         #     '@timestamp': timestamp
         # }
@@ -202,4 +203,4 @@ class PointsecHandler(logging.Handler):
         self.stdout_logger = get_stdout_logger(False)
         # self.stdout_logger.info(record.getMessage())
         if 'ignore' not in message:
-            self.pointsec_sender.append(message)
+            self.firetail_sender.append(message)
