@@ -3,7 +3,7 @@
 Basic example of a resource server
 """
 
-import connexion
+import firetail
 
 
 def get_secret(user) -> str:
@@ -11,6 +11,6 @@ def get_secret(user) -> str:
 
 
 if __name__ == "__main__":
-    app = connexion.FlaskApp(__name__)
+    app = firetail.FlaskApp(__name__)
     app.add_api("app.yaml")
     app.run(port=8080)

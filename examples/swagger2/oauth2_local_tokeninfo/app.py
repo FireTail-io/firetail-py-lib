@@ -3,7 +3,7 @@
 Basic example of a resource server
 """
 
-import connexion
+import firetail
 
 # our hardcoded mock "Bearer" access tokens
 TOKENS = {"123": "jdoe", "456": "rms"}
@@ -21,6 +21,6 @@ def token_info(access_token) -> dict:
 
 
 if __name__ == "__main__":
-    app = connexion.FlaskApp(__name__)
+    app = firetail.FlaskApp(__name__)
     app.add_api("app.yaml")
     app.run(port=8080)
