@@ -3,16 +3,18 @@ import hashlib
 import json
 import logging
 import logging.config
+import time
 
 import jwt
 import requests
-from flask import request
+from flask import g, request
 
 from .logger import get_stdout_logger
 
 
-class auditor:
+class cloud_logger(object):
     def __init__(self,
+                 app,
                  url='https://ingest.eu-west-1.dev.platform.pointsec.io/ingest/request',
                  api_key='5WqBxkOi3m6F1fDRryrR654xalAwz67815Rfe0ds',
                  debug=False,
@@ -72,6 +74,14 @@ class auditor:
                 }
             }
         }
+        if app:
+            self.init_app(app, token)
+
+    def init_app(self, app, token):
+        create_before_request = make_before_request_function()
+        app.before_request(create_before_request)
+        create_after_request = make_after_request_function(self, token)
+        app.after_request(create_after_request)
 
     def set_token(self, token_secret):
         self.token = token_secret
@@ -97,7 +107,7 @@ class auditor:
 
         if self.oauth and self.enrich_oauth:
             try:
-                jwt_decoded = jwt.decode(self.auth_token, options={"verify_signature": False})
+                jwt_decoded = jwt.decode(self.auth_token, options={"verify_signature": False, "verify_exp": False})
             except jwt.exceptions.DecodeError:
                 self.oauth = False
             if self.oauth:
@@ -106,7 +116,7 @@ class auditor:
                     payload['oauth']['email'] = jwt_decoded['email']
         return payload
 
-    def create(self, response, token, scrub_headers=None, debug=False):
+    def create(self, response, token, diff=-1, scrub_headers=None, debug=False):
         if debug:
             self.stdout_logger = get_stdout_logger(True)
         if scrub_headers and isinstance(scrub_headers, list):
@@ -120,6 +130,7 @@ class auditor:
         payload = {
             "version": "1.1",
             "dateCreated": int((datetime.datetime.utcnow()).timestamp() * 1000),
+            "execution_time": diff,
             "req": {
                 "url": request.base_url,
                 "headers": dict(request.headers),
@@ -144,11 +155,24 @@ class auditor:
 
         try:
             if self.token:
-                print(json.dumps(self.clean_pii(payload)))
                 self.logger.info(json.dumps(self.clean_pii(payload)))
         except TypeError:
             pass
         return payload
 
 
-request_auditor = auditor()
+def make_after_request_function(cl, token):
+    def logs_after_request(resp):
+        diff = time.time() - g.start
+        time_diff = diff * 1000
+        print(round(time_diff, 2))
+        cl.create(resp, token, round(time_diff, 2))
+        return resp
+    return logs_after_request
+
+
+def make_before_request_function():
+    def logs_before_request():
+        g.start = time.time()
+
+    return logs_before_request
