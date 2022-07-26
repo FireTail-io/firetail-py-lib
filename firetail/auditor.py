@@ -18,6 +18,7 @@ class cloud_logger(object):
                  url='https://ingest.eu-west-1.dev.platform.pointsec.io/ingest/request',
                  api_key='5WqBxkOi3m6F1fDRryrR654xalAwz67815Rfe0ds',
                  debug=False,
+                 custom_backend=False,
                  token=None,
                  backup_logs=True,
                  network_timeout=10.0,
@@ -29,6 +30,7 @@ class cloud_logger(object):
                  ):
         self.api_key = api_key
         self.startThread = True
+        self.custom_backend = custom_backend
         self.requests_session = requests.Session()
         self.url = url
         self.token = token
@@ -59,6 +61,7 @@ class cloud_logger(object):
                     'level': 'DEBUG',
                     'formatter': 'firetailFormat',
                     'token': self.token,
+                    'custom_backend': self.custom_backend,
                     'logs_drain_timeout': 5,
                     'url': self.url,
                     'api_key': self.api_key,
@@ -132,11 +135,12 @@ class cloud_logger(object):
             "dateCreated": int((datetime.datetime.utcnow()).timestamp() * 1000),
             "execution_time": diff,
             "req": {
+                "httpProtocol": request.environ.get('SERVER_PROTOCOL', "HTTP/1.1"),
                 "url": request.base_url,
                 "headers": dict(request.headers),
                 "path": request.path,
                 "method": request.method,
-                "oPath": request.url_rule.rule if request.url_rule is not None else "",
+                "oPath": request.url_rule.rule if request.url_rule is not None else request.path,
                 "fPath": request.full_path,
                 "args": dict(request.args),
                 "ip": request.remote_addr,
@@ -152,9 +156,9 @@ class cloud_logger(object):
                 "content_type": response.content_type
             }
         }
-
+        print(request.environ)
         try:
-            if self.token:
+            if self.token or self.custom_backend:
                 self.logger.info(json.dumps(self.clean_pii(payload)))
         except TypeError:
             pass
@@ -165,7 +169,6 @@ def make_after_request_function(cl, token):
     def logs_after_request(resp):
         diff = time.time() - g.start
         time_diff = diff * 1000
-        print(round(time_diff, 2))
         cl.create(resp, token, round(time_diff, 2))
         return resp
     return logs_after_request

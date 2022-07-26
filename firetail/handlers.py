@@ -103,6 +103,7 @@ class FiretailHandler(logging.Handler):
                  api_key,
                  token,
                  url,
+                 custom_backend=False,
                  firetail_type="python",
                  logs_drain_timeout=3,
                  debug=False,
@@ -111,7 +112,7 @@ class FiretailHandler(logging.Handler):
                  retries_no=4,
                  retry_timeout=2):
 
-        if not token:
+        if not token and not custom_backend:
             raise FiretailException('firetail Token must be provided')
 
         self.firetail_type = firetail_type
