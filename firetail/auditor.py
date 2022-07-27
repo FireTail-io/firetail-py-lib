@@ -135,7 +135,7 @@ class cloud_logger(object):
             "dateCreated": int((datetime.datetime.utcnow()).timestamp() * 1000),
             "execution_time": diff,
             "req": {
-                "httpProtocol": request.environ.get('SERVER_PROTOCOL', "HTTP/1.1"),
+                "protocol": request.environ.get('SERVER_PROTOCOL', "HTTP/1.1"),
                 "url": request.base_url,
                 "headers": dict(request.headers),
                 "path": request.path,
@@ -156,7 +156,6 @@ class cloud_logger(object):
                 "content_type": response.content_type
             }
         }
-        print(request.environ)
         try:
             if self.token or self.custom_backend:
                 self.logger.info(json.dumps(self.clean_pii(payload)))
