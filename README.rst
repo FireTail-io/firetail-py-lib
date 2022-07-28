@@ -74,6 +74,7 @@ Firetail Features:
   specification defines that an endpoint returns JSON, Firetail will
   automatically serialize the return value for you and set the right
   content type in the HTTP header.
+- Supports api request logs tracking via cloud-logger
 
 Why Firetail
 --------------

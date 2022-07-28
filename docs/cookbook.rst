@@ -149,3 +149,27 @@ as possible when the program starts or you'll get the default configuration.
 
 
 .. _flask-logger: http://flask.pocoo.org/docs/1.0/logging/
+
+Cloud logger
+------------
+
+You can use the cloud logger to ship api request logs to a backend api.
+It has built-in support for the Firetail SaaS platform. It can also keep track of the time 
+taken for a request. You can setup the cloud logger functionality as shown below.
+::
+
+  import firetail
+  from firetail.auditor import cloud_logger
+
+  app = firetail.FlaskApp(__name__)
+  app.add_api('swagger.yaml')
+
+  # setup cloud_logger
+  cloud_logger(app.app, token=your_token)
+
+  app.run(port=8080)
+  
+
+To generate a key, contact `support`_
+
+.. _support: support@firetail.io
