@@ -8,14 +8,8 @@ import functools
 import logging
 from typing import AnyStr, Union
 
-try:
-    from importlib.metadata import version
-except ImportError:
-    from importlib_metadata import version
-
 from jsonschema import Draft4Validator, ValidationError, draft4_format_checker
 from jsonschema.validators import extend
-from packaging.version import Version
 from werkzeug.datastructures import FileStorage
 
 from ..exceptions import (BadRequestProblem, ExtraParameterProblem,
@@ -25,16 +19,9 @@ from ..json_schema import Draft4RequestValidator, Draft4ResponseValidator
 from ..lifecycle import FiretailResponse
 from ..utils import all_json, boolean, is_json_mimetype, is_null, is_nullable
 
-_jsonschema_3_or_newer = Version(version("jsonschema")) >= Version("3.0.0")
+TYPE_MAP = {"integer": int, "number": float, "boolean": boolean, "object": dict}
 
 logger = logging.getLogger('firetail.decorators.validation')
-
-TYPE_MAP = {
-    'integer': int,
-    'number': float,
-    'boolean': boolean,
-    'object': dict
-}
 
 
 class TypeValidationError(Exception):
@@ -279,48 +266,47 @@ class ParameterValidator:
                 return
 
             try:
-                converted_value = coerce_type(
-                    param, value, parameter_type, param_name)
+                converted_value = coerce_type(param, value, parameter_type, param_name)
             except TypeValidationError as e:
                 return str(e)
 
             param = copy.deepcopy(param)
-            param = param.get('schema', param)
-            if 'required' in param:
-                del param['required']
+            param = param.get("schema", param)
+            if "required" in param:
+                del param["required"]
             try:
-                if parameter_type == 'formdata' and param.get('type') == 'file':
-                    if _jsonschema_3_or_newer:
-                        extend(
-                            Draft4Validator,
-                            type_checker=Draft4Validator.TYPE_CHECKER.redefine(
-                                "file",
-                                lambda checker, instance: isinstance(
-                                    instance, FileStorage)
-                            )
-                        )(param, format_checker=draft4_format_checker).validate(converted_value)
-                    else:
-                        Draft4Validator(
-                            param,
-                            format_checker=draft4_format_checker,
-                            types={'file': FileStorage}).validate(converted_value)
+                if parameter_type == "formdata" and param.get("type") == "file":
+                    extend(
+                        Draft4Validator,
+                        type_checker=Draft4Validator.TYPE_CHECKER.redefine(
+                            "file",
+                            lambda checker, instance: isinstance(instance, FileStorage),
+                        ),
+                    )(param, format_checker=draft4_format_checker).validate(
+                        converted_value
+                    )
                 else:
                     Draft4Validator(
-                        param, format_checker=draft4_format_checker).validate(converted_value)
+                        param, format_checker=draft4_format_checker
+                    ).validate(converted_value)
             except ValidationError as exception:
-                debug_msg = 'Error while converting value {converted_value} from param ' \
-                            '{type_converted_value} of type real type {param_type} to the declared type {param}'
+                debug_msg = (
+                    "Error while converting value {converted_value} from param "
+                    "{type_converted_value} of type real type {param_type} to the declared type {param}"
+                )
                 fmt_params = dict(
                     converted_value=str(converted_value),
                     type_converted_value=type(converted_value),
-                    param_type=param.get('type'),
-                    param=param
+                    param_type=param.get("type"),
+                    param=param,
                 )
                 logger.info(debug_msg.format(**fmt_params))
                 return str(exception)
 
-        elif param.get('required'):
-            return "Missing {parameter_type} parameter '{param[name]}'".format(**locals())
+        elif param.get("required"):
+            return "Missing {parameter_type} parameter '{param[name]}'".format(
+                **locals()
+            )
 
     def validate_query_parameter_list(self, request):
         request_params = request.query.keys()

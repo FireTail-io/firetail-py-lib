@@ -383,17 +383,37 @@ class AbstractAPI(AbstractSpecAPI):
             len_response = len(response)
             if len_response == 1:
                 data, = response
-                return cls._build_response(mimetype=mimetype, data=data, extra_context=extra_context)
+                return cls._build_response(
+                    mimetype=mimetype, 
+                    data=data, 
+                    extra_context=extra_context
+                )
             if len_response == 2:
                 if isinstance(response[1], (int, Enum)):
                     data, status_code = response
-                    return cls._build_response(mimetype=mimetype, data=data, status_code=status_code, extra_context=extra_context)
+                    return cls._build_response(
+                        mimetype=mimetype, 
+                        data=data, 
+                        status_code=status_code, 
+                        extra_context=extra_context
+                    )
                 else:
                     data, headers = response
-                return cls._build_response(mimetype=mimetype, data=data, headers=headers, extra_context=extra_context)
+                return cls._build_response(
+                    mimetype=mimetype, 
+                    data=data, 
+                    headers=headers, 
+                    extra_context=extra_context
+                )
             elif len_response == 3:
                 data, status_code, headers = response
-                return cls._build_response(mimetype=mimetype, data=data, status_code=status_code, headers=headers, extra_context=extra_context)
+                return cls._build_response(
+                    mimetype=mimetype, 
+                    data=data, 
+                    status_code=status_code, 
+                    headers=headers, 
+                    extra_context=extra_context
+                )
             else:
                 raise TypeError(
                     'The view function did not return a valid response tuple.'
@@ -401,7 +421,11 @@ class AbstractAPI(AbstractSpecAPI):
                     ' (body, status), or (body, headers).'
                 )
         else:
-            return cls._build_response(mimetype=mimetype, data=response, extra_context=extra_context)
+            return cls._build_response(
+                mimetype=mimetype, 
+                data=response, 
+                extra_context=extra_context
+            )
 
     @classmethod
     def get_firetail_response(cls, response, mimetype=None):

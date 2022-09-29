@@ -7,8 +7,7 @@ import sys
 from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
 
-__location__ = os.path.join(os.getcwd(), os.path.dirname(
-    inspect.getfile(inspect.currentframe())))
+__location__ = os.path.join(os.getcwd(), os.path.dirname(inspect.getfile(inspect.currentframe())))
 
 
 def read_version(package):
@@ -28,8 +27,6 @@ install_requires = [
     'requests>=2.27,<3',
     'inflection>=0.3.1,<0.6',
     'werkzeug>=2.2.1,<3',
-    'importlib-metadata>=1 ; python_version<"3.8"',
-    'packaging>=20',
     'starlette>=0.15,<1',
 ]
 
@@ -41,7 +38,6 @@ flask_require = [
 ]
 
 tests_require = [
-    'decorator>=5,<6',
     'pytest>=6,<7',
     'pytest-cov>=2,<3',
     'testfixtures>=6,<7',
@@ -92,11 +88,11 @@ setup(
     description='Firetail - API first applications with OpenAPI/Swagger and Flask',
     long_description=readme(),
     # long_description_content_type="text/x-rst",
-    author='Point Security Inc DBA FireTail (TM)',
+    author='FireTail International (TM)',
     url='https://github.com/FireTail-io/firetail-py-lib',
     keywords='openapi oai swagger rest api oauth flask microservice framework',
     license='LGPLv3',
-    setup_requires=['flake8'],
+    # setup_requires=['flake8'],
     python_requires=">=3.6",
     install_requires=install_requires + flask_require,
     tests_require=tests_require,

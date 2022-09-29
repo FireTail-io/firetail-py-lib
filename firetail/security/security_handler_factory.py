@@ -13,8 +13,12 @@ import textwrap
 import typing as t
 
 from ..decorators.parameter import inspect_function_arguments
-from ..exceptions import (FiretailException, OAuthProblem,
-                          OAuthResponseProblem, OAuthScopeProblem)
+from ..exceptions import (
+    FiretailException,
+    OAuthProblem,
+    OAuthResponseProblem,
+    OAuthScopeProblem,
+)
 from ..utils import get_function_from_name
 
 logger = logging.getLogger('firetail.api.security')
