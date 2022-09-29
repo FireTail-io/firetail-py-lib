@@ -16,7 +16,7 @@ from .logger import get_stdout_logger
 class cloud_logger(object):
     def __init__(self,
                  app,
-                 url='https://ingest.eu-west-1.dev.platform.pointsec.io/ingest/request',
+                 url='https://ingest.eu-west-1.dev.firetail.app/ingest/request',
                  api_key='5WqBxkOi3m6F1fDRryrR654xalAwz67815Rfe0ds',
                  debug=False,
                  custom_backend=False,
