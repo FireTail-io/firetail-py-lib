@@ -196,7 +196,6 @@ class RequestBodyValidator:
                                     param_defn, data[k], 'requestBody', k)
                             except TypeValidationError as e:
                                 errs += [str(e)]
-                                print(errs)
                     if errs:
                         raise BadRequestProblem(detail=errs)
 
