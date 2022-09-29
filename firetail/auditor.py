@@ -133,7 +133,7 @@ class cloud_logger(object):
         try:
             failed_res_body = False
             response_data = response.get_json() if response.is_json else response.response[0].decode('utf-8')
-        except Exception as e:
+        except Exception:
             response_data = ""
             failed_res_body = True
         payload = {
