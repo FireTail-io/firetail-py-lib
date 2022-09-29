@@ -12,8 +12,11 @@ from jsonschema import Draft4Validator, ValidationError, draft4_format_checker
 from jsonschema.validators import extend
 from werkzeug.datastructures import FileStorage
 
-from ..exceptions import (BadRequestProblem, ExtraParameterProblem,
-                          UnsupportedMediaTypeProblem)
+from ..exceptions import (
+    BadRequestProblem,
+    ExtraParameterProblem,
+    UnsupportedMediaTypeProblem,
+)
 from ..http_facts import FORM_CONTENT_TYPES
 from ..json_schema import Draft4RequestValidator, Draft4ResponseValidator
 from ..lifecycle import FiretailResponse

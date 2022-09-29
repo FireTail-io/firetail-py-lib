@@ -4,9 +4,8 @@ from unittest.mock import MagicMock
 import firetail
 import pytest
 from click.testing import CliRunner
-from firetail.cli import main
-
 from conftest import FIXTURES_FOLDER
+from firetail.cli import main
 
 
 @pytest.fixture()

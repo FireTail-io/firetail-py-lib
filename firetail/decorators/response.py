@@ -8,8 +8,7 @@ import logging
 
 from jsonschema import ValidationError
 
-from ..exceptions import (NonConformingResponseBody,
-                          NonConformingResponseHeaders)
+from ..exceptions import NonConformingResponseBody, NonConformingResponseHeaders
 from ..utils import all_json, has_coroutine
 from .decorator import BaseDecorator
 from .validation import ResponseBodyValidator
