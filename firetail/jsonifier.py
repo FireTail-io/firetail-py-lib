@@ -45,6 +45,7 @@ def wrap_default(default_fn: t.Callable) -> t.Callable:
 
     return wrapped_default
 
+
 class JSONEncoder(json.JSONEncoder):
     """The default Firetail JSON encoder. Handles extra types compared to the
     built-in :class:`json.JSONEncoder`.

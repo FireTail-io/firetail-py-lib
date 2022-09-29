@@ -2,16 +2,14 @@
 This module defines a FlaskApp, a Firetail application to wrap a Flask application.
 """
 
-import datetime
 import logging
 import pathlib
-from decimal import Decimal
 from types import FunctionType  # NOQA
 
 import a2wsgi
 import flask
 import werkzeug.exceptions
-from flask import json, signals
+from flask import signals
 
 from firetail import jsonifier
 
@@ -172,12 +170,14 @@ class FlaskApp(AbstractApp):
         """
         return self.middleware(scope, receive, send)
 
+
 class FlaskJSONProvider(flask.json.provider.DefaultJSONProvider):
     """Custom JSONProvider which adds firetail defaults on top of Flask's"""
 
     @jsonifier.wrap_default
     def default(self, o):
         return super().default(o)
+
 
 class NumberConverter(werkzeug.routing.BaseConverter):
     """ Flask converter for OpenAPI number type """
