@@ -132,7 +132,7 @@ class cloud_logger(object):
             self.logger = logging.getLogger('firetailLogger')
         try:
             failed_res_body = False
-            response_data = response.get_json() if response.is_json else response.response[0].decode('utf-8')
+            response_data = response.get_json() if response.is_json else str(response.response[0].decode('utf-8'))
         except Exception:
             response_data = ""
             failed_res_body = True
