@@ -3,9 +3,13 @@ from unittest.mock import MagicMock
 
 import pytest
 import requests
-from firetail.exceptions import (BadRequestProblem, FiretailException,
-                                 OAuthProblem, OAuthResponseProblem,
-                                 OAuthScopeProblem)
+from firetail.exceptions import (
+    BadRequestProblem,
+    FiretailException,
+    OAuthProblem,
+    OAuthResponseProblem,
+    OAuthScopeProblem,
+)
 
 
 def test_get_tokeninfo_url(monkeypatch, security_handler_factory):

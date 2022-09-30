@@ -2,7 +2,7 @@ import json
 from struct import unpack
 
 import yaml
-from firetail.apps.flask_app import FlaskJSONEncoder
+from firetail.apps.flask_app import FlaskJSONProvider
 from werkzeug.test import Client, EnvironBuilder
 
 
@@ -255,24 +255,21 @@ def test_nested_additional_properties(simple_openapi_app):
     response = json.loads(resp.data.decode('utf-8', 'replace'))
     assert response == {"nested": {"object": True}}
 
-
-def test_custom_encoder(simple_app):
-
-    class CustomEncoder(FlaskJSONEncoder):
+def test_custom_provider(simple_app):
+    class CustomProvider(FlaskJSONProvider):
         def default(self, o):
-            if o.__class__.__name__ == 'DummyClass':
+            if o.__class__.__name__ == "DummyClass":
                 return "cool result"
-            return FlaskJSONEncoder.default(self, o)
+            return super().default(o)
 
     flask_app = simple_app.app
-    flask_app.json_encoder = CustomEncoder
+    flask_app.json = CustomProvider(flask_app)
     app_client = flask_app.test_client()
 
-    resp = app_client.get('/v1.0/custom-json-response')
+    resp = app_client.get("/v1.0/custom-json-response")
     assert resp.status_code == 200
-    response = json.loads(resp.data.decode('utf-8', 'replace'))
-    assert response['theResult'] == 'cool result'
-
+    response = json.loads(resp.data.decode("utf-8", "replace"))
+    assert response["theResult"] == "cool result"
 
 def test_content_type_not_json(simple_app):
     app_client = simple_app.app.test_client()

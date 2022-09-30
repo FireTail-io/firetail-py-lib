@@ -9,8 +9,7 @@ import logging.handlers
 import sys
 import traceback
 
-from .exceptions import (AuthenticationProblem, FiretailException,
-                         ResolverProblem)
+from .exceptions import AuthenticationProblem, FiretailException, ResolverProblem
 from .logger import get_stdout_logger
 from .operations.secure import SecureOperation
 from .sender import FiretailSender

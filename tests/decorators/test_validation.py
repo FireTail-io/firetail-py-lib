@@ -3,8 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 from firetail.apis.flask_api import FlaskApi
 from firetail.decorators.validation import ParameterValidator
-from firetail.json_schema import (Draft4RequestValidator,
-                                  Draft4ResponseValidator)
+from firetail.json_schema import Draft4RequestValidator, Draft4ResponseValidator
 from jsonschema import ValidationError
 
 

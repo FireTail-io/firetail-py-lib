@@ -160,10 +160,9 @@ class FlaskApi(AbstractAPI):
 
         :rtype: FiretailRequest
         """
-        context_dict = {}
-        setattr(flask._request_ctx_stack.top,
-                'firetail_context', context_dict)
         flask_request = flask.request
+        context_dict = {}
+        setattr(flask.globals.request_ctx, "firetail_context", context_dict)
         request = FiretailRequest(
             flask_request.url,
             flask_request.method,
@@ -194,7 +193,7 @@ class FlaskApi(AbstractAPI):
 
 
 def _get_context():
-    return getattr(flask._request_ctx_stack.top, 'firetail_context')
+    return getattr(flask.globals.request_ctx, 'firetail_context')
 
 
 context = LocalProxy(_get_context)

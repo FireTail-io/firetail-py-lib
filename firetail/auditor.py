@@ -3,6 +3,7 @@ import hashlib
 import json
 import logging
 import logging.config
+import sys
 import time
 
 import jwt
@@ -15,7 +16,7 @@ from .logger import get_stdout_logger
 class cloud_logger(object):
     def __init__(self,
                  app,
-                 url='https://ingest.eu-west-1.dev.platform.pointsec.io/ingest/request',
+                 url='https://ingest.eu-west-1.dev.firetail.app/ingest/request',
                  api_key='5WqBxkOi3m6F1fDRryrR654xalAwz67815Rfe0ds',
                  debug=False,
                  custom_backend=False,
@@ -129,11 +130,17 @@ class cloud_logger(object):
             self.LOGGING['handlers']['firetail']['token'] = token
             logging.config.dictConfig(self.LOGGING)
             self.logger = logging.getLogger('firetailLogger')
-
+        try:
+            failed_res_body = False
+            response_data = response.get_json() if response.is_json else response.response[0].decode('utf-8')
+        except Exception:
+            response_data = ""
+            failed_res_body = True
         payload = {
             "version": "1.1",
             "dateCreated": int((datetime.datetime.utcnow()).timestamp() * 1000),
             "execution_time": diff,
+            "source_code": sys.version,
             "req": {
                 "httpProtocol": request.environ.get('SERVER_PROTOCOL', "HTTP/1.1"),
                 "url": request.base_url,
@@ -143,6 +150,7 @@ class cloud_logger(object):
                 "oPath": request.url_rule.rule if request.url_rule is not None else request.path,
                 "fPath": request.full_path,
                 "args": dict(request.args),
+                "body": str(request.data),
                 "ip": request.remote_addr,
                 'pathParams': request.view_args
 
@@ -151,12 +159,12 @@ class cloud_logger(object):
                 "status_code": response.status_code,
                 "content_len": response.content_length,
                 "content_enc": response.content_encoding,
-                "body": response.get_json() if response.is_json else response.response,
+                "failed_res_body": failed_res_body,
+                "body": response_data,
                 "headers": dict(response.headers),
                 "content_type": response.content_type
             }
         }
-        print(request.environ)
         try:
             if self.token or self.custom_backend:
                 self.logger.info(json.dumps(self.clean_pii(payload)))
