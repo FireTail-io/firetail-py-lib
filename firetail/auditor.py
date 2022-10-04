@@ -1,4 +1,3 @@
-import datetime
 import hashlib
 import json
 import logging
@@ -138,7 +137,7 @@ class cloud_logger(object):
             failed_res_body = True
         payload = {
             "version": "1.1",
-            "dateCreated": int((datetime.datetime.utcnow()).timestamp() * 1000),
+            "dateCreated": int(time.time() * 1000),
             "execution_time": diff,
             "source_code": sys.version,
             "req": {
