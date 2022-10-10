@@ -1,0 +1,55 @@
+ci:
+  autoupdate_branch: "main"
+  autoupdate_schedule: monthly
+repos:
+  - repo: https://github.com/PyCQA/flake8
+    rev: 4.0.1
+    hooks:
+      - id: flake8
+        files: "^firetail/"
+        additional_dependencies:
+          - flake8-rst-docstrings==0.2.3
+
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        name: isort
+        files: "^firetail/"
+        args: ["--project", "firetail", "--check-only", "--diff"]
+      - id: isort
+        name: isort examples
+        files: "^examples/"
+        args: ["--thirdparty", "firetail", "--check-only", "--diff"]
+      - id: isort
+        name: isort tests
+        files: "^tests/"
+        args: ["--project", "conftest", "--thirdparty", "firetail", "--check-only", "--diff"]
+
+  - repo: https://github.com/psf/black
+    rev: 22.3.0
+    hooks:
+      - id: black
+        name: black
+        files: "^firetail/"
+        args: ["firetail"]
+      - id: black
+        name: black examples
+        files: "^examples/"
+        args: ["examples"]
+      - id: black
+        name: black tests
+        files: "^tests/"
+        args: ["tests"]
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.961
+    hooks:
+      - id: mypy
+        files: "^firetail/"
+        args: ["--ignore-missing-imports", "firetail"]
+        additional_dependencies:
+          - types-jsonschema
+          - types-PyYAML
+          - types-requests
+        pass_filenames: false
