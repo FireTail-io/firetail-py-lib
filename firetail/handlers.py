@@ -6,7 +6,7 @@ import logging
 import logging.handlers
 import traceback
 
-from .exceptions import ResolverProblem, FiretailException
+from .exceptions import FiretailException, ResolverProblem
 from .logger import get_stdout_logger
 from .sender import FiretailSender
 
