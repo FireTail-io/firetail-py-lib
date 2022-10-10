@@ -21,5 +21,5 @@ def get_secret(user) -> str:
 
 if __name__ == "__main__":
     app = firetail.FlaskApp(__name__)
-    app.add_api("openapi.yaml")
+    app.add_api("swagger.yaml")
     app.run(port=8080)

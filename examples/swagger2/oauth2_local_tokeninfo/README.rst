@@ -2,14 +2,14 @@
 OAuth2 Local Validation Example
 ===============================
 
-This example demonstrates how to implement a resource server with firetail.
+This example demonstrates how to implement a resource server with Firetail.
 The app will lookup OAuth2 Bearer tokens in a static map.
 
 Running:
 
 .. code-block:: bash
 
-    $ sudo pip3 install --upgrade firetail  # install firetail from PyPI
+    $ sudo pip3 install --upgrade firetail  # install Firetail from PyPI
     $ ./app.py
 
 Now open your browser and go to http://localhost:8080/ui/ to see the Swagger UI.

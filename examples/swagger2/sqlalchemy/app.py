@@ -49,7 +49,7 @@ def delete_pet(pet_id):
 logging.basicConfig(level=logging.INFO)
 db_session = orm.init_db("sqlite:///:memory:")
 app = firetail.FlaskApp(__name__)
-app.add_api("openapi.yaml")
+app.add_api("swagger.yaml")
 
 application = app.app
 
@@ -60,4 +60,4 @@ def shutdown_session(exception=None):
 
 
 if __name__ == "__main__":
-    app.run(port=8081, use_reloader=False, threaded=False)
+    app.run(port=8080, threaded=False)  # in-memory database isn't shared across threads

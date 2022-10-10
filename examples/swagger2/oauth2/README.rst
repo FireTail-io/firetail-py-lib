@@ -9,7 +9,7 @@ Running:
 
 .. code-block:: bash
 
-    $ sudo pip3 install --upgrade firetail  # install firetail from PyPI
+    $ sudo pip3 install --upgrade firetail  # install Firetail from PyPI
     $ ./mock_tokeninfo.py &                  # start mock in background
     $ ./app.py
 
