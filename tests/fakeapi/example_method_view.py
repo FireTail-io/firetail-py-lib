@@ -1,15 +1,32 @@
 from flask.views import MethodView
 
 
-class ExampleMethodView(MethodView):
-    mycontent="demonstrate return from MethodView class"
-    def get(self):
-      return self.mycontent
+class PetsView(MethodView):
+
+    mycontent = "demonstrate return from MethodView class"
+
+    def get(self, **kwargs):
+        if kwargs:
+            kwargs.update({"name": "get"})
+            return kwargs
+        else:
+            return [{"name": "get"}]
+
     def search(self):
-      return self.mycontent
+        return [{"name": "search"}]
+
+    def post(self, **kwargs):
+        kwargs.update({"name": "post"})
+        return kwargs, 201
+
+    def put(self, *args, **kwargs):
+        kwargs.update({"name": "put"})
+        return kwargs, 201
+
+    # Test that operation_id can still override resolver
+
     def api_list(self):
-      return self.mycontent
+        return "api_list"
+
     def post_greeting(self):
-      return self.mycontent
-    def post(self):
-      return self.mycontent
+        return "post_greeting"

@@ -13,21 +13,30 @@ from .logger import get_stdout_logger
 
 
 class cloud_logger(object):
-    def __init__(self,
-                 app,
-                 url='https://ingest.eu-west-1.dev.firetail.app/ingest/request',
-                 api_key='5WqBxkOi3m6F1fDRryrR654xalAwz67815Rfe0ds',
-                 debug=False,
-                 custom_backend=False,
-                 token=None,
-                 backup_logs=True,
-                 network_timeout=10.0,
-                 number_of_retries=4,
-                 retry_timeout=2,
-                 logs_drain_timeout=5,
-                 scrub_headers=['set-cookie', 'cookie', 'authorization', 'x-api-key', 'token', 'api-token', 'api-key'],
-                 enrich_oauth=True
-                 ):
+    def __init__(
+        self,
+        app,
+        url="https://ingest.eu-west-1.dev.firetail.app/ingest/request",
+        api_key="5WqBxkOi3m6F1fDRryrR654xalAwz67815Rfe0ds",
+        debug=False,
+        custom_backend=False,
+        token=None,
+        backup_logs=True,
+        network_timeout=10.0,
+        number_of_retries=4,
+        retry_timeout=2,
+        logs_drain_timeout=5,
+        scrub_headers=[
+            "set-cookie",
+            "cookie",
+            "authorization",
+            "x-api-key",
+            "token",
+            "api-token",
+            "api-key",
+        ],
+        enrich_oauth=True,
+    ):
         self.api_key = api_key
         self.startThread = True
         self.custom_backend = custom_backend
@@ -47,35 +56,31 @@ class cloud_logger(object):
         self.enrich_oauth = enrich_oauth
         self.scrub_headers = scrub_headers
         self.LOGGING = {
-            'version': 1,
-            'disable_existing_loggers': False,
-            'formatters': {
-                'firetailFormat': {
-                    'format': '{"additional_field": "value"}',
-                    'validate': False
+            "version": 1,
+            "disable_existing_loggers": False,
+            "formatters": {
+                "firetailFormat": {
+                    "format": '{"additional_field": "value"}',
+                    "validate": False,
                 }
             },
-            'handlers': {
-                'firetail': {
-                    'class': 'firetail.handlers.FiretailHandler',
-                    'level': 'DEBUG',
-                    'formatter': 'firetailFormat',
-                    'token': self.token,
-                    'custom_backend': self.custom_backend,
-                    'logs_drain_timeout': 5,
-                    'url': self.url,
-                    'api_key': self.api_key,
-                    'retries_no': 4,
-                    'retry_timeout': 2,
+            "handlers": {
+                "firetail": {
+                    "class": "firetail.handlers.FiretailHandler",
+                    "level": "DEBUG",
+                    "formatter": "firetailFormat",
+                    "token": self.token,
+                    "custom_backend": self.custom_backend,
+                    "logs_drain_timeout": 5,
+                    "url": self.url,
+                    "api_key": self.api_key,
+                    "retries_no": 4,
+                    "retry_timeout": 2,
                 }
             },
-            'loggers': {
-                '': {
-                    'level': 'DEBUG',
-                    'handlers': ['firetail'],
-                    'propagate': True
-                }
-            }
+            "loggers": {
+                "": {"level": "DEBUG", "handlers": ["firetail"], "propagate": True}
+            },
         }
         if app:
             self.init_app(app, token)
@@ -90,33 +95,36 @@ class cloud_logger(object):
         self.token = token_secret
 
     def sha1_hash(self, value):
-        hash_object = hashlib.sha1(value.encode('utf-8'))
+        hash_object = hashlib.sha1(value.encode("utf-8"))
         return "sha1:" + hash_object.hexdigest()
 
     def clean_pii(self, payload):
         clean_headers = self.scrub_headers
-        if 'req' in payload and 'headers' in payload['req']:
-            for k, v in payload['req']['headers'].items():
+        if "req" in payload and "headers" in payload["req"]:
+            for k, v in payload["req"]["headers"].items():
                 if k.lower() in clean_headers:
-                    if k.lower() == 'authorization' and 'bearer ' in v.lower():
+                    if k.lower() == "authorization" and "bearer " in v.lower():
                         self.oauth = True
                         v = v.split(" ")[1]
                         self.auth_token = v
-                    payload['req']['headers'][k] = self.sha1_hash(v)
-        if 'res' in payload and 'headers' in payload['res']:
-            for k, v in payload['res']['headers'].items():
+                    payload["req"]["headers"][k] = self.sha1_hash(v)
+        if "res" in payload and "headers" in payload["res"]:
+            for k, v in payload["res"]["headers"].items():
                 if k.lower() in clean_headers:
-                    payload['req']['headers'][k] = self.sha1_hash(v)
+                    payload["req"]["headers"][k] = self.sha1_hash(v)
 
         if self.oauth and self.enrich_oauth:
             try:
-                jwt_decoded = jwt.decode(self.auth_token, options={"verify_signature": False, "verify_exp": False})
+                jwt_decoded = jwt.decode(
+                    self.auth_token,
+                    options={"verify_signature": False, "verify_exp": False},
+                )
             except jwt.exceptions.DecodeError:
                 self.oauth = False
             if self.oauth:
-                payload['oauth'] = {'sub': jwt_decoded['sub']}
-                if 'email' in jwt_decoded:
-                    payload['oauth']['email'] = jwt_decoded['email']
+                payload["oauth"] = {"sub": jwt_decoded["sub"]}
+                if "email" in jwt_decoded:
+                    payload["oauth"]["email"] = jwt_decoded["email"]
         return payload
 
     def create(self, response, token, diff=-1, scrub_headers=None, debug=False):
@@ -126,12 +134,16 @@ class cloud_logger(object):
             self.scrub_headers = scrub_headers
         self.token = token
         if not self.logger:
-            self.LOGGING['handlers']['firetail']['token'] = token
+            self.LOGGING["handlers"]["firetail"]["token"] = token
             logging.config.dictConfig(self.LOGGING)
-            self.logger = logging.getLogger('firetailLogger')
+            self.logger = logging.getLogger("firetailLogger")
         try:
             failed_res_body = False
-            response_data = response.get_json() if response.is_json else str(response.response[0].decode('utf-8'))
+            response_data = (
+                response.get_json()
+                if response.is_json
+                else str(response.response[0].decode("utf-8"))
+            )
         except Exception:
             response_data = ""
             failed_res_body = True
@@ -141,18 +153,19 @@ class cloud_logger(object):
             "execution_time": diff,
             "source_code": sys.version,
             "req": {
-                "httpProtocol": request.environ.get('SERVER_PROTOCOL', "HTTP/1.1"),
+                "httpProtocol": request.environ.get("SERVER_PROTOCOL", "HTTP/1.1"),
                 "url": request.base_url,
                 "headers": dict(request.headers),
                 "path": request.path,
                 "method": request.method,
-                "oPath": request.url_rule.rule if request.url_rule is not None else request.path,
+                "oPath": request.url_rule.rule
+                if request.url_rule is not None
+                else request.path,
                 "fPath": request.full_path,
                 "args": dict(request.args),
                 "body": str(request.data),
                 "ip": request.remote_addr,
-                'pathParams': request.view_args
-
+                "pathParams": request.view_args,
             },
             "resp": {
                 "status_code": response.status_code,
@@ -161,8 +174,8 @@ class cloud_logger(object):
                 "failed_res_body": failed_res_body,
                 "body": response_data,
                 "headers": dict(response.headers),
-                "content_type": response.content_type
-            }
+                "content_type": response.content_type,
+            },
         }
         try:
             if self.token or self.custom_backend:
@@ -178,6 +191,7 @@ def make_after_request_function(cl, token):
         time_diff = diff * 1000
         cl.create(resp, token, round(time_diff, 2))
         return resp
+
     return logs_after_request
 
 

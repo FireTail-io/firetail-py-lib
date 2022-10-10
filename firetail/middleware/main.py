@@ -1,10 +1,14 @@
 import pathlib
 import typing as t
 
-from starlette.exceptions import ExceptionMiddleware
 from starlette.types import ASGIApp, Receive, Scope, Send
 
-from firetail.middleware.base import AppMiddleware
+from firetail.middleware.abstract import AppMiddleware
+from firetail.middleware.exceptions import ExceptionMiddleware
+from firetail.middleware.request_validation import RequestValidationMiddleware
+from firetail.middleware.response_validation import ResponseValidationMiddleware
+from firetail.middleware.routing import RoutingMiddleware
+from firetail.middleware.security import SecurityMiddleware
 from firetail.middleware.swagger_ui import SwaggerUIMiddleware
 
 
@@ -13,12 +17,14 @@ class FiretailMiddleware:
     default_middlewares = [
         ExceptionMiddleware,
         SwaggerUIMiddleware,
+        RoutingMiddleware,
+        SecurityMiddleware,
+        RequestValidationMiddleware,
+        ResponseValidationMiddleware,
     ]
 
     def __init__(
-            self,
-            app: ASGIApp,
-            middlewares: t.Optional[t.List[t.Type[ASGIApp]]] = None
+        self, app: ASGIApp, middlewares: t.Optional[t.List[t.Type[ASGIApp]]] = None
     ):
         """High level Firetail middleware that manages a list o middlewares wrapped around an
         application.
@@ -32,8 +38,9 @@ class FiretailMiddleware:
         self.app, self.apps = self._apply_middlewares(app, middlewares)
 
     @staticmethod
-    def _apply_middlewares(app: ASGIApp, middlewares: t.List[t.Type[ASGIApp]]) \
-            -> t.Tuple[ASGIApp, t.Iterable[ASGIApp]]:
+    def _apply_middlewares(
+        app: ASGIApp, middlewares: t.List[t.Type[ASGIApp]]
+    ) -> t.Tuple[ASGIApp, t.Iterable[ASGIApp]]:
         """Apply all middlewares to the provided app.
 
         :param app: App to wrap in middlewares.
@@ -44,16 +51,16 @@ class FiretailMiddleware:
         """
         apps = []
         for middleware in reversed(middlewares):
-            app = middleware(app)
+            app = middleware(app)  # type: ignore
             apps.append(app)
         return app, reversed(apps)
 
     def add_api(
-            self,
-            specification: t.Union[pathlib.Path, str, dict],
-            base_path: t.Optional[str] = None,
-            arguments: t.Optional[dict] = None,
-            **kwargs
+        self,
+        specification: t.Union[pathlib.Path, str, dict],
+        base_path: t.Optional[str] = None,
+        arguments: t.Optional[dict] = None,
+        **kwargs
     ) -> None:
         """Add an API to the underlying routing middleware based on a OpenAPI spec.
 
@@ -63,8 +70,9 @@ class FiretailMiddleware:
         """
         for app in self.apps:
             if isinstance(app, AppMiddleware):
-                app.add_api(specification, base_path=base_path,
-                            arguments=arguments, **kwargs)
+                app.add_api(
+                    specification, base_path=base_path, arguments=arguments, **kwargs
+                )
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         await self.app(scope, receive, send)
