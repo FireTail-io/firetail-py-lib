@@ -20,50 +20,68 @@ from ..resolver import Resolver
 from ..spec import Specification
 
 MODULE_PATH = pathlib.Path(__file__).absolute().parent.parent
-SWAGGER_UI_URL = 'ui'
+SWAGGER_UI_URL = "ui"
 
-logger = logging.getLogger('firetail.apis.abstract')
+logger = logging.getLogger("firetail.apis.abstract")
 
 
 class AbstractAPIMeta(abc.ABCMeta):
-
     def __init__(cls, name, bases, attrs):
         abc.ABCMeta.__init__(cls, name, bases, attrs)
         cls._set_jsonifier()
 
 
 class AbstractSpecAPI(metaclass=AbstractAPIMeta):
-
     def __init__(
-            self,
-            specification: t.Union[pathlib.Path, str, dict],
-            base_path: t.Optional[str] = None,
-            arguments: t.Optional[dict] = None,
-            options: t.Optional[dict] = None,
-            *args,
-            **kwargs
+        self,
+        specification: t.Union[pathlib.Path, str, dict],
+        base_path: t.Optional[str] = None,
+        resolver: t.Optional[Resolver] = None,
+        arguments: t.Optional[dict] = None,
+        options: t.Optional[dict] = None,
+        *args,
+        **kwargs,
     ):
-        """Base API class with only minimal behavior related to the specification."""
-        logger.debug('Loading specification: %s', specification,
-                     extra={'swagger_yaml': specification,
-                            'base_path': base_path,
-                            'arguments': arguments})
+        """Base API class with only minimal behavior related to the specification.
+
+        :param specification: OpenAPI specification. Can be provided either as dict, or as path
+            to file.
+        :param base_path: Base path to host the API.
+        :param resolver: Callable that maps operationID to a function
+        :param resolver_error_handler: Callable that generates an Operation used for handling
+            ResolveErrors
+        :param arguments: Jinja arguments to resolve in specification.
+        :param options: New style options dictionary.
+        """
+        logger.debug(
+            "Loading specification: %s",
+            specification,
+            extra={
+                "swagger_yaml": specification,
+                "base_path": base_path,
+                "arguments": arguments,
+            },
+        )
 
         # Avoid validator having ability to modify specification
-        self.specification = Specification.load(
-            specification, arguments=arguments)
+        self.specification = Specification.load(specification, arguments=arguments)
 
-        logger.debug('Read specification', extra={'spec': self.specification})
+        logger.debug("Read specification", extra={"spec": self.specification})
 
-        self.options = FiretailOptions(
-            options, oas_version=self.specification.version)
+        self.options = FiretailOptions(options, oas_version=self.specification.version)
 
-        logger.debug('Options Loaded',
-                     extra={'swagger_ui': self.options.openapi_console_ui_available,
-                            'swagger_path': self.options.openapi_console_ui_from_dir,
-                            'swagger_url': self.options.openapi_console_ui_path})
+        logger.debug(
+            "Options Loaded",
+            extra={
+                "swagger_ui": self.options.openapi_console_ui_available,
+                "swagger_path": self.options.openapi_console_ui_from_dir,
+                "swagger_url": self.options.openapi_console_ui_path,
+            },
+        )
 
         self._set_base_path(base_path)
+
+        self.resolver = resolver or Resolver()
 
     def _set_base_path(self, base_path: t.Optional[str] = None) -> None:
         if base_path is not None:
@@ -78,139 +96,131 @@ class AbstractSpecAPI(metaclass=AbstractAPIMeta):
         cls.jsonifier = Jsonifier()
 
 
-class AbstractSwaggerUIAPI(AbstractSpecAPI):
+class AbstractRoutingAPI(AbstractSpecAPI):
+    def __init__(
+        self,
+        *args,
+        resolver_error_handler: t.Optional[t.Callable] = None,
+        debug: bool = False,
+        **kwargs,
+    ) -> None:
+        """Minimal interface of an API, with only functionality related to routing.
 
-    def __init__(self, *args, **kwargs):
+        :param debug: Flag to run in debug mode
+        """
         super().__init__(*args, **kwargs)
+        self.debug = debug
+        self.resolver_error_handler = resolver_error_handler
 
-        if self.options.openapi_spec_available:
-            self.add_openapi_json()
-            self.add_openapi_yaml()
+        self.add_paths()
 
-        if self.options.openapi_console_ui_available:
-            self.add_swagger_ui()
+    def add_paths(self, paths: t.Optional[dict] = None) -> None:
+        """
+        Adds the paths defined in the specification as endpoints
+        """
+        paths = paths or self.specification.get("paths", dict())
+        for path, methods in paths.items():
+            logger.debug("Adding %s%s...", self.base_path, path)
+
+            for method in methods:
+                if method not in METHODS:
+                    continue
+                try:
+                    self.add_operation(path, method)
+                except ResolverError as err:
+                    # If we have an error handler for resolver errors, add it as an operation.
+                    # Otherwise treat it as any other error.
+                    if self.resolver_error_handler is not None:
+                        self._add_resolver_error_handler(method, path, err)
+                    else:
+                        self._handle_add_operation_error(path, method, err.exc_info)
+                except Exception:
+                    # All other relevant exceptions should be handled as well.
+                    self._handle_add_operation_error(path, method, sys.exc_info())
+
+    def add_operation(self, path: str, method: str) -> None:
+        raise NotImplementedError
 
     @abc.abstractmethod
-    def add_openapi_json(self):
+    def _add_operation_internal(self, method: str, path: str, operation: t.Any) -> None:
         """
-        Adds openapi spec to {base_path}/openapi.json
-             (or {base_path}/swagger.json for swagger2)
-        """
-
-    @abc.abstractmethod
-    def add_openapi_yaml(self):
-        """
-        Adds openapi spec to {base_path}/openapi.yaml
-             (or {base_path}/swagger.yaml for swagger2)
+        Adds the operation according to the user framework in use.
+        It will be used to register the operation on the user framework router.
         """
 
-    @abc.abstractmethod
-    def add_swagger_ui(self):
+    def _add_resolver_error_handler(self, method: str, path: str, err: ResolverError):
         """
-        Adds swagger ui to {base_path}/ui/
+        Adds a handler for ResolverError for the given method and path.
         """
+        self.resolver_error_handler = t.cast(t.Callable, self.resolver_error_handler)
+        operation = self.resolver_error_handler(
+            err,
+        )
+        self._add_operation_internal(method, path, operation)
+
+    def _handle_add_operation_error(self, path: str, method: str, exc_info: tuple):
+        url = f"{self.base_path}{path}"
+        error_msg = "Failed to add operation for {method} {url}".format(
+            method=method.upper(), url=url
+        )
+        if self.debug:
+            logger.exception(error_msg)
+        else:
+            logger.error(error_msg)
+            _type, value, traceback = exc_info
+            raise value.with_traceback(traceback)
 
 
-class AbstractAPI(AbstractSpecAPI):
+class AbstractAPI(AbstractRoutingAPI, metaclass=AbstractAPIMeta):
     """
     Defines an abstract interface for a Swagger API
     """
 
-    def __init__(self, specification, base_path=None, arguments=None,
-                 validate_responses=False, strict_validation=False, resolver=None,
-                 auth_all_paths=False, debug=False, resolver_error_handler=None,
-                 validator_map=None, pythonic_params=False, pass_context_arg_name=None, options=None,
-                 ):
+    def __init__(
+        self,
+        specification,
+        base_path=None,
+        arguments=None,
+        validate_responses=False,
+        strict_validation=False,
+        resolver=None,
+        debug=False,
+        resolver_error_handler=None,
+        validator_map=None,
+        pythonic_params=False,
+        options=None,
+        **kwargs,
+    ):
         """
-        :type specification: pathlib.Path | dict
-        :type base_path: str | None
-        :type arguments: dict | None
         :type validate_responses: bool
         :type strict_validation: bool
-        :type auth_all_paths: bool
-        :type debug: bool
         :param validator_map: Custom validators for the types "parameter", "body" and "response".
         :type validator_map: dict
-        :param resolver: Callable that maps operationID to a function
-        :param resolver_error_handler: If given, a callable that generates an
-            Operation used for handling ResolveErrors
         :type resolver_error_handler: callable | None
         :param pythonic_params: When True CamelCase parameters are converted to snake_case and an underscore is appended
             to any shadowed built-ins
         :type pythonic_params: bool
-        :param options: New style options dictionary.
-        :type options: dict | None
-        :param pass_context_arg_name: If not None URL request handling functions with an argument matching this name
-            will be passed the framework's request context.
-        :type pass_context_arg_name: str | None
         """
-        self.debug = debug
         self.validator_map = validator_map
-        self.resolver_error_handler = resolver_error_handler
 
-        logger.debug('Loading specification: %s', specification,
-                     extra={'swagger_yaml': specification,
-                            'base_path': base_path,
-                            'arguments': arguments,
-                            'auth_all_paths': auth_all_paths})
-
-        # Avoid validator having ability to modify specification
-        self.specification = Specification.load(
-            specification, arguments=arguments)
-
-        logger.debug('Read specification', extra={'spec': self.specification})
-
-        self.options = FiretailOptions(
-            options, oas_version=self.specification.version)
-
-        logger.debug('Options Loaded',
-                     extra={'swagger_ui': self.options.openapi_console_ui_available,
-                            'swagger_path': self.options.openapi_console_ui_from_dir,
-                            'swagger_url': self.options.openapi_console_ui_path})
-
-        self._set_base_path(base_path)
-
-        logger.debug('Security Definitions: %s',
-                     self.specification.security_definitions)
-
-        self.resolver = resolver or Resolver()
-
-        logger.debug('Validate Responses: %s', str(validate_responses))
+        logger.debug("Validate Responses: %s", str(validate_responses))
         self.validate_responses = validate_responses
 
-        logger.debug('Strict Request Validation: %s', str(strict_validation))
+        logger.debug("Strict Request Validation: %s", str(strict_validation))
         self.strict_validation = strict_validation
 
-        logger.debug('Pythonic params: %s', str(pythonic_params))
+        logger.debug("Pythonic params: %s", str(pythonic_params))
         self.pythonic_params = pythonic_params
 
-        logger.debug('pass_context_arg_name: %s', pass_context_arg_name)
-        self.pass_context_arg_name = pass_context_arg_name
-
-        self.security_handler_factory = self.make_security_handler_factory(
-            pass_context_arg_name)
-
-        super().__init__(specification, base_path=base_path,
-                         arguments=arguments, options=options)
-
-        self.add_paths()
-
-        if auth_all_paths:
-            self.add_auth_on_not_found(
-                self.specification.security,
-                self.specification.security_definitions
-            )
-
-    @abc.abstractmethod
-    def add_auth_on_not_found(self, security, security_definitions):
-        """
-        Adds a 404 error handler to authenticate and only expose the 404 status if the security validation pass.
-        """
-
-    @staticmethod
-    @abc.abstractmethod
-    def make_security_handler_factory(pass_context_arg_name):
-        """ Create SecurityHandlerFactory to create all security check handlers """
+        super().__init__(
+            specification,
+            base_path=base_path,
+            arguments=arguments,
+            resolver=resolver,
+            resolver_error_handler=resolver_error_handler,
+            debug=debug,
+            options=options,
+        )
 
     def add_operation(self, path, method):
         """
@@ -239,67 +249,8 @@ class AbstractAPI(AbstractSpecAPI):
             strict_validation=self.strict_validation,
             pythonic_params=self.pythonic_params,
             uri_parser_class=self.options.uri_parser_class,
-            pass_context_arg_name=self.pass_context_arg_name
         )
         self._add_operation_internal(method, path, operation)
-
-    @abc.abstractmethod
-    def _add_operation_internal(self, method, path, operation):
-        """
-        Adds the operation according to the user framework in use.
-        It will be used to register the operation on the user framework router.
-        """
-
-    def _add_resolver_error_handler(self, method, path, err):
-        """
-        Adds a handler for ResolverError for the given method and path.
-        """
-        operation = self.resolver_error_handler(
-            err,
-            security=self.specification.security,
-            security_definitions=self.specification.security_definitions
-        )
-        self._add_operation_internal(method, path, operation)
-
-    def add_paths(self, paths=None):
-        """
-        Adds the paths defined in the specification as endpoints
-
-        :type paths: list
-        """
-        paths = paths or self.specification.get('paths', dict())
-        for path, methods in paths.items():
-            logger.debug('Adding %s%s...', self.base_path, path)
-
-            for method in methods:
-                if method not in METHODS:
-                    continue
-                try:
-                    self.add_operation(path, method)
-                except ResolverError as err:
-                    # If we have an error handler for resolver errors, add it as an operation.
-                    # Otherwise treat it as any other error.
-                    if self.resolver_error_handler is not None:
-                        self._add_resolver_error_handler(method, path, err)
-                    else:
-                        self._handle_add_operation_error(
-                            path, method, err.exc_info)
-                except Exception:
-                    # All other relevant exceptions should be handled as well.
-                    self._handle_add_operation_error(
-                        path, method, sys.exc_info())
-
-    def _handle_add_operation_error(self, path, method, exc_info):
-        url = f'{self.base_path}{path}'
-        error_msg = 'Failed to add operation for {method} {url}'.format(
-            method=method.upper(),
-            url=url)
-        if self.debug:
-            logger.exception(error_msg)
-        else:
-            logger.error(error_msg)
-            _type, value, traceback = exc_info
-            raise value.with_traceback(traceback)
 
     @classmethod
     @abc.abstractmethod
@@ -334,34 +285,38 @@ class AbstractAPI(AbstractSpecAPI):
         """
         if extra_context is None:
             extra_context = {}
-        logger.debug('Getting data and status code',
-                     extra={
-                         'data': response,
-                         'data_type': type(response),
-                         **extra_context
-                     })
+        logger.debug(
+            "Getting data and status code",
+            extra={"data": response, "data_type": type(response), **extra_context},
+        )
 
         if isinstance(response, FiretailResponse):
             framework_response = cls._firetail_to_framework_response(
-                response, mimetype, extra_context)
+                response, mimetype, extra_context
+            )
         else:
             framework_response = cls._response_from_handler(
-                response, mimetype, extra_context)
+                response, mimetype, extra_context
+            )
 
-        logger.debug('Got framework response',
-                     extra={
-                         'response': framework_response,
-                         'response_type': type(framework_response),
-                         **extra_context
-                     })
+        logger.debug(
+            "Got framework response",
+            extra={
+                "response": framework_response,
+                "response_type": type(framework_response),
+                **extra_context,
+            },
+        )
         return framework_response
 
     @classmethod
     def _response_from_handler(
-            cls,
-            response: t.Union[t.Any, str, t.Tuple[str], t.Tuple[str, int], t.Tuple[str, int, dict]],
-            mimetype: str,
-            extra_context: t.Optional[dict] = None
+        cls,
+        response: t.Union[
+            t.Any, str, t.Tuple[str], t.Tuple[str, int], t.Tuple[str, int, dict]
+        ],
+        mimetype: str,
+        extra_context: t.Optional[dict] = None,
     ) -> t.Any:
         """
         Create a framework response from the operation handler data.
@@ -382,11 +337,9 @@ class AbstractAPI(AbstractSpecAPI):
         if isinstance(response, tuple):
             len_response = len(response)
             if len_response == 1:
-                data, = response
+                (data,) = response
                 return cls._build_response(
-                    mimetype=mimetype,
-                    data=data,
-                    extra_context=extra_context
+                    mimetype=mimetype, data=data, extra_context=extra_context
                 )
             if len_response == 2:
                 if isinstance(response[1], (int, Enum)):
@@ -395,7 +348,7 @@ class AbstractAPI(AbstractSpecAPI):
                         mimetype=mimetype,
                         data=data,
                         status_code=status_code,
-                        extra_context=extra_context
+                        extra_context=extra_context,
                     )
                 else:
                     data, headers = response
@@ -403,7 +356,7 @@ class AbstractAPI(AbstractSpecAPI):
                     mimetype=mimetype,
                     data=data,
                     headers=headers,
-                    extra_context=extra_context
+                    extra_context=extra_context,
                 )
             elif len_response == 3:
                 data, status_code, headers = response
@@ -412,24 +365,22 @@ class AbstractAPI(AbstractSpecAPI):
                     data=data,
                     status_code=status_code,
                     headers=headers,
-                    extra_context=extra_context
+                    extra_context=extra_context,
                 )
             else:
                 raise TypeError(
-                    'The view function did not return a valid response tuple.'
-                    ' The tuple must have the form (body), (body, status, headers),'
-                    ' (body, status), or (body, headers).'
+                    "The view function did not return a valid response tuple."
+                    " The tuple must have the form (body), (body, status, headers),"
+                    " (body, status), or (body, headers)."
                 )
         else:
             return cls._build_response(
-                mimetype=mimetype,
-                data=response,
-                extra_context=extra_context
+                mimetype=mimetype, data=response, extra_context=extra_context
             )
 
     @classmethod
     def get_firetail_response(cls, response, mimetype=None):
-        """ Cast framework dependent response to FiretailResponse used for schema validation """
+        """Cast framework dependent response to FiretailResponse used for schema validation"""
         if isinstance(response, FiretailResponse):
             return response
 
@@ -440,21 +391,29 @@ class AbstractAPI(AbstractSpecAPI):
     @classmethod
     @abc.abstractmethod
     def _is_framework_response(cls, response):
-        """ Return True if `response` is a framework response class """
+        """Return True if `response` is a framework response class"""
 
     @classmethod
     @abc.abstractmethod
     def _framework_to_firetail_response(cls, response, mimetype):
-        """ Cast framework response class to FiretailResponse used for schema validation """
+        """Cast framework response class to FiretailResponse used for schema validation"""
 
     @classmethod
     @abc.abstractmethod
     def _firetail_to_framework_response(cls, response, mimetype, extra_context=None):
-        """ Cast FiretailResponse to framework response class """
+        """Cast FiretailResponse to framework response class"""
 
     @classmethod
     @abc.abstractmethod
-    def _build_response(cls, data, mimetype, content_type=None, status_code=None, headers=None, extra_context=None):
+    def _build_response(
+        cls,
+        data,
+        mimetype,
+        content_type=None,
+        status_code=None,
+        headers=None,
+        extra_context=None,
+    ):
         """
         Create a framework response from the provided arguments.
         :param data: Body data.
@@ -471,7 +430,9 @@ class AbstractAPI(AbstractSpecAPI):
         """
 
     @classmethod
-    def _prepare_body_and_status_code(cls, data, mimetype, status_code=None, extra_context=None):
+    def _prepare_body_and_status_code(
+        cls, data, mimetype, status_code=None, extra_context=None
+    ):
         if data is NoContent:
             data = None
 
@@ -492,12 +453,11 @@ class AbstractAPI(AbstractSpecAPI):
 
         if extra_context is None:
             extra_context = {}
-        logger.debug('Prepared body and status code (%d)',
-                     status_code,
-                     extra={
-                         'body': body,
-                         **extra_context
-                     })
+        logger.debug(
+            "Prepared body and status code (%d)",
+            status_code,
+            extra={"body": body, **extra_context},
+        )
 
         return body, status_code, mimetype
 

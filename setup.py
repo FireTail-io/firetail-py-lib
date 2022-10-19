@@ -28,6 +28,8 @@ install_requires = [
     'inflection>=0.3.1,<0.6',
     'werkzeug>=2.2.1,<3',
     'starlette>=0.15,<1',
+    'httpx>=0.15,<1',
+    'typing-extensions>=4,<5',
 ]
 
 swagger_ui_require = 'swagger-ui-bundle>=0.0.2,<0.1'
@@ -39,8 +41,9 @@ flask_require = [
 
 tests_require = [
     'pytest>=6,<7',
+    'pytest-asyncio>=0.18,<0.19',
+    'pre-commit>=2,<3',
     'pytest-cov>=2,<3',
-    'testfixtures>=6,<7',
     *flask_require,
     swagger_ui_require
 ]

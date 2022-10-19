@@ -5,6 +5,7 @@ This module provides general utility functions used within Firetail.
 import asyncio
 import functools
 import importlib
+import typing as t
 
 import yaml
 
@@ -21,23 +22,25 @@ def boolean(s):
     """
     if isinstance(s, bool):
         return s
-    elif not hasattr(s, 'lower'):
-        raise ValueError('Invalid boolean value')
-    elif s.lower() == 'true':
+    elif not hasattr(s, "lower"):
+        raise ValueError("Invalid boolean value")
+    elif s.lower() == "true":
         return True
-    elif s.lower() == 'false':
+    elif s.lower() == "false":
         return False
     else:
-        raise ValueError('Invalid boolean value')
+        raise ValueError("Invalid boolean value")
 
 
 # https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#data-types
-TYPE_MAP = {'integer': int,
-            'number': float,
-            'string': str,
-            'boolean': boolean,
-            'array': list,
-            'object': dict}  # map of swagger types to python types
+TYPE_MAP = {
+    "integer": int,
+    "number": float,
+    "string": str,
+    "boolean": boolean,
+    "array": list,
+    "object": dict,
+}  # map of swagger types to python types
 
 
 def make_type(value, _type):
@@ -46,8 +49,8 @@ def make_type(value, _type):
 
 
 def deep_merge(a, b):
-    """ merges b into a
-        in case of conflict the value from b is used
+    """merges b into a
+    in case of conflict the value from b is used
     """
     for key in b:
         if key in a:
@@ -68,7 +71,7 @@ def deep_getattr(obj, attr):
     Recurses through an attribute chain to get the ultimate value.
     """
 
-    attrs = attr.split('.')
+    attrs = attr.split(".")
 
     return functools.reduce(getattr, attrs, obj)
 
@@ -102,10 +105,10 @@ def get_function_from_name(function_name):
     if function_name is None:
         raise ValueError("Empty function name")
 
-    if '.' in function_name:
-        module_name, attr_path = function_name.rsplit('.', 1)
+    if "." in function_name:
+        module_name, attr_path = function_name.rsplit(".", 1)
     else:
-        module_name = ''
+        module_name = ""
         attr_path = function_name
 
     module = None
@@ -116,9 +119,9 @@ def get_function_from_name(function_name):
             module = importlib.import_module(module_name)
         except ImportError as import_error:
             last_import_error = import_error
-            if '.' in module_name:
-                module_name, attr_path1 = module_name.rsplit('.', 1)
-                attr_path = f'{attr_path1}.{attr_path}'
+            if "." in module_name:
+                module_name, attr_path1 = module_name.rsplit(".", 1)
+                attr_path = f"{attr_path1}.{attr_path}"
             else:
                 raise
     try:
@@ -136,8 +139,13 @@ def is_json_mimetype(mimetype):
     :type mimetype: str
     :rtype: bool
     """
-    maintype, subtype = mimetype.split('/')  # type: str, str
-    return maintype == 'application' and (subtype == 'json' or subtype.endswith('+json'))
+
+    maintype, subtype = mimetype.split("/")  # type: str, str
+    if ";" in subtype:
+        subtype, parameter = subtype.split(";", maxsplit=1)
+    return maintype == "application" and (
+        subtype == "json" or subtype.endswith("+json")
+    )
 
 
 def all_json(mimetypes):
@@ -166,14 +174,13 @@ def all_json(mimetypes):
 
 
 def is_nullable(param_def):
-    return (
-        param_def.get('schema', param_def).get('nullable', False) or
-        param_def.get('x-nullable', False)  # swagger2
-    )
+    return param_def.get("schema", param_def).get("nullable", False) or param_def.get(
+        "x-nullable", False
+    )  # swagger2
 
 
 def is_null(value):
-    if hasattr(value, 'strip') and value.strip() in ['null', 'None']:
+    if hasattr(value, "strip") and value.strip() in ["null", "None"]:
         return True
 
     if value is None:
@@ -188,9 +195,10 @@ def has_coroutine(function, api=None):
     If ``function`` is a decorator (has a ``__wrapped__`` attribute)
     this function will also look at the wrapped function.
     """
+
     def iscorofunc(func):
         iscorofunc = asyncio.iscoroutinefunction(func)
-        while not iscorofunc and hasattr(func, '__wrapped__'):
+        while not iscorofunc and hasattr(func, "__wrapped__"):
             func = func.__wrapped__
             iscorofunc = asyncio.iscoroutinefunction(func)
         return iscorofunc
@@ -200,9 +208,7 @@ def has_coroutine(function, api=None):
 
     else:
         return any(
-            iscorofunc(func) for func in (
-                function, api.get_request, api.get_response
-            )
+            iscorofunc(func) for func in (function, api.get_request, api.get_response)
         )
 
 
@@ -212,6 +218,7 @@ def yamldumper(openapi):
     :param openapi: a spec dictionary.
     :return: a nicely-formatted, serialized yaml spec.
     """
+
     def should_use_block(value):
         char_list = (
             "\u000a"  # line feed
@@ -230,7 +237,7 @@ def yamldumper(openapi):
 
     def my_represent_scalar(self, tag, value, style=None):
         if should_use_block(value):
-            style = '|'
+            style = "|"
         else:
             style = self.default_style
 
@@ -241,7 +248,7 @@ def yamldumper(openapi):
 
     class NoAnchorDumper(yaml.dumper.SafeDumper):
         """A yaml Dumper that does not replace duplicate entries
-           with yaml anchors.
+        with yaml anchors.
         """
 
         def ignore_aliases(self, *args):
@@ -260,3 +267,32 @@ def not_installed_error(exc):  # pragma: no cover
         raise exc
 
     return functools.partial(_required_lib, exc)
+
+
+def extract_content_type(
+    headers: t.List[t.Tuple[bytes, bytes]]
+) -> t.Tuple[t.Optional[str], t.Optional[str]]:
+    """Extract the mime type and encoding from the content type headers.
+
+    :param headers: Headers from ASGI scope
+
+    :return: A tuple of mime type, encoding
+    """
+    mime_type, encoding = None, None
+    for key, value in headers:
+        # Headers can always be decoded using latin-1:
+        # https://stackoverflow.com/a/27357138/4098821
+        decoded_key = key.decode("latin-1")
+        if decoded_key.lower() == "content-type":
+            content_type = value.decode("latin-1")
+            if ";" in content_type:
+                mime_type, parameters = content_type.split(";", maxsplit=1)
+
+                prefix = "charset="
+                for parameter in parameters.split(";"):
+                    if parameter.startswith(prefix):
+                        encoding = parameter[len(prefix) :]
+            else:
+                mime_type = content_type
+            break
+    return mime_type, encoding

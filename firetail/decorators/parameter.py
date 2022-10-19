@@ -18,6 +18,8 @@ from ..utils import all_json
 
 logger = logging.getLogger(__name__)
 
+CONTEXT_NAME = "context_"
+
 
 def inspect_function_arguments(function):  # pragma: no cover
     """
@@ -28,8 +30,11 @@ def inspect_function_arguments(function):  # pragma: no cover
     :rtype: tuple[list[str], bool]
     """
     parameters = inspect.signature(function).parameters
-    bound_arguments = [name for name, p in parameters.items()
-                       if p.kind not in (p.VAR_POSITIONAL, p.VAR_KEYWORD)]
+    bound_arguments = [
+        name
+        for name, p in parameters.items()
+        if p.kind not in (p.VAR_POSITIONAL, p.VAR_KEYWORD)
+    ]
     has_kwargs = any(p.kind == p.VAR_KEYWORD for p in parameters.values())
     return list(bound_arguments), has_kwargs
 
@@ -48,8 +53,18 @@ def snake_and_shadow(name):
     return snake
 
 
-def parameter_to_arg(operation, function, pythonic_params=False,
-                     pass_context_arg_name=None):
+def sanitized(name):
+    return name and re.sub(
+        "^[^a-zA-Z_]+", "", re.sub("[^0-9a-zA-Z_]", "", re.sub(r"\[(?!])", "_", name))
+    )
+
+
+def pythonic(name):
+    name = name and snake_and_shadow(name)
+    return sanitized(name)
+
+
+def parameter_to_arg(operation, function, pythonic_params=False):
     """
     Pass query and body parameters as keyword arguments to handler function.
 
@@ -59,18 +74,8 @@ def parameter_to_arg(operation, function, pythonic_params=False,
     :param pythonic_params: When True CamelCase parameters are converted to snake_case and an underscore is appended to
     any shadowed built-ins
     :type pythonic_params: bool
-    :param pass_context_arg_name: If not None URL and function has an argument matching this name, the framework's
-    request context will be passed as that argument.
-    :type pass_context_arg_name: str|None
     """
     consumes = operation.consumes
-
-    def sanitized(name):
-        return name and re.sub('^[^a-zA-Z_]+', '', re.sub('[^0-9a-zA-Z[_]', '', re.sub(r'[\[]', '_', name)))
-
-    def pythonic(name):
-        name = name and snake_and_shadow(name)
-        return sanitized(name)
 
     sanitize = pythonic if pythonic_params else sanitized
     arguments, has_kwargs = inspect_function_arguments(function)
@@ -78,7 +83,7 @@ def parameter_to_arg(operation, function, pythonic_params=False,
     @functools.wraps(function)
     def wrapper(request):
         # type: (FiretailRequest) -> Any
-        logger.debug('Function Arguments: %s', arguments)
+        logger.debug("Function Arguments: %s", arguments)
         kwargs = {}
 
         if all_json(consumes):
@@ -94,8 +99,15 @@ def parameter_to_arg(operation, function, pythonic_params=False,
             query = dict(request.query.items())
 
         kwargs.update(
-            operation.get_arguments(request.path_params, query, request_body,
-                                    request.files, arguments, has_kwargs, sanitize)
+            operation.get_arguments(
+                request.path_params,
+                query,
+                request_body,
+                request.files,
+                arguments,
+                has_kwargs,
+                sanitize,
+            )
         )
 
         # optionally convert parameter variable names to un-shadowed, snake_case form
@@ -107,12 +119,10 @@ def parameter_to_arg(operation, function, pythonic_params=False,
             if has_kwargs or key in arguments:
                 kwargs[key] = value
             else:
-                logger.debug(
-                    "Context parameter '%s' not in function arguments", key)
-
+                logger.debug("Context parameter '%s' not in function arguments", key)
         # attempt to provide the request context to the function
-        if pass_context_arg_name and (has_kwargs or pass_context_arg_name in arguments):
-            kwargs[pass_context_arg_name] = request.context
+        if CONTEXT_NAME in arguments:
+            kwargs[CONTEXT_NAME] = request.context
 
         return function(**kwargs)
 

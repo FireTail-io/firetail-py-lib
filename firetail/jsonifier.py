@@ -73,17 +73,18 @@ class Jsonifier:
         """
         self.json = json_
         self.dumps_args = kwargs
+        self.dumps_args.setdefault("cls", JSONEncoder)
 
     def dumps(self, data, **kwargs):
-        """ Central point where JSON serialization happens inside
+        """Central point where JSON serialization happens inside
         Firetail.
         """
         for k, v in self.dumps_args.items():
             kwargs.setdefault(k, v)
-        return self.json.dumps(data, **kwargs) + '\n'
+        return self.json.dumps(data, **kwargs) + "\n"
 
     def loads(self, data):
-        """ Central point where JSON deserialization happens inside
+        """Central point where JSON deserialization happens inside
         Firetail.
         """
         if isinstance(data, bytes):

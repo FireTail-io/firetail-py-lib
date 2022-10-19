@@ -67,11 +67,10 @@ def canonical_base_path(base_path):
     """
     Make given "basePath" a canonical base URL which can be prepended to paths starting with "/".
     """
-    return base_path.rstrip('/')
+    return base_path.rstrip("/")
 
 
 class Specification(Mapping):
-
     def __init__(self, raw_spec):
         self._raw_spec = copy.deepcopy(raw_spec)
         self._set_defaults(raw_spec)
@@ -81,13 +80,11 @@ class Specification(Mapping):
     @classmethod
     @abc.abstractmethod
     def _set_defaults(cls, spec):
-        """ set some default values in the spec
-        """
+        """set some default values in the spec"""
 
     @classmethod
     def _validate_spec(cls, spec):
-        """ validate spec against schema
-        """
+        """validate spec against schema"""
         try:
             OpenApiValidator = create_spec_validator(spec)
             validator = OpenApiValidator(cls.openapi_schema)
@@ -111,7 +108,12 @@ class Specification(Mapping):
 
     @property
     def security(self):
-        return self._spec.get('security')
+        return self._spec.get("security")
+
+    @property
+    @abc.abstractmethod
+    def security_schemes(self):
+        raise NotImplementedError
 
     def __getitem__(self, k):
         return self._spec[k]
@@ -132,12 +134,12 @@ class Specification(Mapping):
         """
         arguments = arguments or {}
 
-        with specification.open(mode='rb') as openapi_yaml:
+        with specification.open(mode="rb") as openapi_yaml:
             contents = openapi_yaml.read()
             try:
                 openapi_template = contents.decode()
             except UnicodeDecodeError:
-                openapi_template = contents.decode('utf-8', 'replace')
+                openapi_template = contents.decode("utf-8", "replace")
 
             openapi_string = jinja2.Template(openapi_template).render(**arguments)
             return yaml.safe_load(openapi_string)
@@ -154,7 +156,7 @@ class Specification(Mapping):
     @staticmethod
     def _get_spec_version(spec):
         try:
-            version_string = spec.get('openapi') or spec.get('swagger')
+            version_string = spec.get("openapi") or spec.get("swagger")
         except AttributeError:
             raise InvalidSpecification(NO_SPEC_VERSION_ERR_MSG)
         if version_string is None:
@@ -162,8 +164,10 @@ class Specification(Mapping):
         try:
             version_tuple = tuple(map(int, version_string.split(".")))
         except TypeError:
-            err = ('Unable to convert version string to semantic version tuple: '
-                   '{version_string}.')
+            err = (
+                "Unable to convert version string to semantic version tuple: "
+                "{version_string}."
+            )
             err = err.format(version_string=version_string)
             raise InvalidSpecification(err)
         return version_tuple
@@ -173,14 +177,11 @@ class Specification(Mapping):
         """
         Takes in a dictionary, and returns a Specification
         """
+
         def enforce_string_keys(obj):
             # YAML supports integer keys, but JSON does not
             if isinstance(obj, dict):
-                return {
-                    str(k): enforce_string_keys(v)
-                    for k, v
-                    in obj.items()
-                }
+                return {str(k): enforce_string_keys(v) for k, v in obj.items()}
             return obj
 
         spec = enforce_string_keys(spec)
@@ -207,97 +208,96 @@ class Specification(Mapping):
 class Swagger2Specification(Specification):
     """Python interface for a Swagger 2 specification."""
 
-    yaml_name = 'swagger.yaml'
+    yaml_name = "swagger.yaml"
     operation_cls = Swagger2Operation
 
     openapi_schema = json.loads(
-        pkgutil.get_data('firetail', 'resources/schemas/v2.0/schema.json')
+        pkgutil.get_data("firetail", "resources/schemas/v2.0/schema.json")  # type: ignore
     )
 
     @classmethod
     def _set_defaults(cls, spec):
-        spec.setdefault('produces', [])
-        spec.setdefault('consumes', ['application/json'])
-        spec.setdefault('definitions', {})
-        spec.setdefault('parameters', {})
-        spec.setdefault('responses', {})
+        spec.setdefault("produces", [])
+        spec.setdefault("consumes", ["application/json"])
+        spec.setdefault("definitions", {})
+        spec.setdefault("parameters", {})
+        spec.setdefault("responses", {})
 
     @property
     def produces(self):
-        return self._spec['produces']
+        return self._spec["produces"]
 
     @property
     def consumes(self):
-        return self._spec['consumes']
+        return self._spec["consumes"]
 
     @property
     def definitions(self):
-        return self._spec['definitions']
+        return self._spec["definitions"]
 
     @property
     def parameter_definitions(self):
-        return self._spec['parameters']
+        return self._spec["parameters"]
 
     @property
     def response_definitions(self):
-        return self._spec['responses']
+        return self._spec["responses"]
 
     @property
-    def security_definitions(self):
-        return self._spec.get('securityDefinitions', {})
+    def security_schemes(self):
+        return self._spec.get("securityDefinitions", {})
 
     @property
     def base_path(self):
-        return canonical_base_path(self._spec.get('basePath', ''))
+        return canonical_base_path(self._spec.get("basePath", ""))
 
     @base_path.setter
     def base_path(self, base_path):
         base_path = canonical_base_path(base_path)
-        self._raw_spec['basePath'] = base_path
-        self._spec['basePath'] = base_path
+        self._raw_spec["basePath"] = base_path
+        self._spec["basePath"] = base_path
 
 
 class OpenAPISpecification(Specification):
     """Python interface for an OpenAPI 3 specification."""
 
-    yaml_name = 'openapi.yaml'
+    yaml_name = "openapi.yaml"
     operation_cls = OpenAPIOperation
 
     openapi_schema = json.loads(
-        pkgutil.get_data('firetail', 'resources/schemas/v3.0/schema.json')
+        pkgutil.get_data("firetail", "resources/schemas/v3.0/schema.json")  # type: ignore
     )
 
     @classmethod
     def _set_defaults(cls, spec):
-        spec.setdefault('components', {})
+        spec.setdefault("components", {})
 
     @property
-    def security_definitions(self):
-        return self._spec['components'].get('securitySchemes', {})
+    def security_schemes(self):
+        return self._spec["components"].get("securitySchemes", {})
 
     @property
     def components(self):
-        return self._spec['components']
+        return self._spec["components"]
 
     @property
     def base_path(self):
-        servers = self._spec.get('servers', [])
+        servers = self._spec.get("servers", [])
         try:
             # assume we're the first server in list
             server = copy.deepcopy(servers[0])
             server_vars = server.pop("variables", {})
-            server['url'] = server['url'].format(
-                **{k: v['default'] for k, v
-                   in server_vars.items()}
+            server["url"] = server["url"].format(
+                **{k: v["default"] for k, v in server_vars.items()}
             )
-            base_path = urlsplit(server['url']).path
+            base_path = urlsplit(server["url"]).path
         except IndexError:
-            base_path = ''
+            base_path = ""
         return canonical_base_path(base_path)
 
     @base_path.setter
     def base_path(self, base_path):
         base_path = canonical_base_path(base_path)
-        user_servers = [{'url': base_path}]
-        self._raw_spec['servers'] = user_servers
-        self._spec['servers'] = user_servers
+        user_servers = [{"url": base_path}]
+        self._raw_spec["servers"] = user_servers
+        self._spec["servers"] = user_servers

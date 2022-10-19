@@ -3,7 +3,6 @@ import logging
 
 
 class FiretailFlusher(logging.Logger):
-
     def __init__(self, logger):
         self.logger = logger
 
@@ -13,8 +12,9 @@ class FiretailFlusher(logging.Logger):
             try:
                 return function(*args, **kwargs)
             except Exception as e:
-                self.logger.exception('call failed: {}'.format(e))
+                self.logger.exception("call failed: {}".format(e))
                 raise
             finally:
                 [h.flush() for h in self.logger.root.handlers]
+
         return wrapper
