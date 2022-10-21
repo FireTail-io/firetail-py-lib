@@ -6,7 +6,6 @@ validation, serialization, etc.
 
 class FiretailRequest:
     """Firetail interface for a request."""
-
     def __init__(self,
                  url,
                  method,
@@ -40,7 +39,6 @@ class FiretailRequest:
 
 class FiretailResponse:
     """Firetail interface for a response."""
-
     def __init__(self,
                  status_code=200,
                  mimetype=None,

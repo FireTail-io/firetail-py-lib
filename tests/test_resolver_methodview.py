@@ -1,8 +1,7 @@
 from firetail.operations import OpenAPIOperation
 from firetail.resolver import MethodViewResolver, Resolver
 
-COMPONENTS = {'parameters': {'myparam': {
-    'in': 'path', 'schema': {'type': 'integer'}}}}
+COMPONENTS = {'parameters': {'myparam': {'in': 'path', 'schema': {'type': 'integer'}}}}
 
 
 def test_standard_resolve_x_router_controller():
@@ -20,7 +19,6 @@ def test_standard_resolve_x_router_controller():
         resolver=Resolver()
     )
     assert operation.operation_id == 'fakeapi.hello.post_greeting'
-
 
 def test_methodview_resolve_operation_id():
     operation = OpenAPIOperation(
@@ -57,14 +55,13 @@ def test_methodview_resolve_x_router_controller_with_operation_id():
 
 def test_methodview_resolve_x_router_controller_without_operation_id():
     operation = OpenAPIOperation(api=None,
-                                 method='GET',
-                                 path='/hello/{id}',
-                                 path_parameters=[],
-                                 operation={
-                                     'x-openapi-router-controller': 'fakeapi.example_method'},
-                                 app_security=[],
-                                 components=COMPONENTS,
-                                 resolver=MethodViewResolver('fakeapi'))
+                          method='GET',
+                          path='/hello/{id}',
+                          path_parameters=[],
+                          operation={'x-openapi-router-controller': 'fakeapi.example_method'},
+                          app_security=[],
+                          components=COMPONENTS,
+                          resolver=MethodViewResolver('fakeapi'))
     assert operation.operation_id == 'fakeapi.ExampleMethodView.get'
 
 

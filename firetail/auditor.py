@@ -1,4 +1,3 @@
-import datetime
 import hashlib
 import json
 import logging
@@ -16,7 +15,7 @@ from .logger import get_stdout_logger
 class cloud_logger(object):
     def __init__(self,
                  app,
-                 url='https://ingest.eu-west-1.dev.platform.pointsec.io/ingest/request',
+                 url='https://ingest.eu-west-1.dev.firetail.app/ingest/request',
                  api_key='5WqBxkOi3m6F1fDRryrR654xalAwz67815Rfe0ds',
                  debug=False,
                  custom_backend=False,
@@ -132,13 +131,13 @@ class cloud_logger(object):
             self.logger = logging.getLogger('firetailLogger')
         try:
             failed_res_body = False
-            response_data = response.get_json() if response.is_json else response.response[0].decode('utf-8')
-        except Exception as e:
+            response_data = response.get_json() if response.is_json else str(response.response[0].decode('utf-8'))
+        except Exception:
             response_data = ""
             failed_res_body = True
         payload = {
             "version": "1.1",
-            "dateCreated": int((datetime.datetime.utcnow()).timestamp() * 1000),
+            "dateCreated": int(time.time() * 1000),
             "execution_time": diff,
             "source_code": sys.version,
             "req": {

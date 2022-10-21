@@ -36,14 +36,15 @@ def problem(status, title, detail, type=None, instance=None, headers=None, ext=N
     if not type:
         type = 'about:blank'
 
-    problem_response = {'type': type, 'title': title,
-                        'detail': detail, 'status': status}
+    problem_response = {'type': type, 'title': title, 'detail': detail, 'status': status}
     if instance:
         problem_response['instance'] = instance
     if ext:
         problem_response.update(ext)
 
     mimetype = content_type = 'application/problem+json'
-    return FiretailResponse(status, mimetype, content_type,
+    return FiretailResponse(status,
+                            mimetype,
+                            content_type,
                             body=problem_response,
                             headers=headers)

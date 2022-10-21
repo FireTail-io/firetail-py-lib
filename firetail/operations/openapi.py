@@ -9,6 +9,7 @@ from copy import copy, deepcopy
 from firetail.operations.abstract import AbstractOperation
 
 from ..decorators.uri_parsing import OpenAPIURIParser
+from ..http_facts import FORM_CONTENT_TYPES
 from ..utils import deep_get, deep_merge, is_null, is_nullable, make_type
 
 logger = logging.getLogger("firetail.operations.openapi3")
@@ -168,10 +169,8 @@ class OpenAPIOperation(AbstractOperation):
         response_definition = self.response_definition(
             status_code, content_type
         )
-        content_definition = response_definition.get(
-            "content", response_definition)
-        content_definition = content_definition.get(
-            content_type, content_definition)
+        content_definition = response_definition.get("content", response_definition)
+        content_definition = content_definition.get(content_type, content_definition)
         if "schema" in content_definition:
             return self.with_definitions(content_definition).get("schema", {})
         return {}
@@ -198,8 +197,7 @@ class OpenAPIOperation(AbstractOperation):
         try:
             # TODO also use example header?
             return (
-                list(deep_get(self._responses, examples_path).values())[
-                    0]['value'],
+                list(deep_get(self._responses, examples_path).values())[0]['value'],
                 status_code
             )
         except (KeyError, IndexError):
@@ -271,8 +269,7 @@ class OpenAPIOperation(AbstractOperation):
                 logger.warning(
                     'this operation accepts multiple content types, using %s',
                     self.consumes[0])
-            res = self._request_body.get(
-                'content', {}).get(self.consumes[0], {})
+            res = self._request_body.get('content', {}).get(self.consumes[0], {})
             return self.with_definitions(res)
         return {}
 
@@ -280,23 +277,39 @@ class OpenAPIOperation(AbstractOperation):
         if len(arguments) <= 0 and not has_kwargs:
             return {}
 
-        # prefer the x-body-name as an extension of requestBody
-        x_body_name = sanitize(self.request_body.get('x-body-name', None))
+        # get the deprecated name from the body-schema for legacy firetail compat
+        x_body_name = sanitize(self.body_schema.get('x-body-name'))
 
-        if not x_body_name:
-            # x-body-name also accepted in the schema field for legacy firetail compat
+        if x_body_name:
             warnings.warn('x-body-name within the requestBody schema will be deprecated in the '
                           'next major version. It should be provided directly under '
                           'the requestBody instead.', DeprecationWarning)
-            x_body_name = sanitize(self.body_schema.get('x-body-name', 'body'))
 
+        # prefer the x-body-name as an extension of requestBody, fallback to deprecated schema name, default 'body'
+        x_body_name = sanitize(self.request_body.get('x-body-name', x_body_name or 'body'))
+
+        if self.consumes[0] in FORM_CONTENT_TYPES:
+            result = self._get_body_argument_form(body)
+        else:
+            result = self._get_body_argument_json(body)
+
+        if x_body_name in arguments or has_kwargs:
+            return {x_body_name: result}
+        return {}
+
+    def _get_body_argument_json(self, body):
         # if the body came in null, and the schema says it can be null, we decide
         # to include no value for the body argument, rather than the default body
         if is_nullable(self.body_schema) and is_null(body):
-            if x_body_name in arguments or has_kwargs:
-                return {x_body_name: None}
-            return {}
+            return None
 
+        if body is None:
+            default_body = self.body_schema.get('default', {})
+            return deepcopy(default_body)
+
+        return body
+
+    def _get_body_argument_form(self, body):
         # now determine the actual value for the body (whether it came in or is default)
         default_body = self.body_schema.get('default', {})
         body_props = {k: {"schema": v} for k, v
@@ -306,26 +319,11 @@ class OpenAPIOperation(AbstractOperation):
         # see: https://github.com/OAI/OpenAPI-Specification/blame/3.0.2/versions/3.0.2.md#L2305
         additional_props = self.body_schema.get("additionalProperties", True)
 
-        if body is None:
-            body = deepcopy(default_body)
-
-        # if the body isn't even an object, then none of the concerns below matter
-        if self.body_schema.get("type") != "object":
-            if x_body_name in arguments or has_kwargs:
-                return {x_body_name: body}
-            return {}
-
-        # supply the initial defaults and convert all values to the proper types by schema
         body_arg = deepcopy(default_body)
         body_arg.update(body or {})
 
-        res = {}
         if body_props or additional_props:
-            res = self._get_typed_body_values(
-                body_arg, body_props, additional_props)
-
-        if x_body_name in arguments or has_kwargs:
-            return {x_body_name: res}
+            return self._get_typed_body_values(body_arg, body_props, additional_props)
         return {}
 
     def _get_typed_body_values(self, body_arg, body_props, additional_props):
@@ -339,8 +337,7 @@ class OpenAPIOperation(AbstractOperation):
         :type additional_props: dict|bool
         :rtype: dict
         """
-        additional_props_defn = {"schema": additional_props} if isinstance(
-            additional_props, dict) else None
+        additional_props_defn = {"schema": additional_props} if isinstance(additional_props, dict) else None
         res = {}
 
         for key, value in body_arg.items():
@@ -349,12 +346,10 @@ class OpenAPIOperation(AbstractOperation):
                 res[key] = self._get_val_from_param(value, prop_defn)
             except KeyError:  # pragma: no cover
                 if not additional_props:
-                    logger.error(
-                        f"Body property '{key}' not defined in body schema")
+                    logger.error(f"Body property '{key}' not defined in body schema")
                     continue
                 if additional_props_defn is not None:
-                    value = self._get_val_from_param(
-                        value, additional_props_defn)
+                    value = self._get_val_from_param(value, additional_props_defn)
                 res[key] = value
 
         return res
@@ -367,8 +362,7 @@ class OpenAPIOperation(AbstractOperation):
                 res[key] = copy(prop['default'])
             elif prop.get('type') == 'object' and 'properties' in prop:
                 res.setdefault(key, {})
-                res[key] = self._build_default_obj_recursive(
-                    prop['properties'], res[key])
+                res[key] = self._build_default_obj_recursive(prop['properties'], res[key])
         return res
 
     def _get_default_obj(self, schema):

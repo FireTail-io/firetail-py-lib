@@ -1,8 +1,7 @@
 from firetail.operations import OpenAPIOperation
 from firetail.resolver import RelativeResolver, Resolver, RestyResolver
 
-COMPONENTS = {'parameters': {'myparam': {
-    'in': 'path', 'schema': {'type': 'integer'}}}}
+COMPONENTS = {'parameters': {'myparam': {'in': 'path', 'schema': {'type': 'integer'}}}}
 
 
 def test_standard_resolve_x_router_controller():

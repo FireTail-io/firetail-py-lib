@@ -31,8 +31,7 @@ def test_get_function_from_name_attr_error(monkeypatch):
 
 
 def test_get_function_from_name_for_class_method():
-    function = utils.get_function_from_name(
-        'firetail.FlaskApp.common_error_handler')
+    function = utils.get_function_from_name('firetail.FlaskApp.common_error_handler')
     assert function == firetail.FlaskApp.common_error_handler
 
 

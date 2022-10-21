@@ -80,7 +80,7 @@ class FiretailOptions:
         """
         if (self._options.get('swagger_ui', True) and
                 self.openapi_console_ui_from_dir is None):
-            # logger.warning(NO_UI_MSG)
+            logger.warning(NO_UI_MSG)
             return False
         return self._options.get('swagger_ui', True)
 

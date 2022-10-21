@@ -40,7 +40,6 @@ class Jsonifier:
     """
     Central point to serialize and deserialize to/from JSon in Firetail.
     """
-
     def __init__(self, json_=json, **kwargs):
         """
         :param json_: json library to use. Must have loads() and dumps() method  # NOQA

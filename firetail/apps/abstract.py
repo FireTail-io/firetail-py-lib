@@ -55,14 +55,12 @@ class AbstractApp(metaclass=abc.ABCMeta):
         self.server = server
         self.server_args = dict() if server_args is None else server_args
         self.app = self.create_app()
-        self.middleware = self._apply_middleware()
 
         # we get our application root path to avoid duplicating logic
         self.root_path = self.get_root_path()
         logger.debug('Root Path: %s', self.root_path)
 
-        # Ensure specification dir is a Path
-        specification_dir = pathlib.Path(specification_dir)
+        specification_dir = pathlib.Path(specification_dir)  # Ensure specification dir is a Path
         if specification_dir.is_absolute():
             self.specification_dir = specification_dir
         else:
@@ -78,12 +76,6 @@ class AbstractApp(metaclass=abc.ABCMeta):
     def create_app(self):
         """
         Creates the user framework application
-        """
-
-    @abc.abstractmethod
-    def _apply_middleware(self):
-        """
-        Apply middleware to application
         """
 
     @abc.abstractmethod
@@ -140,14 +132,12 @@ class AbstractApp(metaclass=abc.ABCMeta):
             resolver_error_handler = self._resolver_error_handler
 
         resolver = resolver or self.resolver
-        resolver = Resolver(resolver) if hasattr(
-            resolver, '__call__') else resolver
+        resolver = Resolver(resolver) if hasattr(resolver, '__call__') else resolver
 
         auth_all_paths = auth_all_paths if auth_all_paths is not None else self.auth_all_paths
         # TODO test if base_path starts with an / (if not none)
         arguments = arguments or dict()
-        # copy global arguments and update with api specific
-        arguments = dict(self.arguments, **arguments)
+        arguments = dict(self.arguments, **arguments)  # copy global arguments and update with api specific
 
         if isinstance(specification, dict):
             specification = specification
@@ -155,22 +145,6 @@ class AbstractApp(metaclass=abc.ABCMeta):
             specification = self.specification_dir / specification
 
         api_options = self.options.extend(options)
-
-        self.middleware.add_api(
-            specification,
-            base_path=base_path,
-            arguments=arguments,
-            resolver=resolver,
-            resolver_error_handler=resolver_error_handler,
-            validate_responses=validate_responses,
-            strict_validation=strict_validation,
-            auth_all_paths=auth_all_paths,
-            debug=self.debug,
-            validator_map=validator_map,
-            pythonic_params=pythonic_params,
-            pass_context_arg_name=pass_context_arg_name,
-            options=api_options.as_dict()
-        )
 
         api = self.api_cls(specification,
                            base_path=base_path,
@@ -269,3 +243,12 @@ class AbstractApp(metaclass=abc.ABCMeta):
         :type debug: bool
         :param options: options to be forwarded to the underlying server
         """
+
+    def __call__(self, environ, start_response):  # pragma: no cover
+        """
+        Makes the class callable to be WSGI-compliant. As Flask is used to handle requests,
+        this is a passthrough-call to the Flask callable class.
+        This is an abstraction to avoid directly referencing the app attribute from outside the
+        class and protect it from unwanted modification.
+        """
+        return self.app(environ, start_response)

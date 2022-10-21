@@ -17,19 +17,16 @@ def test_app(simple_app):
     assert b"Swagger UI" in swagger_ui.data
 
     # test return Swagger UI static files
-    swagger_icon = app_client.get(
-        '/v1.0/ui/swagger-ui.js')  # type: flask.Response
+    swagger_icon = app_client.get('/v1.0/ui/swagger-ui.js')  # type: flask.Response
     assert swagger_icon.status_code == 200
 
-    post_greeting_url = app_client.post(
-        '/v1.0/greeting/jsantos/the/third/of/his/name', data={})  # type: flask.Response
+    post_greeting_url = app_client.post('/v1.0/greeting/jsantos/the/third/of/his/name', data={})  # type: flask.Response
     assert post_greeting_url.status_code == 200
     assert post_greeting_url.content_type == 'application/json'
     greeting_response_url = json.loads(post_greeting_url.data.decode('utf-8'))
     assert greeting_response_url['greeting'] == 'Hello jsantos thanks for the/third/of/his/name'
 
-    post_greeting = app_client.post(
-        '/v1.0/greeting/jsantos', data={})  # type: flask.Response
+    post_greeting = app_client.post('/v1.0/greeting/jsantos', data={})  # type: flask.Response
     assert post_greeting.status_code == 200
     assert post_greeting.content_type == 'application/json'
     greeting_response = json.loads(post_greeting.data.decode('utf-8'))
@@ -39,8 +36,7 @@ def test_app(simple_app):
     assert get_bye.status_code == 200
     assert get_bye.data == b'Goodbye jsantos'
 
-    post_greeting = app_client.post(
-        '/v1.0/greeting/jsantos', data={})  # type: flask.Response
+    post_greeting = app_client.post('/v1.0/greeting/jsantos', data={})  # type: flask.Response
     assert post_greeting.status_code == 200
     assert post_greeting.content_type == 'application/json'
     greeting_response = json.loads(post_greeting.data.decode('utf-8'))
@@ -63,7 +59,7 @@ def test_openapi_yaml_behind_proxy(reverse_proxied_app):
         headers=headers
     )
     assert openapi_yaml.status_code == 200
-    assert openapi_yaml.headers.get('Content-Type').startswith('text/yaml')
+    assert openapi_yaml.headers.get('Content-Type') == 'text/yaml'
     spec = yaml.load(openapi_yaml.data.decode('utf-8'), Loader=yaml.BaseLoader)
 
     if reverse_proxied_app._spec_file == 'swagger.yaml':
@@ -97,30 +93,24 @@ def test_returning_flask_response_tuple(simple_app):
 def test_jsonifier(simple_app):
     app_client = simple_app.app.test_client()
 
-    post_greeting = app_client.post(
-        '/v1.0/greeting/jsantos', data={})  # type: flask.Response
+    post_greeting = app_client.post('/v1.0/greeting/jsantos', data={})  # type: flask.Response
     assert post_greeting.status_code == 200
     assert post_greeting.content_type == 'application/json'
-    greeting_reponse = json.loads(
-        post_greeting.data.decode('utf-8', 'replace'))
+    greeting_reponse = json.loads(post_greeting.data.decode('utf-8', 'replace'))
     assert greeting_reponse['greeting'] == 'Hello jsantos'
 
-    get_list_greeting = app_client.get(
-        '/v1.0/list/jsantos', data={})  # type: flask.Response
+    get_list_greeting = app_client.get('/v1.0/list/jsantos', data={})  # type: flask.Response
     assert get_list_greeting.status_code == 200
     assert get_list_greeting.content_type == 'application/json'
-    greeting_reponse = json.loads(
-        get_list_greeting.data.decode('utf-8', 'replace'))
+    greeting_reponse = json.loads(get_list_greeting.data.decode('utf-8', 'replace'))
     assert len(greeting_reponse) == 2
     assert greeting_reponse[0] == 'hello'
     assert greeting_reponse[1] == 'jsantos'
 
-    get_greetings = app_client.get(
-        '/v1.0/greetings/jsantos', data={})  # type: flask.Response
+    get_greetings = app_client.get('/v1.0/greetings/jsantos', data={})  # type: flask.Response
     assert get_greetings.status_code == 200
     assert get_greetings.content_type == 'application/x.firetail+json'
-    greetings_reponse = json.loads(
-        get_greetings.data.decode('utf-8', 'replace'))
+    greetings_reponse = json.loads(get_greetings.data.decode('utf-8', 'replace'))
     assert len(greetings_reponse) == 1
     assert greetings_reponse['greetings'] == 'Hello jsantos'
 
@@ -136,8 +126,7 @@ def test_not_content_response(simple_app):
 def test_pass_through(simple_app):
     app_client = simple_app.app.test_client()
 
-    response = app_client.get(
-        '/v1.0/multimime', data={})  # type: flask.Response
+    response = app_client.get('/v1.0/multimime', data={})  # type: flask.Response
     assert response.status_code == 200
 
 
@@ -152,8 +141,7 @@ def test_empty(simple_app):
 def test_exploded_deep_object_param_endpoint_openapi_simple(simple_openapi_app):
     app_client = simple_openapi_app.app.test_client()
 
-    response = app_client.get(
-        '/v1.0/exploded-deep-object-param?id[foo]=bar')  # type: flask.Response
+    response = app_client.get('/v1.0/exploded-deep-object-param?id[foo]=bar')  # type: flask.Response
     assert response.status_code == 200
     response_data = json.loads(response.data.decode('utf-8', 'replace'))
     assert response_data == {'foo': 'bar', 'foo4': 'blubb'}
@@ -162,19 +150,16 @@ def test_exploded_deep_object_param_endpoint_openapi_simple(simple_openapi_app):
 def test_exploded_deep_object_param_endpoint_openapi_multiple_data_types(simple_openapi_app):
     app_client = simple_openapi_app.app.test_client()
 
-    response = app_client.get(
-        '/v1.0/exploded-deep-object-param?id[foo]=bar&id[fooint]=2&id[fooboo]=false')  # type: flask.Response
+    response = app_client.get('/v1.0/exploded-deep-object-param?id[foo]=bar&id[fooint]=2&id[fooboo]=false')  # type: flask.Response
     assert response.status_code == 200
     response_data = json.loads(response.data.decode('utf-8', 'replace'))
-    assert response_data == {'foo': 'bar',
-                             'fooint': 2, 'fooboo': False, 'foo4': 'blubb'}
+    assert response_data == {'foo': 'bar', 'fooint': 2, 'fooboo': False, 'foo4': 'blubb'}
 
 
 def test_exploded_deep_object_param_endpoint_openapi_additional_properties(simple_openapi_app):
     app_client = simple_openapi_app.app.test_client()
 
-    response = app_client.get(
-        '/v1.0/exploded-deep-object-param-additional-properties?id[foo]=bar&id[fooint]=2')  # type: flask.Response
+    response = app_client.get('/v1.0/exploded-deep-object-param-additional-properties?id[foo]=bar&id[fooint]=2')  # type: flask.Response
     assert response.status_code == 200
     response_data = json.loads(response.data.decode('utf-8', 'replace'))
     assert response_data == {'foo': 'bar', 'fooint': '2'}
@@ -183,16 +168,14 @@ def test_exploded_deep_object_param_endpoint_openapi_additional_properties(simpl
 def test_exploded_deep_object_param_endpoint_openapi_additional_properties_false(simple_openapi_app):
     app_client = simple_openapi_app.app.test_client()
 
-    response = app_client.get(
-        '/v1.0/exploded-deep-object-param?id[foo]=bar&id[foofoo]=barbar')  # type: flask.Response
+    response = app_client.get('/v1.0/exploded-deep-object-param?id[foo]=bar&id[foofoo]=barbar')  # type: flask.Response
     assert response.status_code == 400
 
 
 def test_exploded_deep_object_param_endpoint_openapi_with_dots(simple_openapi_app):
     app_client = simple_openapi_app.app.test_client()
 
-    response = app_client.get(
-        '/v1.0/exploded-deep-object-param-additional-properties?id[foo]=bar&id[foo.foo]=barbar')  # type: flask.Response
+    response = app_client.get('/v1.0/exploded-deep-object-param-additional-properties?id[foo]=bar&id[foo.foo]=barbar')  # type: flask.Response
     assert response.status_code == 200
     response_data = json.loads(response.data.decode('utf-8', 'replace'))
     assert response_data == {'foo': 'bar', 'foo.foo': 'barbar'}
@@ -201,12 +184,10 @@ def test_exploded_deep_object_param_endpoint_openapi_with_dots(simple_openapi_ap
 def test_nested_exploded_deep_object_param_endpoint_openapi(simple_openapi_app):
     app_client = simple_openapi_app.app.test_client()
 
-    response = app_client.get(
-        '/v1.0/nested-exploded-deep-object-param?id[foo][foo2]=bar&id[foofoo]=barbar')  # type: flask.Response
+    response = app_client.get('/v1.0/nested-exploded-deep-object-param?id[foo][foo2]=bar&id[foofoo]=barbar')  # type: flask.Response
     assert response.status_code == 200
     response_data = json.loads(response.data.decode('utf-8', 'replace'))
-    assert response_data == {
-        'foo': {'foo2': 'bar', 'foo3': 'blubb'}, 'foofoo': 'barbar'}
+    assert response_data == {'foo': {'foo2': 'bar', 'foo3': 'blubb'}, 'foofoo': 'barbar'}
 
 
 def test_redirect_endpoint(simple_app):
@@ -366,6 +347,7 @@ def test_post_wrong_content_type(simple_app):
     resp = Client.open(app_client, environ)
     assert resp.status_code == 415
 
+
     resp = app_client.post('/v1.0/post_wrong_content_type',
                            content_type="application/json",
                            data="not a valid json"
@@ -378,7 +360,7 @@ def test_get_unicode_response(simple_app):
     app_client = simple_app.app.test_client()
     resp = app_client.get('/v1.0/get_unicode_response')
     actualJson = {'currency': '\xa3', 'key': 'leena'}
-    assert json.loads(resp.data.decode('utf-8', 'replace')) == actualJson
+    assert json.loads(resp.data.decode('utf-8','replace')) == actualJson
 
 
 def test_get_enum_response(simple_app):
@@ -406,3 +388,34 @@ def test_streaming_response(simple_app):
     app_client = simple_app.app.test_client()
     resp = app_client.get('/v1.0/get_streaming_response')
     assert resp.status_code == 200
+
+
+def test_oneof(simple_openapi_app):
+    app_client = simple_openapi_app.app.test_client()
+
+    post_greeting = app_client.post(  # type: flask.Response
+        '/v1.0/oneof_greeting',
+        data=json.dumps({"name": 3}),
+        content_type="application/json"
+    )
+    assert post_greeting.status_code == 200
+    assert post_greeting.content_type == 'application/json'
+    greeting_reponse = json.loads(post_greeting.data.decode('utf-8', 'replace'))
+    assert greeting_reponse['greeting'] == 'Hello 3'
+
+    post_greeting = app_client.post(  # type: flask.Response
+        '/v1.0/oneof_greeting',
+        data=json.dumps({"name": True}),
+        content_type="application/json"
+    )
+    assert post_greeting.status_code == 200
+    assert post_greeting.content_type == 'application/json'
+    greeting_reponse = json.loads(post_greeting.data.decode('utf-8', 'replace'))
+    assert greeting_reponse['greeting'] == 'Hello True'
+
+    post_greeting = app_client.post(  # type: flask.Response
+        '/v1.0/oneof_greeting',
+        data=json.dumps({"name": "jsantos"}),
+        content_type="application/json"
+    )
+    assert post_greeting.status_code == 400

@@ -15,8 +15,7 @@ def test_timer(monkeypatch):
     op = wrapper(operation)
     metrics = MagicMock()
     monkeypatch.setattr('flask.request', MagicMock())
-    monkeypatch.setattr('flask.current_app', MagicMock(
-        response_class=flask.Response))
+    monkeypatch.setattr('flask.current_app', MagicMock(response_class=flask.Response))
     monkeypatch.setattr('firetail.decorators.metrics.uwsgi_metrics', metrics)
     with pytest.raises(ProblemException) as exc:
         op(MagicMock())

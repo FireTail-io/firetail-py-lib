@@ -214,14 +214,14 @@ def yamldumper(openapi):
     """
     def should_use_block(value):
         char_list = (
-            "\u000a"  # line feed
-            "\u000d"  # carriage return
-            "\u001c"  # file separator
-            "\u001d"  # group separator
-            "\u001e"  # record separator
-            "\u0085"  # next line
-            "\u2028"  # line separator
-            "\u2029"  # paragraph separator
+          "\u000a"  # line feed
+          "\u000d"  # carriage return
+          "\u001c"  # file separator
+          "\u001d"  # group separator
+          "\u001e"  # record separator
+          "\u0085"  # next line
+          "\u2028"  # line separator
+          "\u2029"  # paragraph separator
         )
         for c in char_list:
             if c in value:

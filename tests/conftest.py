@@ -6,7 +6,6 @@ import sys
 import pytest
 from firetail import App
 from firetail.security import FlaskSecurityHandlerFactory
-from werkzeug.test import Client, EnvironBuilder
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -30,38 +29,6 @@ class FakeResponse:
 
     def json(self):
         return json.loads(self.text)
-
-
-def fixed_get_environ():
-    """See https://github.com/pallets/werkzeug/issues/2347"""
-
-    original_get_environ = EnvironBuilder.get_environ
-
-    def f(self):
-        result = original_get_environ(self)
-        result.pop("HTTP_CONTENT_TYPE", None)
-        result.pop("HTTP_CONTENT_LENGTH", None)
-        return result
-
-    return f
-
-
-EnvironBuilder.get_environ = fixed_get_environ()
-
-
-def buffered_open():
-    """For use with ASGI middleware"""
-
-    original_open = Client.open
-
-    def f(*args, **kwargs):
-        kwargs["buffered"] = True
-        return original_open(*args, **kwargs)
-
-    return f
-
-
-Client.open = buffered_open()
 
 
 # Helper fixtures functions
@@ -90,8 +57,7 @@ def oauth_requests(monkeypatch):
                 return FakeResponse(200, '{"uid": "test-user", "scopes": ["myscope", "otherscope"]}')
         return url
 
-    monkeypatch.setattr(
-        'firetail.security.flask_security_handler_factory.session.get', fake_get)
+    monkeypatch.setattr('firetail.security.flask_security_handler_factory.session.get', fake_get)
 
 
 @pytest.fixture
@@ -102,8 +68,7 @@ def security_handler_factory():
 
 @pytest.fixture
 def app():
-    cnx_app = App(__name__, port=5001,
-                  specification_dir=SPEC_FOLDER, debug=True)
+    cnx_app = App(__name__, port=5001, specification_dir=SPEC_FOLDER, debug=True)
     cnx_app.add_api('api.yaml', validate_responses=True)
     return cnx_app
 
@@ -111,6 +76,11 @@ def app():
 @pytest.fixture
 def simple_api_spec_dir():
     return FIXTURES_FOLDER / 'simple'
+
+
+@pytest.fixture(scope='session')
+def aiohttp_api_spec_dir():
+    return FIXTURES_FOLDER / 'aiohttp'
 
 
 @pytest.fixture
@@ -177,8 +147,7 @@ def reverse_proxied_app(request):
             self.server = server
 
         def __call__(self, environ, start_response):
-            script_name = environ.get(
-                'HTTP_X_FORWARDED_PATH', '') or self.script_name
+            script_name = environ.get('HTTP_X_FORWARDED_PATH', '') or self.script_name
             if script_name:
                 environ['SCRIPT_NAME'] = "/" + script_name.lstrip("/")
                 path_info = environ['PATH_INFO']
@@ -193,8 +162,7 @@ def reverse_proxied_app(request):
                 environ['HTTP_HOST'] = server
             return self.app(environ, start_response)
 
-    app = build_app_from_fixture(
-        'simple', request.param, validate_responses=True)
+    app = build_app_from_fixture('simple', request.param, validate_responses=True)
     flask_app = app.app
     proxied = ReverseProxied(
         flask_app.wsgi_app,
@@ -258,3 +226,9 @@ def unordered_definition_app(request):
 def bad_operations_app(request):
     return build_app_from_fixture('bad_operations', request.param,
                                   resolver_error=501)
+
+
+if sys.version_info < (3, 5, 3) and sys.version_info[0] == 3:
+    @pytest.fixture
+    def aiohttp_client(test_client):
+        return test_client

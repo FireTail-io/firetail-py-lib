@@ -8,14 +8,12 @@ import pathlib
 from decimal import Decimal
 from types import FunctionType  # NOQA
 
-import a2wsgi
 import flask
 import werkzeug.exceptions
 from flask import json, signals
 
 from ..apis.flask_api import FlaskApi
 from ..exceptions import ProblemException
-from ..middleware import FiretailMiddleware
 from ..problem import problem
 from .abstract import AbstractApp
 
@@ -30,9 +28,8 @@ class FlaskApp(AbstractApp):
 
         See :class:`~firetail.AbstractApp` for additional parameters.
         """
-        self.extra_files = extra_files or []
-
         super().__init__(import_name, FlaskApi, server=server, **kwargs)
+        self.extra_files = extra_files or []
 
     def create_app(self):
         app = flask.Flask(self.import_name, **self.server_args)
@@ -40,17 +37,6 @@ class FlaskApp(AbstractApp):
         app.url_map.converters['float'] = NumberConverter
         app.url_map.converters['int'] = IntegerConverter
         return app
-
-    def _apply_middleware(self):
-        middlewares = [*FiretailMiddleware.default_middlewares,
-                       a2wsgi.WSGIMiddleware]
-        middleware = FiretailMiddleware(
-            self.app.wsgi_app, middlewares=middlewares)
-
-        # Wrap with ASGI to WSGI middleware for usage with development server and test client
-        self.app.wsgi_app = a2wsgi.ASGIMiddleware(middleware)
-
-        return middleware
 
     def get_root_path(self):
         return pathlib.Path(self.app.root_path)
@@ -134,8 +120,7 @@ class FlaskApp(AbstractApp):
         if extra_files is not None:
             self.extra_files.extend(extra_files)
 
-        logger.debug('Starting %s HTTP server..',
-                     self.server, extra=vars(self))
+        logger.debug('Starting %s HTTP server..', self.server, extra=vars(self))
         if self.server == 'flask':
             self.app.run(self.host, port=self.port, debug=self.debug,
                          extra_files=self.extra_files, **options)
@@ -147,8 +132,7 @@ class FlaskApp(AbstractApp):
             except ImportError:
                 raise Exception('tornado library not installed')
             wsgi_container = tornado.wsgi.WSGIContainer(self.app)
-            http_server = tornado.httpserver.HTTPServer(
-                wsgi_container, **options)
+            http_server = tornado.httpserver.HTTPServer(wsgi_container, **options)
             http_server.listen(self.port, address=self.host)
             logger.info('Listening on %s:%s..', self.host, self.port)
             tornado.ioloop.IOLoop.instance().start()
@@ -157,18 +141,11 @@ class FlaskApp(AbstractApp):
                 import gevent.pywsgi
             except ImportError:
                 raise Exception('gevent library not installed')
-            http_server = gevent.pywsgi.WSGIServer(
-                (self.host, self.port), self.app, **options)
+            http_server = gevent.pywsgi.WSGIServer((self.host, self.port), self.app, **options)
             logger.info('Listening on %s:%s..', self.host, self.port)
             http_server.serve_forever()
         else:
             raise Exception(f'Server {self.server} not recognized')
-
-    def __call__(self, scope, receive, send):  # pragma: no cover
-        """
-        ASGI interface. Calls the middleware wrapped around the wsgi app.
-        """
-        return self.middleware(scope, receive, send)
 
 
 class FlaskJSONEncoder(json.JSONEncoder):
