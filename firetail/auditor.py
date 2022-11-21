@@ -148,17 +148,14 @@ class cloud_logger(object):
                 "body": str(request.data),
                 "ip": request.remote_addr
             },
-
             "response": {
                 "statusCode": response.status_code,
                 "body": response_data,
                 "headers": dict(response.headers)
             },
-
             "oauth": {		
-			    "subject": self.oauth,
-		    },
-
+                "subject": self.oauth
+            },
         }
         try:
             if self.token or self.custom_backend:
