@@ -136,33 +136,29 @@ class cloud_logger(object):
             response_data = ""
             failed_res_body = True
         payload = {
-            "version": "1.1",
+            "version": "1.0.0-alpha",
             "dateCreated": int(time.time() * 1000),
-            "execution_time": diff,
-            "source_code": sys.version,
-            "req": {
+            "executionTime": diff,
+            "request": {
                 "httpProtocol": request.environ.get('SERVER_PROTOCOL', "HTTP/1.1"),
-                "url": request.base_url,
+                "uri": request.url,
                 "headers": dict(request.headers),
-                "path": request.path,
+                "resource": request.path,
                 "method": request.method,
-                "oPath": request.url_rule.rule if request.url_rule is not None else request.path,
-                "fPath": request.full_path,
-                "args": dict(request.args),
                 "body": str(request.data),
-                "ip": request.remote_addr,
-                'pathParams': request.view_args
-
+                "ip": request.remote_addr
             },
-            "resp": {
-                "status_code": response.status_code,
-                "content_len": response.content_length,
-                "content_enc": response.content_encoding,
-                "failed_res_body": failed_res_body,
+
+            "response": {
+                "statusCode": response.status_code,
                 "body": response_data,
-                "headers": dict(response.headers),
-                "content_type": response.content_type
-            }
+                "headers": dict(response.headers)
+            },
+
+            "oauth": {		
+			    "subject": self.oauth,
+		    },
+
         }
         try:
             if self.token or self.custom_backend:

@@ -33,7 +33,6 @@ def backup_logs(logs, logger):
 class FiretailSender:
     def __init__(self,
                  token,
-                 api_key,
                  url,
                  logs_drain_timeout=5,
                  debug=False,
@@ -42,7 +41,6 @@ class FiretailSender:
                  number_of_retries=4,
                  retry_timeout=2):
         self.token = token
-        self.api_key = api_key
         self.url = url
         self.logs_drain_timeout = logs_drain_timeout
         self.stdout_logger = get_stdout_logger(debug)

@@ -48,4 +48,4 @@ except ImportError as e:  # pragma: no cover
     AioHttpApp = _aiohttp_not_installed_error
 
 # This version is replaced during release process.
-__version__ = '2022.10.dev8'
+__version__ = '2022.11.dev10'
