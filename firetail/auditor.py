@@ -25,7 +25,7 @@ class cloud_logger(object):
                  number_of_retries=4,
                  retry_timeout=2,
                  logs_drain_timeout=5,
-                 scrub_headers=['set-cookie', 'cookie', 'authorization', 'x-api-key', 'token', 'api-token', 'api-key'],
+                 scrub_headers=['set-cookie', 'cookie', 'authorization', 'token', 'api-token', 'api-key'],
                  enrich_oauth=True
                  ):
         self.api_key = api_key
@@ -143,7 +143,7 @@ class cloud_logger(object):
                 "httpProtocol": request.environ.get('SERVER_PROTOCOL', "HTTP/1.1"),
                 "uri": request.url,
                 "headers": dict(request.headers),
-                "resource": request.path,
+                "resource":  request.url_rule.rule if request.url_rule is not None else request.path,
                 "method": request.method,
                 "body": str(request.data),
                 "ip": request.remote_addr

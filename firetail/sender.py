@@ -115,7 +115,6 @@ class FiretailSender:
 
             should_backup_to_disk = True
             headers = {"Content-type": "text/plain",
-                       'x-api-key': self.api_key,
                        'x-ps-api-key': self.token}
 
             for current_try in range(self.number_of_retries):
