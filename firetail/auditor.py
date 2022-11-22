@@ -2,7 +2,6 @@ import hashlib
 import json
 import logging
 import logging.config
-import sys
 import time
 
 import jwt
@@ -130,11 +129,9 @@ class cloud_logger(object):
             logging.config.dictConfig(self.LOGGING)
             self.logger = logging.getLogger('firetailLogger')
         try:
-            failed_res_body = False
             response_data = response.get_json() if response.is_json else str(response.response[0].decode('utf-8'))
         except Exception:
             response_data = ""
-            failed_res_body = True
         payload = {
             "version": "1.0.0-alpha",
             "dateCreated": int(time.time() * 1000),
@@ -153,7 +150,7 @@ class cloud_logger(object):
                 "body": response_data,
                 "headers": dict(response.headers)
             },
-            "oauth": {		
+            "oauth": {
                 "subject": self.oauth
             },
         }
