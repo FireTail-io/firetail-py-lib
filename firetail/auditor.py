@@ -24,7 +24,7 @@ class cloud_logger(object):
                  number_of_retries=4,
                  retry_timeout=2,
                  logs_drain_timeout=5,
-                 scrub_headers=['set-cookie', 'cookie', 'authorization', 'token', 'api-token', 'api-key'],
+                 scrub_headers=['set-cookie', 'cookie', 'authorization', 'x-api-key', 'token', 'api-token', 'api-key'],
                  enrich_oauth=True
                  ):
         self.api_key = api_key
@@ -151,7 +151,7 @@ class cloud_logger(object):
                 "headers": dict(response.headers)
             },
             "oauth": {
-                "subject": self.oauth
+                "subject": self.oauth if self.oauth is not None else None
             },
         }
         try:
