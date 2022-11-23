@@ -121,7 +121,6 @@ class cloud_logger(object):
             result[x] = [y]
         return result
 
-
     def create(self, response, token, diff=-1, scrub_headers=None, debug=False):
         if debug:
             self.stdout_logger = get_stdout_logger(True)
