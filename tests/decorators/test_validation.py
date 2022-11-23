@@ -3,14 +3,12 @@ from unittest.mock import MagicMock
 import pytest
 from firetail.apis.flask_api import FlaskApi
 from firetail.decorators.validation import ParameterValidator
-from firetail.json_schema import (Draft4RequestValidator,
-                                  Draft4ResponseValidator)
+from firetail.json_schema import Draft4RequestValidator, Draft4ResponseValidator
 from jsonschema import ValidationError
 
 
 def test_get_valid_parameter():
-    result = ParameterValidator.validate_parameter(
-        'formdata', 20, {'type': 'number', 'name': 'foobar'})
+    result = ParameterValidator.validate_parameter('formdata', 20, {'type': 'number', 'name': 'foobar'})
     assert result is None
 
 
@@ -33,8 +31,7 @@ def test_get_missing_required_parameter():
 
 
 def test_get_x_nullable_parameter():
-    param = {'type': 'number', 'required': True,
-             'name': 'foo', 'x-nullable': True}
+    param = {'type': 'number', 'required': True, 'name': 'foo', 'x-nullable': True}
     result = ParameterValidator.validate_parameter('formdata', 'None', param)
     assert result is None
 
@@ -51,8 +48,8 @@ def test_get_explodable_object_parameter():
              'required': True, 'name': 'foo', 'style': 'deepObject', 'explode': True}
     result = ParameterValidator.validate_parameter('query', {'bar': 1}, param)
     assert result is None
-
-
+    
+    
 def test_get_valid_parameter_with_enum_array_header():
     value = 'VALUE1,VALUE2'
     param = {'schema': {'type': 'array', 'items': {'type': 'string', 'enum': ['VALUE1', 'VALUE2']}},
@@ -64,8 +61,7 @@ def test_get_valid_parameter_with_enum_array_header():
 def test_invalid_type(monkeypatch):
     logger = MagicMock()
     monkeypatch.setattr('firetail.decorators.validation.logger', logger)
-    result = ParameterValidator.validate_parameter(
-        'formdata', 20, {'type': 'string', 'name': 'foo'})
+    result = ParameterValidator.validate_parameter('formdata', 20, {'type': 'string', 'name': 'foo'})
     expected_result = """20 is not of type 'string'
 
 Failed validating 'type' in schema:
@@ -81,8 +77,7 @@ def test_invalid_type_value_error(monkeypatch):
     logger = MagicMock()
     monkeypatch.setattr('firetail.decorators.validation.logger', logger)
     value = {'test': 1, 'second': 2}
-    result = ParameterValidator.validate_parameter(
-        'formdata', value, {'type': 'boolean', 'name': 'foo'})
+    result = ParameterValidator.validate_parameter('formdata', value, {'type': 'boolean', 'name': 'foo'})
     assert result == "Wrong type, expected 'boolean' for formdata parameter 'foo'"
 
 

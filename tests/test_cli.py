@@ -4,9 +4,8 @@ from unittest.mock import MagicMock
 import firetail
 import pytest
 from click.testing import CliRunner
-from firetail.cli import main
-
 from conftest import FIXTURES_FOLDER
+from firetail.cli import main
 
 
 @pytest.fixture()
@@ -78,8 +77,7 @@ def test_run_simple_spec(mock_app_run, spec_file):
 def test_run_spec_with_host(mock_app_run, spec_file):
     default_port = 5000
     runner = CliRunner()
-    runner.invoke(main, ['run', spec_file, '--host',
-                  'custom.host'], catch_exceptions=False)
+    runner.invoke(main, ['run', spec_file, '--host', 'custom.host'], catch_exceptions=False)
 
     app_instance = mock_app_run()
     app_instance.run.assert_called_with(
@@ -96,7 +94,7 @@ def test_run_no_options_all_default(mock_app_run, expected_arguments, spec_file)
 
 
 def test_run_using_option_hide_spec(mock_app_run, expected_arguments,
-                                    spec_file):
+                                           spec_file):
     runner = CliRunner()
     runner.invoke(main, ['run', spec_file, '--hide-spec'],
                   catch_exceptions=False)
@@ -106,7 +104,7 @@ def test_run_using_option_hide_spec(mock_app_run, expected_arguments,
 
 
 def test_run_using_option_hide_console_ui(mock_app_run, expected_arguments,
-                                          spec_file):
+                                                 spec_file):
     runner = CliRunner()
     runner.invoke(main, ['run', spec_file, '--hide-console-ui'],
                   catch_exceptions=False)
@@ -116,7 +114,7 @@ def test_run_using_option_hide_console_ui(mock_app_run, expected_arguments,
 
 
 def test_run_using_option_console_ui_from(mock_app_run, expected_arguments,
-                                          spec_file):
+                                           spec_file):
     user_path = '/some/path/here'
     runner = CliRunner()
     runner.invoke(main, ['run', spec_file, '--console-ui-from', user_path],
@@ -127,7 +125,7 @@ def test_run_using_option_console_ui_from(mock_app_run, expected_arguments,
 
 
 def test_run_using_option_console_ui_url(mock_app_run, expected_arguments,
-                                         spec_file):
+                                           spec_file):
     user_url = '/console_ui_test'
     runner = CliRunner()
     runner.invoke(main, ['run', spec_file, '--console-ui-url', user_url],
@@ -138,7 +136,7 @@ def test_run_using_option_console_ui_url(mock_app_run, expected_arguments,
 
 
 def test_run_using_option_auth_all_paths(mock_app_run, expected_arguments,
-                                         spec_file):
+                                                 spec_file):
     runner = CliRunner()
     runner.invoke(main, ['run', spec_file, '--auth-all-paths'],
                   catch_exceptions=False)
@@ -163,7 +161,7 @@ def test_run_in_debug_mode(mock_app_run, expected_arguments, spec_file,
 
 
 def test_run_in_very_verbose_mode(mock_app_run, expected_arguments, spec_file,
-                                  monkeypatch):
+                           monkeypatch):
     logging_config = MagicMock(name='firetail.cli.logging.basicConfig')
     monkeypatch.setattr('firetail.cli.logging.basicConfig',
                         logging_config)
@@ -178,7 +176,7 @@ def test_run_in_very_verbose_mode(mock_app_run, expected_arguments, spec_file,
 
 
 def test_run_in_verbose_mode(mock_app_run, expected_arguments, spec_file,
-                             monkeypatch):
+                           monkeypatch):
     logging_config = MagicMock(name='firetail.cli.logging.basicConfig')
     monkeypatch.setattr('firetail.cli.logging.basicConfig',
                         logging_config)
@@ -212,16 +210,14 @@ def test_run_unimplemented_operations_and_stub(mock_app_run):
     with pytest.raises(AttributeError):
         runner.invoke(main, ['run', spec_file], catch_exceptions=False)
     # yet can be run with --stub option
-    result = runner.invoke(
-        main, ['run', spec_file, '--stub'], catch_exceptions=False)
+    result = runner.invoke(main, ['run', spec_file, '--stub'], catch_exceptions=False)
     assert result.exit_code == 0
 
     spec_file = str(FIXTURES_FOLDER / 'module_does_not_exist/swagger.yaml')
     with pytest.raises(ImportError):
         runner.invoke(main, ['run', spec_file], catch_exceptions=False)
     # yet can be run with --stub option
-    result = runner.invoke(
-        main, ['run', spec_file, '--stub'], catch_exceptions=False)
+    result = runner.invoke(main, ['run', spec_file, '--stub'], catch_exceptions=False)
     assert result.exit_code == 0
 
 
@@ -232,8 +228,7 @@ def test_run_unimplemented_operations_and_mock(mock_app_run):
     with pytest.raises(AttributeError):
         runner.invoke(main, ['run', spec_file], catch_exceptions=False)
     # yet can be run with --mock option
-    result = runner.invoke(
-        main, ['run', spec_file, '--mock=all'], catch_exceptions=False)
+    result = runner.invoke(main, ['run', spec_file, '--mock=all'], catch_exceptions=False)
     assert result.exit_code == 0
 
 
@@ -261,6 +256,23 @@ def test_run_with_wsgi_containers(mock_app_run, spec_file):
     assert result.exit_code == 0
 
 
+def test_run_with_aiohttp_not_installed(mock_app_run, spec_file):
+    import sys
+    aiohttp_bkp = sys.modules.pop('aiohttp', None)
+    sys.modules['aiohttp'] = None
+
+    runner = CliRunner()
+
+    # missing aiohttp
+    result = runner.invoke(main,
+                           ['run', spec_file, '-f', 'aiohttp'],
+                           catch_exceptions=False)
+    sys.modules['aiohttp'] = aiohttp_bkp
+
+    assert 'aiohttp library is not installed' in result.output
+    assert result.exit_code == 1
+
+
 def test_run_with_wsgi_server_and_server_opts(mock_app_run, spec_file):
     runner = CliRunner()
 
@@ -270,4 +282,27 @@ def test_run_with_wsgi_server_and_server_opts(mock_app_run, spec_file):
                             '-s', 'flask'],
                            catch_exceptions=False)
     assert "these options are mutually exclusive" in result.output
+    assert result.exit_code == 2
+
+
+def test_run_with_incompatible_server_and_default_framework(mock_app_run, spec_file):
+    runner = CliRunner()
+
+    result = runner.invoke(main,
+                           ['run', spec_file,
+                           '-s', 'aiohttp'],
+                           catch_exceptions=False)
+    assert "Invalid server 'aiohttp' for app-framework 'flask'" in result.output
+    assert result.exit_code == 2
+
+
+def test_run_with_incompatible_server_and_framework(mock_app_run, spec_file):
+    runner = CliRunner()
+
+    result = runner.invoke(main,
+                           ['run', spec_file,
+                           '-s', 'flask',
+                           '-f', 'aiohttp'],
+                           catch_exceptions=False)
+    assert "Invalid server 'flask' for app-framework 'aiohttp'" in result.output
     assert result.exit_code == 2

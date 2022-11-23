@@ -35,7 +35,6 @@ def test_mock_resolver_default():
     assert status_code == 200
     assert response == {'foo': 'bar'}
 
-
 def test_mock_resolver_numeric():
     resolver = MockResolver(mock_all=True)
 
@@ -68,7 +67,6 @@ def test_mock_resolver_numeric():
     response, status_code = resolver.mock_operation(operation)
     assert status_code == 200
     assert response == {'foo': 'bar'}
-
 
 def test_mock_resolver_example():
     resolver = MockResolver(mock_all=True)
@@ -109,7 +107,6 @@ def test_mock_resolver_example():
     assert status_code == 200
     assert response == {'foo': 'bar'}
 
-
 def test_mock_resolver_example_nested_in_object():
     resolver = MockResolver(mock_all=True)
 
@@ -147,7 +144,6 @@ def test_mock_resolver_example_nested_in_object():
     assert status_code == 200
     assert response == {'foo': 'bar'}
 
-
 def test_mock_resolver_example_nested_in_list():
     resolver = MockResolver(mock_all=True)
 
@@ -182,7 +178,6 @@ def test_mock_resolver_example_nested_in_list():
     response, status_code = resolver.mock_operation(operation)
     assert status_code == 200
     assert response == ['bar']
-
 
 def test_mock_resolver_example_nested_in_object_openapi():
     resolver = MockResolver(mock_all=True)
@@ -220,7 +215,6 @@ def test_mock_resolver_example_nested_in_object_openapi():
     assert status_code == 200
     assert response == {'foo': 'bar'}
 
-
 def test_mock_resolver_example_nested_in_list_openapi():
     resolver = MockResolver(mock_all=True)
 
@@ -254,7 +248,6 @@ def test_mock_resolver_example_nested_in_list_openapi():
     response, status_code = resolver.mock_operation(operation)
     assert status_code == 200
     assert response == ['bar']
-
 
 def test_mock_resolver_no_example_nested_in_object():
     resolver = MockResolver(mock_all=True)
@@ -292,7 +285,6 @@ def test_mock_resolver_no_example_nested_in_object():
     assert status_code == 200
     assert response == 'No example response was defined.'
 
-
 def test_mock_resolver_no_example_nested_in_list_openapi():
     resolver = MockResolver(mock_all=True)
 
@@ -325,7 +317,6 @@ def test_mock_resolver_no_example_nested_in_list_openapi():
     response, status_code = resolver.mock_operation(operation)
     assert status_code == 202
     assert response == 'No example response was defined.'
-
 
 def test_mock_resolver_no_examples():
     resolver = MockResolver(mock_all=True)
@@ -397,5 +388,4 @@ def test_mock_resolver_notimplemented():
                                   resolver=resolver)
 
     # check if it is using the mock function
-    assert operation._resolution.function() == (
-        'No example response was defined.', 418)
+    assert operation._resolution.function() == ('No example response was defined.', 418)

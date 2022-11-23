@@ -48,6 +48,17 @@ def snake_and_shadow(name):
     return snake
 
 
+def sanitized(name):
+    return name and re.sub('^[^a-zA-Z_]+', '',
+                           re.sub('[^0-9a-zA-Z_]', '',
+                                  re.sub(r'\[(?!])', '_', name)))
+
+
+def pythonic(name):
+    name = name and snake_and_shadow(name)
+    return sanitized(name)
+
+
 def parameter_to_arg(operation, function, pythonic_params=False,
                      pass_context_arg_name=None):
     """
@@ -64,13 +75,6 @@ def parameter_to_arg(operation, function, pythonic_params=False,
     :type pass_context_arg_name: str|None
     """
     consumes = operation.consumes
-
-    def sanitized(name):
-        return name and re.sub('^[^a-zA-Z_]+', '', re.sub('[^0-9a-zA-Z[_]', '', re.sub(r'[\[]', '_', name)))
-
-    def pythonic(name):
-        name = name and snake_and_shadow(name)
-        return sanitized(name)
 
     sanitize = pythonic if pythonic_params else sanitized
     arguments, has_kwargs = inspect_function_arguments(function)
@@ -107,8 +111,7 @@ def parameter_to_arg(operation, function, pythonic_params=False,
             if has_kwargs or key in arguments:
                 kwargs[key] = value
             else:
-                logger.debug(
-                    "Context parameter '%s' not in function arguments", key)
+                logger.debug("Context parameter '%s' not in function arguments", key)
 
         # attempt to provide the request context to the function
         if pass_context_arg_name and (has_kwargs or pass_context_arg_name in arguments):

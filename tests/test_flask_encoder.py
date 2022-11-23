@@ -4,9 +4,8 @@ import math
 from decimal import Decimal
 
 import pytest
-from firetail.apps.flask_app import FlaskJSONEncoder
-
 from conftest import build_app_from_fixture
+from firetail.apps.flask_app import FlaskJSONEncoder
 
 SPECS = ["swagger.yaml", "openapi.yaml"]
 
@@ -38,15 +37,13 @@ def test_json_encoder_datetime_with_timezone():
         def dst(self, dt):
             return datetime.timedelta(0)
 
-    s = json.dumps(datetime.datetime.now(
-        DummyTimezone()), cls=FlaskJSONEncoder)
+    s = json.dumps(datetime.datetime.now(DummyTimezone()), cls=FlaskJSONEncoder)
     assert s.endswith('+00:00"')
 
 
 @pytest.mark.parametrize("spec", SPECS)
 def test_readonly(json_datetime_dir, spec):
-    app = build_app_from_fixture(
-        json_datetime_dir, spec, validate_responses=True)
+    app = build_app_from_fixture(json_datetime_dir, spec, validate_responses=True)
     app_client = app.app.test_client()
 
     res = app_client.get('/v1.0/' + spec.replace('yaml', 'json'))
@@ -64,17 +61,14 @@ def test_readonly(json_datetime_dir, spec):
             assert data, f"No data in part '{part}' of '{path}'"
         return data
 
-    example = get_value(
-        spec_data, f'paths./datetime.get.{response_path}.example.value')
+    example = get_value(spec_data, f'paths./datetime.get.{response_path}.example.value')
     assert example in [
         '2000-01-23T04:56:07.000008+00:00',  # PyYAML 5.3+
         '2000-01-23T04:56:07.000008Z'
     ]
-    example = get_value(
-        spec_data, f'paths./date.get.{response_path}.example.value')
+    example = get_value(spec_data, f'paths./date.get.{response_path}.example.value')
     assert example == '2000-01-23'
-    example = get_value(
-        spec_data, f'paths./uuid.get.{response_path}.example.value')
+    example = get_value(spec_data, f'paths./uuid.get.{response_path}.example.value')
     assert example == 'a7b8869c-5f24-4ce0-a5d1-3e44c3663aa9'
 
     res = app_client.get('/v1.0/datetime')

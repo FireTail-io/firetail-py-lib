@@ -13,8 +13,12 @@ import textwrap
 import typing as t
 
 from ..decorators.parameter import inspect_function_arguments
-from ..exceptions import (FiretailException, OAuthProblem,
-                          OAuthResponseProblem, OAuthScopeProblem)
+from ..exceptions import (
+    FiretailException,
+    OAuthProblem,
+    OAuthResponseProblem,
+    OAuthScopeProblem,
+)
 from ..utils import get_function_from_name
 
 logger = logging.getLogger('firetail.api.security')
@@ -45,8 +49,7 @@ class AbstractSecurityHandlerFactory(abc.ABC):
         """
         Return function by getting its name from security_definition or environment variable
         """
-        func = security_definition.get(
-            security_definition_key) or os.environ.get(environ_key)
+        func = security_definition.get(security_definition_key) or os.environ.get(environ_key)
         if func:
             return get_function_from_name(func)
         return default
@@ -58,8 +61,7 @@ class AbstractSecurityHandlerFactory(abc.ABC):
         >>> get_tokeninfo_url({'x-tokenInfoFunc': 'foo.bar'})
         '<function foo.bar>'
         """
-        token_info_func = self._get_function(
-            security_definition, "x-tokenInfoFunc", 'TOKENINFO_FUNC')
+        token_info_func = self._get_function(security_definition, "x-tokenInfoFunc", 'TOKENINFO_FUNC')
         if token_info_func:
             return token_info_func
 
@@ -176,8 +178,7 @@ class AbstractSecurityHandlerFactory(abc.ABC):
         return auth_type.lower(), value
 
     def verify_oauth(self, token_info_func, scope_validate_func, required_scopes):
-        check_oauth_func = self.check_oauth_func(
-            token_info_func, scope_validate_func)
+        check_oauth_func = self.check_oauth_func(token_info_func, scope_validate_func)
 
         def wrapper(request):
             auth_type, token = self.get_auth_header_value(request)
@@ -197,8 +198,7 @@ class AbstractSecurityHandlerFactory(abc.ABC):
                 return self.no_value
 
             try:
-                username, password = base64.b64decode(
-                    user_pass).decode('latin1').split(':', 1)
+                username, password = base64.b64decode(user_pass).decode('latin1').split(':', 1)
             except Exception:
                 raise OAuthProblem(description='Invalid authorization header')
 
@@ -242,8 +242,7 @@ class AbstractSecurityHandlerFactory(abc.ABC):
 
             if loc == 'query':
                 try:
-                    api_key, request.query = _immutable_pop(
-                        request.query, name)
+                    api_key, request.query = _immutable_pop(request.query, name)
                 except KeyError:
                     api_key = None
             elif loc == 'header':
@@ -311,14 +310,12 @@ class AbstractSecurityHandlerFactory(abc.ABC):
 
     def _need_to_add_context_or_scopes(self, func):
         arguments, has_kwargs = inspect_function_arguments(func)
-        need_context = self.pass_context_arg_name and (
-            has_kwargs or self.pass_context_arg_name in arguments)
+        need_context = self.pass_context_arg_name and (has_kwargs or self.pass_context_arg_name in arguments)
         need_required_scopes = has_kwargs or self.required_scopes_kw in arguments
         return need_context, need_required_scopes
 
     def _generic_check(self, func, exception_msg):
-        need_to_add_context, need_to_add_required_scopes = self._need_to_add_context_or_scopes(
-            func)
+        need_to_add_context, need_to_add_required_scopes = self._need_to_add_context_or_scopes(func)
 
         def wrapper(request, *args, required_scopes=None):
             kwargs = {}
@@ -330,8 +327,7 @@ class AbstractSecurityHandlerFactory(abc.ABC):
             if token_info is self.no_value:
                 return self.no_value
             if token_info is None:
-                raise OAuthResponseProblem(
-                    description=exception_msg, token_response=None)
+                raise OAuthResponseProblem(description=exception_msg, token_response=None)
             return token_info
 
         return wrapper
@@ -346,30 +342,25 @@ class AbstractSecurityHandlerFactory(abc.ABC):
         return self._generic_check(api_key_info_func, 'Provided apikey is not valid')
 
     def check_oauth_func(self, token_info_func, scope_validate_func):
-        get_token_info = self._generic_check(
-            token_info_func, 'Provided token is not valid')
-        need_to_add_context, _ = self._need_to_add_context_or_scopes(
-            scope_validate_func)
+        get_token_info = self._generic_check(token_info_func, 'Provided token is not valid')
+        need_to_add_context, _ = self._need_to_add_context_or_scopes(scope_validate_func)
 
         def wrapper(request, token, required_scopes):
-            token_info = get_token_info(
-                request, token, required_scopes=required_scopes)
+            token_info = get_token_info(request, token, required_scopes=required_scopes)
 
             # Fallback to 'scopes' for backward compatibility
-            token_scopes = token_info.get(
-                'scope', token_info.get('scopes', ''))
+            token_scopes = token_info.get('scope', token_info.get('scopes', ''))
 
             kwargs = {}
             if need_to_add_context:
                 kwargs[self.pass_context_arg_name] = request.context
-            validation = scope_validate_func(
-                required_scopes, token_scopes, **kwargs)
+            validation = scope_validate_func(required_scopes, token_scopes, **kwargs)
             if not validation:
                 raise OAuthScopeProblem(
                     description='Provided token doesn\'t have the required scope',
                     required_scopes=required_scopes,
                     token_scopes=token_scopes
-                )
+                    )
 
             return token_info
         return wrapper
@@ -388,17 +379,15 @@ class AbstractSecurityHandlerFactory(abc.ABC):
                 except Exception as err:
                     errors.append(err)
 
-            if token_info is cls.no_value:
+            else:
                 if errors != []:
                     cls._raise_most_specific(errors)
                 else:
                     logger.info("... No auth provided. Aborting with 401.")
-                    raise OAuthProblem(
-                        description='No authorization token provided')
+                    raise OAuthProblem(description='No authorization token provided')
 
             # Fallback to 'uid' for backward compatibility
-            request.context['user'] = token_info.get(
-                'sub', token_info.get('uid'))
+            request.context['user'] = token_info.get('sub', token_info.get('uid'))
             request.context['token_info'] = token_info
             return function(request)
 

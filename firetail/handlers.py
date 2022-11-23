@@ -2,15 +2,12 @@
 This module defines error handlers, operations that produce proper response problems.
 """
 
-# import datetime
 import json
 import logging
 import logging.handlers
-import sys
 import traceback
 
-from .exceptions import (AuthenticationProblem, FiretailException,
-                         ResolverProblem)
+from .exceptions import AuthenticationProblem, FiretailException, ResolverProblem
 from .logger import get_stdout_logger
 from .operations.secure import SecureOperation
 from .sender import FiretailSender
@@ -98,35 +95,35 @@ class ResolverErrorHandler(SecureOperation):
 
 
 class FiretailHandler(logging.Handler):
-
-    def __init__(self,
-                 api_key,
-                 token,
-                 url,
-                 custom_backend=False,
-                 firetail_type="python",
-                 logs_drain_timeout=3,
-                 debug=False,
-                 backup_logs=True,
-                 network_timeout=10.0,
-                 retries_no=4,
-                 retry_timeout=2):
+    def __init__(
+        self,
+        token,
+        url,
+        custom_backend=False,
+        firetail_type="python",
+        logs_drain_timeout=3,
+        debug=False,
+        backup_logs=True,
+        network_timeout=10.0,
+        retries_no=4,
+        retry_timeout=2,
+    ):
 
         if not token and not custom_backend:
-            raise FiretailException('firetail Token must be provided')
+            raise FiretailException("firetail Token must be provided")
 
         self.firetail_type = firetail_type
 
         self.firetail_sender = FiretailSender(
             token=token,
             url=url,
-            api_key=api_key,
             logs_drain_timeout=logs_drain_timeout,
             debug=debug,
             backup_logs=backup_logs,
             network_timeout=network_timeout,
             number_of_retries=retries_no,
-            retry_timeout=retry_timeout)
+            retry_timeout=retry_timeout,
+        )
         logging.Handler.__init__(self)
 
     def __del__(self):
@@ -135,17 +132,32 @@ class FiretailHandler(logging.Handler):
     def extra_fields(self, message):
 
         not_allowed_keys = (
-            'args', 'asctime', 'created', 'exc_info', 'stack_info', 'exc_text',
-            'filename', 'funcName', 'levelname', 'levelno', 'lineno', 'module',
-            'msecs', 'msecs', 'message', 'msg', 'name', 'pathname', 'process',
-            'processName', 'relativeCreated', 'thread', 'threadName')
+            "args",
+            "asctime",
+            "created",
+            "exc_info",
+            "stack_info",
+            "exc_text",
+            "filename",
+            "funcName",
+            "levelname",
+            "levelno",
+            "lineno",
+            "module",
+            "msecs",
+            "msecs",
+            "message",
+            "msg",
+            "name",
+            "pathname",
+            "process",
+            "processName",
+            "relativeCreated",
+            "thread",
+            "threadName",
+        )
 
-        if sys.version_info < (3, 0):
-            # long and basestring don't exist in py3 so, NOQA
-            var_type = (basestring, bool, dict, float,  # NOQA
-                        int, long, list, type(None))  # NOQA
-        else:
-            var_type = (str, bool, dict, float, int, list, type(None))
+        var_type = (str, bool, dict, float, int, list, type(None))
 
         extra_fields = {}
 
@@ -169,7 +181,7 @@ class FiretailHandler(logging.Handler):
             return message
 
     def format_exception(self, exc_info):
-        return '\n'.join(traceback.format_exception(*exc_info))
+        return "\n".join(traceback.format_exception(*exc_info))
 
     def format_message(self, message):
         # now = datetime.datetime.utcnow()
@@ -188,7 +200,7 @@ class FiretailHandler(logging.Handler):
         try:
             payload = json.loads(message.getMessage())
         except json.decoder.JSONDecodeError:
-            return {'ignore': True}
+            return {"ignore": True}
 
         # requiredInBody = ['req', 'res']
         # for item in requiredInBody:
@@ -202,5 +214,5 @@ class FiretailHandler(logging.Handler):
         message = self.format_message(record)
         self.stdout_logger = get_stdout_logger(False)
         # self.stdout_logger.info(record.getMessage())
-        if 'ignore' not in message:
+        if "ignore" not in message:
             self.firetail_sender.append(message)
