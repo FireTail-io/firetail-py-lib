@@ -15,7 +15,6 @@ class cloud_logger(object):
     def __init__(self,
                  app,
                  url='https://api.logging.eu-west-1.sandbox.firetail.app/logs/bulk',
-                 api_key='5WqBxkOi3m6F1fDRryrR654xalAwz67815Rfe0ds',
                  debug=False,
                  custom_backend=False,
                  token=None,
@@ -27,7 +26,6 @@ class cloud_logger(object):
                  scrub_headers=['set-cookie', 'cookie', 'authorization', 'x-api-key', 'token', 'api-token', 'api-key'],
                  enrich_oauth=True
                  ):
-        self.api_key = api_key
         self.startThread = True
         self.custom_backend = custom_backend
         self.requests_session = requests.Session()
@@ -63,7 +61,6 @@ class cloud_logger(object):
                     'custom_backend': self.custom_backend,
                     'logs_drain_timeout': 5,
                     'url': self.url,
-                    'api_key': self.api_key,
                     'retries_no': 4,
                     'retry_timeout': 2,
                 }
@@ -118,6 +115,13 @@ class cloud_logger(object):
                     payload['oauth']['email'] = jwt_decoded['email']
         return payload
 
+    def format_headers(self, req_headers):
+        result = {}
+        for x, y in req_headers.items():
+            result[x] = [y]
+        return result
+
+
     def create(self, response, token, diff=-1, scrub_headers=None, debug=False):
         if debug:
             self.stdout_logger = get_stdout_logger(True)
@@ -139,7 +143,7 @@ class cloud_logger(object):
             "request": {
                 "httpProtocol": request.environ.get('SERVER_PROTOCOL', "HTTP/1.1"),
                 "uri": request.url,
-                "headers": dict(request.headers),
+                "headers": self.format_headers(dict(request.headers)),
                 "resource":  request.url_rule.rule if request.url_rule is not None else request.path,
                 "method": request.method,
                 "body": str(request.data),
@@ -148,10 +152,7 @@ class cloud_logger(object):
             "response": {
                 "statusCode": response.status_code,
                 "body": response_data,
-                "headers": dict(response.headers)
-            },
-            "oauth": {
-                "subject": self.oauth if self.oauth is not None else None
+                "headers": self.format_headers(dict(response.headers))
             },
         }
         try:
