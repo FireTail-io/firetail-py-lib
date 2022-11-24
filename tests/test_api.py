@@ -20,8 +20,7 @@ def test_canonical_base_path():
 
 
 def test_api():
-    api = FlaskApi(TEST_FOLDER / "fixtures/simple/swagger.yaml",
-                   base_path="/api/v1.0")
+    api = FlaskApi(TEST_FOLDER / "fixtures/simple/swagger.yaml", base_path="/api/v1.0")
     assert api.blueprint.name == '/api/v1_0'
     assert api.blueprint.url_prefix == '/api/v1.0'
 
@@ -29,8 +28,7 @@ def test_api():
     assert api2.blueprint.name == '/v1_0'
     assert api2.blueprint.url_prefix == '/v1.0'
 
-    api3 = FlaskApi(TEST_FOLDER / "fixtures/simple/openapi.yaml",
-                    base_path="/api/v1.0")
+    api3 = FlaskApi(TEST_FOLDER / "fixtures/simple/openapi.yaml", base_path="/api/v1.0")
     assert api3.blueprint.name == '/api/v1_0'
     assert api3.blueprint.url_prefix == '/api/v1.0'
 
@@ -106,8 +104,7 @@ def test_invalid_schema_file_structure():
 
 def test_invalid_encoding():
     with tempfile.NamedTemporaryFile(mode='wb', delete=False) as f:
-        f.write(
-            "swagger: '2.0'\ninfo:\n  title: Foo 整\n  version: v1\npaths: {}".encode('gbk'))
+        f.write("swagger: '2.0'\ninfo:\n  title: Foo 整\n  version: v1\npaths: {}".encode('gbk'))
     FlaskApi(pathlib.Path(f.name), base_path="/api/v1.0")
     os.unlink(f.name)
 
@@ -129,7 +126,6 @@ def test_validation_error_on_completely_invalid_swagger_spec():
     with pytest.raises(InvalidSpecification):
         FlaskApi(pathlib.Path(f.name), base_path="/api/v1.0")
     os.unlink(f.name)
-
 
 @pytest.fixture
 def mock_api_logger(monkeypatch):

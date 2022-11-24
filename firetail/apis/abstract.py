@@ -7,6 +7,7 @@ import logging
 import pathlib
 import sys
 import typing as t
+import warnings
 from enum import Enum
 
 from ..decorators.produces import NoContent
@@ -18,6 +19,7 @@ from ..operations import make_operation
 from ..options import FiretailOptions
 from ..resolver import Resolver
 from ..spec import Specification
+from ..utils import is_json_mimetype
 
 MODULE_PATH = pathlib.Path(__file__).absolute().parent.parent
 SWAGGER_UI_URL = 'ui'
@@ -32,86 +34,7 @@ class AbstractAPIMeta(abc.ABCMeta):
         cls._set_jsonifier()
 
 
-class AbstractSpecAPI(metaclass=AbstractAPIMeta):
-
-    def __init__(
-            self,
-            specification: t.Union[pathlib.Path, str, dict],
-            base_path: t.Optional[str] = None,
-            arguments: t.Optional[dict] = None,
-            options: t.Optional[dict] = None,
-            *args,
-            **kwargs
-    ):
-        """Base API class with only minimal behavior related to the specification."""
-        logger.debug('Loading specification: %s', specification,
-                     extra={'swagger_yaml': specification,
-                            'base_path': base_path,
-                            'arguments': arguments})
-
-        # Avoid validator having ability to modify specification
-        self.specification = Specification.load(
-            specification, arguments=arguments)
-
-        logger.debug('Read specification', extra={'spec': self.specification})
-
-        self.options = FiretailOptions(
-            options, oas_version=self.specification.version)
-
-        logger.debug('Options Loaded',
-                     extra={'swagger_ui': self.options.openapi_console_ui_available,
-                            'swagger_path': self.options.openapi_console_ui_from_dir,
-                            'swagger_url': self.options.openapi_console_ui_path})
-
-        self._set_base_path(base_path)
-
-    def _set_base_path(self, base_path: t.Optional[str] = None) -> None:
-        if base_path is not None:
-            # update spec to include user-provided base_path
-            self.specification.base_path = base_path
-            self.base_path = base_path
-        else:
-            self.base_path = self.specification.base_path
-
-    @classmethod
-    def _set_jsonifier(cls):
-        cls.jsonifier = Jsonifier()
-
-
-class AbstractSwaggerUIAPI(AbstractSpecAPI):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        if self.options.openapi_spec_available:
-            self.add_openapi_json()
-            self.add_openapi_yaml()
-
-        if self.options.openapi_console_ui_available:
-            self.add_swagger_ui()
-
-    @abc.abstractmethod
-    def add_openapi_json(self):
-        """
-        Adds openapi spec to {base_path}/openapi.json
-             (or {base_path}/swagger.json for swagger2)
-        """
-
-    @abc.abstractmethod
-    def add_openapi_yaml(self):
-        """
-        Adds openapi spec to {base_path}/openapi.yaml
-             (or {base_path}/swagger.yaml for swagger2)
-        """
-
-    @abc.abstractmethod
-    def add_swagger_ui(self):
-        """
-        Adds swagger ui to {base_path}/ui/
-        """
-
-
-class AbstractAPI(AbstractSpecAPI):
+class AbstractAPI(metaclass=AbstractAPIMeta):
     """
     Defines an abstract interface for a Swagger API
     """
@@ -155,13 +78,11 @@ class AbstractAPI(AbstractSpecAPI):
                             'auth_all_paths': auth_all_paths})
 
         # Avoid validator having ability to modify specification
-        self.specification = Specification.load(
-            specification, arguments=arguments)
+        self.specification = Specification.load(specification, arguments=arguments)
 
         logger.debug('Read specification', extra={'spec': self.specification})
 
-        self.options = FiretailOptions(
-            options, oas_version=self.specification.version)
+        self.options = FiretailOptions(options, oas_version=self.specification.version)
 
         logger.debug('Options Loaded',
                      extra={'swagger_ui': self.options.openapi_console_ui_available,
@@ -170,8 +91,7 @@ class AbstractAPI(AbstractSpecAPI):
 
         self._set_base_path(base_path)
 
-        logger.debug('Security Definitions: %s',
-                     self.specification.security_definitions)
+        logger.debug('Security Definitions: %s', self.specification.security_definitions)
 
         self.resolver = resolver or Resolver()
 
@@ -187,11 +107,14 @@ class AbstractAPI(AbstractSpecAPI):
         logger.debug('pass_context_arg_name: %s', pass_context_arg_name)
         self.pass_context_arg_name = pass_context_arg_name
 
-        self.security_handler_factory = self.make_security_handler_factory(
-            pass_context_arg_name)
+        self.security_handler_factory = self.make_security_handler_factory(pass_context_arg_name)
 
-        super().__init__(specification, base_path=base_path,
-                         arguments=arguments, options=options)
+        if self.options.openapi_spec_available:
+            self.add_openapi_json()
+            self.add_openapi_yaml()
+
+        if self.options.openapi_console_ui_available:
+            self.add_swagger_ui()
 
         self.add_paths()
 
@@ -200,6 +123,27 @@ class AbstractAPI(AbstractSpecAPI):
                 self.specification.security,
                 self.specification.security_definitions
             )
+
+    def _set_base_path(self, base_path=None):
+        if base_path is not None:
+            # update spec to include user-provided base_path
+            self.specification.base_path = base_path
+            self.base_path = base_path
+        else:
+            self.base_path = self.specification.base_path
+
+    @abc.abstractmethod
+    def add_openapi_json(self):
+        """
+        Adds openapi spec to {base_path}/openapi.json
+             (or {base_path}/swagger.json for swagger2)
+        """
+
+    @abc.abstractmethod
+    def add_swagger_ui(self):
+        """
+        Adds swagger ui to {base_path}/ui/
+        """
 
     @abc.abstractmethod
     def add_auth_on_not_found(self, security, security_definitions):
@@ -282,12 +226,10 @@ class AbstractAPI(AbstractSpecAPI):
                     if self.resolver_error_handler is not None:
                         self._add_resolver_error_handler(method, path, err)
                     else:
-                        self._handle_add_operation_error(
-                            path, method, err.exc_info)
+                        self._handle_add_operation_error(path, method, err.exc_info)
                 except Exception:
                     # All other relevant exceptions should be handled as well.
-                    self._handle_add_operation_error(
-                        path, method, sys.exc_info())
+                    self._handle_add_operation_error(path, method, sys.exc_info())
 
     def _handle_add_operation_error(self, path, method, exc_info):
         url = f'{self.base_path}{path}'
@@ -314,6 +256,7 @@ class AbstractAPI(AbstractSpecAPI):
         """
         This method converts a handler response to a framework response.
         This method should just retrieve response from handler then call `cls._get_response`.
+        It is mainly here to handle AioHttp async handler.
         :param response: A response to cast (tuple, framework response, etc).
         :param mimetype: The response mimetype.
         :type mimetype: Union[None, str]
@@ -342,11 +285,9 @@ class AbstractAPI(AbstractSpecAPI):
                      })
 
         if isinstance(response, FiretailResponse):
-            framework_response = cls._firetail_to_framework_response(
-                response, mimetype, extra_context)
+            framework_response = cls._firetail_to_framework_response(response, mimetype, extra_context)
         else:
-            framework_response = cls._response_from_handler(
-                response, mimetype, extra_context)
+            framework_response = cls._response_from_handler(response, mimetype, extra_context)
 
         logger.debug('Got framework response',
                      extra={
@@ -383,37 +324,21 @@ class AbstractAPI(AbstractSpecAPI):
             len_response = len(response)
             if len_response == 1:
                 data, = response
-                return cls._build_response(
-                    mimetype=mimetype,
-                    data=data,
-                    extra_context=extra_context
-                )
+                return cls._build_response(mimetype=mimetype, data=data, extra_context=extra_context)
             if len_response == 2:
                 if isinstance(response[1], (int, Enum)):
                     data, status_code = response
-                    return cls._build_response(
-                        mimetype=mimetype,
-                        data=data,
-                        status_code=status_code,
-                        extra_context=extra_context
-                    )
+                    return cls._build_response(mimetype=mimetype, data=data, status_code=status_code, extra_context=extra_context)
                 else:
                     data, headers = response
-                return cls._build_response(
-                    mimetype=mimetype,
-                    data=data,
-                    headers=headers,
-                    extra_context=extra_context
-                )
+                return cls._build_response(mimetype=mimetype, data=data, headers=headers, extra_context=extra_context)
             elif len_response == 3:
                 data, status_code, headers = response
-                return cls._build_response(
-                    mimetype=mimetype,
-                    data=data,
-                    status_code=status_code,
-                    headers=headers,
-                    extra_context=extra_context
-                )
+                return cls._build_response(mimetype=mimetype,
+                                           data=data,
+                                           status_code=status_code,
+                                           headers=headers,
+                                           extra_context=extra_context)
             else:
                 raise TypeError(
                     'The view function did not return a valid response tuple.'
@@ -421,17 +346,24 @@ class AbstractAPI(AbstractSpecAPI):
                     ' (body, status), or (body, headers).'
                 )
         else:
-            return cls._build_response(
-                mimetype=mimetype,
-                data=response,
-                extra_context=extra_context
-            )
+            return cls._build_response(mimetype=mimetype, data=response, extra_context=extra_context)
 
     @classmethod
     def get_firetail_response(cls, response, mimetype=None):
         """ Cast framework dependent response to FiretailResponse used for schema validation """
         if isinstance(response, FiretailResponse):
-            return response
+            # If body in FiretailResponse is not byte, it may not pass schema validation.
+            # In this case, rebuild response with aiohttp to have consistency
+            if response.body is None or isinstance(response.body, bytes):
+                return response
+            else:
+                response = cls._build_response(
+                    data=response.body,
+                    mimetype=mimetype,
+                    content_type=response.content_type,
+                    headers=response.headers,
+                    status_code=response.status_code
+                )
 
         if not cls._is_framework_response(response):
             response = cls._response_from_handler(response, mimetype)
@@ -502,9 +434,31 @@ class AbstractAPI(AbstractSpecAPI):
         return body, status_code, mimetype
 
     @classmethod
-    @abc.abstractmethod
     def _serialize_data(cls, data, mimetype):
-        pass
+        # TODO: Harmonize with flask_api. Currently this is the backwards compatible with aiohttp_api._cast_body.
+        if not isinstance(data, bytes):
+            if isinstance(mimetype, str) and is_json_mimetype(mimetype):
+                body = cls.jsonifier.dumps(data)
+            elif isinstance(data, str):
+                body = data
+            else:
+                warnings.warn(
+                    "Implicit (aiohttp) serialization with str() will change in the next major version. "
+                    "This is triggered because a non-JSON response body is being stringified. "
+                    "This will be replaced by something that is mimetype-specific and may "
+                    "serialize some things as JSON or throw an error instead of silently "
+                    "stringifying unknown response bodies. "
+                    "Please make sure to specify media/mime types in your specs.",
+                    FutureWarning  # a Deprecation targeted at application users.
+                )
+                body = str(data)
+        else:
+            body = data
+        return body, mimetype
 
     def json_loads(self, data):
         return self.jsonifier.loads(data)
+
+    @classmethod
+    def _set_jsonifier(cls):
+        cls.jsonifier = Jsonifier()

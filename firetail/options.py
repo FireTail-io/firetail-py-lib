@@ -12,11 +12,6 @@ except ImportError:
 
 from firetail.decorators.uri_parsing import AbstractURIParser
 
-NO_UI_MSG = """The swagger_ui directory could not be found.
-    Please install firetail with extra install: pip install firetail[swagger-ui]
-    or provide the path to your local installation by passing swagger_path=<your path>
-"""
-
 logger = logging.getLogger("firetail.options")
 
 
@@ -80,7 +75,6 @@ class FiretailOptions:
         """
         if (self._options.get('swagger_ui', True) and
                 self.openapi_console_ui_from_dir is None):
-            # logger.warning(NO_UI_MSG)
             return False
         return self._options.get('swagger_ui', True)
 

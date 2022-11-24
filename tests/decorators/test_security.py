@@ -13,29 +13,24 @@ from firetail.exceptions import (
 
 
 def test_get_tokeninfo_url(monkeypatch, security_handler_factory):
-    security_handler_factory.get_token_info_remote = MagicMock(
-        return_value='get_token_info_remote_result')
+    security_handler_factory.get_token_info_remote = MagicMock(return_value='get_token_info_remote_result')
     env = {}
     monkeypatch.setattr('os.environ', env)
     logger = MagicMock()
-    monkeypatch.setattr(
-        'firetail.security.security_handler_factory.logger', logger)
+    monkeypatch.setattr('firetail.security.security_handler_factory.logger', logger)
 
     security_def = {}
     assert security_handler_factory.get_tokeninfo_func(security_def) is None
     logger.warn.assert_not_called()
 
     env['TOKENINFO_URL'] = 'issue-146'
-    assert security_handler_factory.get_tokeninfo_func(
-        security_def) == 'get_token_info_remote_result'
-    security_handler_factory.get_token_info_remote.assert_called_with(
-        'issue-146')
+    assert security_handler_factory.get_tokeninfo_func(security_def) == 'get_token_info_remote_result'
+    security_handler_factory.get_token_info_remote.assert_called_with('issue-146')
     logger.warn.assert_not_called()
     logger.warn.reset_mock()
 
     security_def = {'x-tokenInfoUrl': 'bar'}
-    assert security_handler_factory.get_tokeninfo_func(
-        security_def) == 'get_token_info_remote_result'
+    assert security_handler_factory.get_tokeninfo_func(security_def) == 'get_token_info_remote_result'
     security_handler_factory.get_token_info_remote.assert_called_with('bar')
     logger.warn.assert_not_called()
 
@@ -44,8 +39,7 @@ def test_verify_oauth_missing_auth_header(security_handler_factory):
     def somefunc(token):
         return None
 
-    wrapped_func = security_handler_factory.verify_oauth(
-        somefunc, security_handler_factory.validate_scope, ['admin'])
+    wrapped_func = security_handler_factory.verify_oauth(somefunc, security_handler_factory.validate_scope, ['admin'])
 
     request = MagicMock()
     request.headers = {}
@@ -62,18 +56,15 @@ def test_verify_oauth_scopes_remote(monkeypatch, security_handler_factory):
         tokeninfo_response._content = json.dumps(tokeninfo).encode()
         return tokeninfo_response
 
-    token_info_func = security_handler_factory.get_tokeninfo_func(
-        {'x-tokenInfoUrl': 'https://example.org/tokeninfo'})
-    wrapped_func = security_handler_factory.verify_oauth(
-        token_info_func, security_handler_factory.validate_scope, ['admin'])
+    token_info_func = security_handler_factory.get_tokeninfo_func({'x-tokenInfoUrl': 'https://example.org/tokeninfo'})
+    wrapped_func = security_handler_factory.verify_oauth(token_info_func, security_handler_factory.validate_scope, ['admin'])
 
     request = MagicMock()
     request.headers = {"Authorization": "Bearer 123"}
 
     session = MagicMock()
     session.get = get_tokeninfo_response
-    monkeypatch.setattr(
-        'firetail.security.flask_security_handler_factory.session', session)
+    monkeypatch.setattr('firetail.security.flask_security_handler_factory.session', session)
 
     with pytest.raises(OAuthScopeProblem, match="Provided token doesn't have the required scope"):
         wrapped_func(request)
@@ -93,8 +84,7 @@ def test_verify_oauth_invalid_local_token_response_none(security_handler_factory
     def somefunc(token):
         return None
 
-    wrapped_func = security_handler_factory.verify_oauth(
-        somefunc, security_handler_factory.validate_scope, ['admin'])
+    wrapped_func = security_handler_factory.verify_oauth(somefunc, security_handler_factory.validate_scope, ['admin'])
 
     request = MagicMock()
     request.headers = {"Authorization": "Bearer 123"}
@@ -109,8 +99,7 @@ def test_verify_oauth_scopes_local(security_handler_factory):
     def token_info(token):
         return tokeninfo
 
-    wrapped_func = security_handler_factory.verify_oauth(
-        token_info, security_handler_factory.validate_scope, ['admin'])
+    wrapped_func = security_handler_factory.verify_oauth(token_info, security_handler_factory.validate_scope, ['admin'])
 
     request = MagicMock()
     request.headers = {"Authorization": "Bearer 123"}
@@ -161,8 +150,7 @@ def test_verify_apikey_query(security_handler_factory):
             return {'sub': 'foo'}
         return None
 
-    wrapped_func = security_handler_factory.verify_api_key(
-        apikey_info, 'query', 'auth')
+    wrapped_func = security_handler_factory.verify_api_key(apikey_info, 'query', 'auth')
 
     request = MagicMock()
     request.query = {"auth": 'foobar'}
@@ -176,8 +164,7 @@ def test_verify_apikey_header(security_handler_factory):
             return {'sub': 'foo'}
         return None
 
-    wrapped_func = security_handler_factory.verify_api_key(
-        apikey_info, 'header', 'X-Auth')
+    wrapped_func = security_handler_factory.verify_api_key(apikey_info, 'header', 'X-Auth')
 
     request = MagicMock()
     request.headers = {"X-Auth": 'foobar'}
@@ -190,16 +177,13 @@ def test_multiple_schemes(security_handler_factory):
         if apikey == 'foobar':
             return {'sub': 'foo'}
         return None
-
     def apikey2_info(apikey, required_scopes=None):
         if apikey == 'bar':
             return {'sub': 'bar'}
         return None
 
-    wrapped_func_key1 = security_handler_factory.verify_api_key(
-        apikey1_info, 'header', 'X-Auth-1')
-    wrapped_func_key2 = security_handler_factory.verify_api_key(
-        apikey2_info, 'header', 'X-Auth-2')
+    wrapped_func_key1 = security_handler_factory.verify_api_key(apikey1_info, 'header', 'X-Auth-1')
+    wrapped_func_key2 = security_handler_factory.verify_api_key(apikey2_info, 'header', 'X-Auth-2')
     schemes = {
         'key1': wrapped_func_key1,
         'key2': wrapped_func_key2,
@@ -240,19 +224,15 @@ def test_verify_security_oauthproblem(security_handler_factory):
     with pytest.raises(OAuthProblem) as exc_info:
         secured_func(request)
 
-    assert str(
-        exc_info.value) == '401 Unauthorized: No authorization token provided'
-
+    assert str(exc_info.value) == '401 Unauthorized: No authorization token provided'
 
 @pytest.mark.parametrize(
     'errors, most_specific',
     [
         ([OAuthProblem()], OAuthProblem),
         ([OAuthProblem(), OAuthScopeProblem([], [])], OAuthScopeProblem),
-        ([OAuthProblem(), OAuthScopeProblem([], []),
-         BadRequestProblem], OAuthScopeProblem),
-        ([OAuthProblem(), OAuthScopeProblem([], []),
-         BadRequestProblem, FiretailException], OAuthScopeProblem),
+        ([OAuthProblem(), OAuthScopeProblem([], []), BadRequestProblem], OAuthScopeProblem),
+        ([OAuthProblem(), OAuthScopeProblem([], []), BadRequestProblem, FiretailException], OAuthScopeProblem),
         ([BadRequestProblem(), FiretailException()], BadRequestProblem),
         ([FiretailException()], FiretailException),
     ]

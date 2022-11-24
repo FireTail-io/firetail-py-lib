@@ -17,8 +17,7 @@ SPECS = ["swagger.yaml", "openapi.yaml"]
 def test_app_with_relative_path(simple_api_spec_dir, spec):
     # Create the app with a relative path and run the test_app testcase below.
     app = App(__name__, port=5001,
-              specification_dir='..' /
-              simple_api_spec_dir.relative_to(TEST_FOLDER),
+              specification_dir='..' / simple_api_spec_dir.relative_to(TEST_FOLDER),
               debug=True)
     app.add_api(spec)
 
@@ -33,8 +32,7 @@ def test_app_with_resolver(simple_api_spec_dir, spec):
     from firetail.resolver import Resolver
     resolver = Resolver()
     app = App(__name__, port=5001,
-              specification_dir='..' /
-              simple_api_spec_dir.relative_to(TEST_FOLDER),
+              specification_dir='..' / simple_api_spec_dir.relative_to(TEST_FOLDER),
               resolver=resolver)
     api = app.add_api(spec)
     assert api.resolver is resolver
@@ -45,8 +43,7 @@ def test_app_with_different_server_option(simple_api_spec_dir, spec):
     # Create the app with a relative path and run the test_app testcase below.
     app = App(__name__, port=5001,
               server='gevent',
-              specification_dir='..' /
-              simple_api_spec_dir.relative_to(TEST_FOLDER),
+              specification_dir='..' / simple_api_spec_dir.relative_to(TEST_FOLDER),
               debug=True)
     app.add_api(spec)
 
@@ -59,8 +56,7 @@ def test_app_with_different_server_option(simple_api_spec_dir, spec):
 def test_app_with_different_uri_parser(simple_api_spec_dir):
     from firetail.decorators.uri_parsing import FirstValueURIParser
     app = App(__name__, port=5001,
-              specification_dir='..' /
-              simple_api_spec_dir.relative_to(TEST_FOLDER),
+              specification_dir='..' / simple_api_spec_dir.relative_to(TEST_FOLDER),
               options={"uri_parser_class": FirstValueURIParser},
               debug=True)
     app.add_api('swagger.yaml')
@@ -76,14 +72,12 @@ def test_app_with_different_uri_parser(simple_api_spec_dir):
 
 @pytest.mark.parametrize("spec", SPECS)
 def test_swagger_ui(simple_api_spec_dir, spec):
-    app = App(__name__, port=5001,
-              specification_dir=simple_api_spec_dir, debug=True)
+    app = App(__name__, port=5001, specification_dir=simple_api_spec_dir, debug=True)
     app.add_api(spec)
     app_client = app.app.test_client()
     swagger_ui = app_client.get('/v1.0/ui/')  # type: flask.Response
     assert swagger_ui.status_code == 200
-    spec_json_filename = '/v1.0/{spec}'.format(
-        spec=spec.replace("yaml", "json"))
+    spec_json_filename = '/v1.0/{spec}'.format(spec=spec.replace("yaml", "json"))
     assert spec_json_filename.encode() in swagger_ui.data
     if "openapi" in spec:
         assert b'swagger-ui-config.json' not in swagger_ui.data
@@ -114,8 +108,7 @@ def test_no_swagger_ui(simple_api_spec_dir, spec):
     swagger_ui = app_client.get('/v1.0/ui/')  # type: flask.Response
     assert swagger_ui.status_code == 404
 
-    app2 = App(__name__, port=5001,
-               specification_dir=simple_api_spec_dir, debug=True)
+    app2 = App(__name__, port=5001, specification_dir=simple_api_spec_dir, debug=True)
     app2.add_api(spec, options={"swagger_ui": False})
     app2_client = app2.app.test_client()
     swagger_ui2 = app2_client.get('/v1.0/ui/')  # type: flask.Response
@@ -134,15 +127,13 @@ def test_swagger_ui_config_json(simple_api_spec_dir, spec):
     url = '/v1.0/ui/swagger-ui-config.json'
     swagger_ui_config_json = app_client.get(url)  # type: flask.Response
     assert swagger_ui_config_json.status_code == 200
-    assert swagger_ui_config == json.loads(
-        swagger_ui_config_json.get_data(as_text=True))
+    assert swagger_ui_config == json.loads(swagger_ui_config_json.get_data(as_text=True))
 
 
 @pytest.mark.parametrize("spec", SPECS)
 def test_no_swagger_ui_config_json(simple_api_spec_dir, spec):
     """ Verify the swagger-ui-config.json file is not returned when the swagger_ui_config option not passed to app. """
-    app = App(__name__, port=5001,
-              specification_dir=simple_api_spec_dir, debug=True)
+    app = App(__name__, port=5001, specification_dir=simple_api_spec_dir, debug=True)
     app.add_api(spec)
     app_client = app.app.test_client()
     url = '/v1.0/ui/swagger-ui-config.json'
@@ -153,8 +144,7 @@ def test_no_swagger_ui_config_json(simple_api_spec_dir, spec):
 @pytest.mark.parametrize("spec", SPECS)
 def test_swagger_json_app(simple_api_spec_dir, spec):
     """ Verify the spec json file is returned for default setting passed to app. """
-    app = App(__name__, port=5001,
-              specification_dir=simple_api_spec_dir, debug=True)
+    app = App(__name__, port=5001, specification_dir=simple_api_spec_dir, debug=True)
     app.add_api(spec)
     app_client = app.app.test_client()
     url = '/v1.0/{spec}'
@@ -166,8 +156,7 @@ def test_swagger_json_app(simple_api_spec_dir, spec):
 @pytest.mark.parametrize("spec", SPECS)
 def test_swagger_yaml_app(simple_api_spec_dir, spec):
     """ Verify the spec yaml file is returned for default setting passed to app. """
-    app = App(__name__, port=5001,
-              specification_dir=simple_api_spec_dir, debug=True)
+    app = App(__name__, port=5001, specification_dir=simple_api_spec_dir, debug=True)
     app.add_api(spec)
     app_client = app.app.test_client()
     url = '/v1.0/{spec}'
@@ -203,11 +192,9 @@ def test_dict_as_yaml_path(simple_api_spec_dir, spec):
             openapi_template = contents.decode('utf-8', 'replace')
 
         openapi_string = jinja2.Template(openapi_template).render({})
-        specification = yaml.load(
-            openapi_string, ExtendedSafeLoader)  # type: dict
+        specification = yaml.load(openapi_string, ExtendedSafeLoader)  # type: dict
 
-    app = App(__name__, port=5001,
-              specification_dir=simple_api_spec_dir, debug=True)
+    app = App(__name__, port=5001, specification_dir=simple_api_spec_dir, debug=True)
     app.add_api(specification)
 
     app_client = app.app.test_client()
@@ -219,8 +206,7 @@ def test_dict_as_yaml_path(simple_api_spec_dir, spec):
 @pytest.mark.parametrize("spec", SPECS)
 def test_swagger_json_api(simple_api_spec_dir, spec):
     """ Verify the spec json file is returned for default setting passed to api. """
-    app = App(__name__, port=5001,
-              specification_dir=simple_api_spec_dir, debug=True)
+    app = App(__name__, port=5001, specification_dir=simple_api_spec_dir, debug=True)
     app.add_api(spec)
 
     app_client = app.app.test_client()
@@ -232,8 +218,7 @@ def test_swagger_json_api(simple_api_spec_dir, spec):
 @pytest.mark.parametrize("spec", SPECS)
 def test_no_swagger_json_api(simple_api_spec_dir, spec):
     """ Verify the spec json file is not returned when set to False when adding api. """
-    app = App(__name__, port=5001,
-              specification_dir=simple_api_spec_dir, debug=True)
+    app = App(__name__, port=5001, specification_dir=simple_api_spec_dir, debug=True)
     app.add_api(spec, options={"serve_spec": False})
 
     app_client = app.app.test_client()
@@ -251,17 +236,19 @@ def test_swagger_json_content_type(simple_app):
     assert response.content_type == 'application/json'
 
 
-def test_single_route(simple_app):
+def test_single_route():
+    app = App(__name__)
+
     def route1():
         return 'single 1'
 
-    @simple_app.route('/single2', methods=['POST'])
+    @app.route('/single2', methods=['POST'])
     def route2():
         return 'single 2'
 
-    app_client = simple_app.app.test_client()
+    app_client = app.app.test_client()
 
-    simple_app.add_url_rule('/single1', 'single1', route1, methods=['GET'])
+    app.add_url_rule('/single1', 'single1', route1, methods=['GET'])
 
     get_single1 = app_client.get('/single1')  # type: flask.Response
     assert get_single1.data == b'single 1'
@@ -292,33 +279,28 @@ def test_resolve_classmethod(simple_app):
 def test_add_api_with_function_resolver_function_is_wrapped(simple_api_spec_dir, spec):
     app = App(__name__, specification_dir=simple_api_spec_dir)
     api = app.add_api(spec, resolver=lambda oid: (lambda foo: 'bar'))
-    assert api.resolver.resolve_function_from_operation_id(
-        'faux')('bah') == 'bar'
+    assert api.resolver.resolve_function_from_operation_id('faux')('bah') == 'bar'
 
 
 def test_default_query_param_does_not_match_defined_type(
         default_param_error_spec_dir):
     with pytest.raises(InvalidSpecification):
-        build_app_from_fixture(default_param_error_spec_dir,
-                               validate_responses=True, debug=False)
+        build_app_from_fixture(default_param_error_spec_dir, validate_responses=True, debug=False)
 
 
 def test_handle_add_operation_error_debug(simple_api_spec_dir):
     app = App(__name__, specification_dir=simple_api_spec_dir, debug=True)
     app.api_cls = type('AppTest', (app.api_cls,), {})
-    app.api_cls.add_operation = mock.MagicMock(
-        side_effect=Exception('operation error!'))
+    app.api_cls.add_operation = mock.MagicMock(side_effect=Exception('operation error!'))
     api = app.add_api('swagger.yaml', resolver=lambda oid: (lambda foo: 'bar'))
     assert app.api_cls.add_operation.called
-    assert api.resolver.resolve_function_from_operation_id(
-        'faux')('bah') == 'bar'
+    assert api.resolver.resolve_function_from_operation_id('faux')('bah') == 'bar'
 
 
 def test_handle_add_operation_error(simple_api_spec_dir):
     app = App(__name__, specification_dir=simple_api_spec_dir)
     app.api_cls = type('AppTest', (app.api_cls,), {})
-    app.api_cls.add_operation = mock.MagicMock(
-        side_effect=Exception('operation error!'))
+    app.api_cls.add_operation = mock.MagicMock(side_effect=Exception('operation error!'))
     with pytest.raises(Exception):
         app.add_api('swagger.yaml', resolver=lambda oid: (lambda foo: 'bar'))
 

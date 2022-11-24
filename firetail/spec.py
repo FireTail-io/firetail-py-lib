@@ -31,9 +31,7 @@ def create_spec_validator(spec: dict) -> Draft4Validator:
     """
     # Create an instance validator, which validates defaults against the spec itself instead of
     # against the OpenAPI schema.
-    InstanceValidator = extend_validator(
-        Draft4Validator, {"type": NullableTypeValidator}
-    )
+    InstanceValidator = extend_validator(Draft4Validator, {'type': NullableTypeValidator})
     instance_validator = InstanceValidator(spec)
 
     def validate_defaults(validator, properties, instance, schema):
@@ -48,10 +46,8 @@ def create_spec_validator(spec: dict) -> Draft4Validator:
         # Validate default only when the subschema has validated successfully
         if not valid:
             return
-        if isinstance(instance, dict) and "default" in instance:
-            for error in instance_validator.evolve(schema=instance).iter_errors(
-                instance["default"]
-            ):
+        if isinstance(instance, dict) and 'default' in instance:
+            for error in instance_validator.iter_errors(instance['default'], instance):
                 yield error
 
     SpecValidator = extend_validator(Draft4Validator, {"properties": validate_defaults})

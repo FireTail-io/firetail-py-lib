@@ -1,0 +1,54 @@
+swagger: "2.0"
+
+info:
+  title: "{{title}}"
+  version: "1.0"
+
+basePath: /v1.0
+
+securityDefinitions:
+    oauth:
+      type: oauth2
+      flow: password
+      tokenUrl: https://oauth.example/token
+      x-tokenInfoUrl: https://oauth.example/token_info
+      scopes:
+        myscope: can do stuff
+    basic:
+      type: basic
+      x-basicInfoFunc: fakeapi.auth.fake_basic_auth
+    api_key:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      x-apikeyInfoFunc: fakeapi.auth.fake_json_auth
+    api_key_fail:
+      type: apiKey
+      in: header
+      name: X-API-Key-2
+      x-apikeyInfoFunc: fakeapi.auth.async_auth_exception
+
+security:
+  - oauth:
+    - myscope
+  - basic: []
+  - api_key: []
+paths:
+  /all_auth:
+    get:
+      summary: Test different authentication
+      operationId: fakeapi.aiohttp_handlers.aiohttp_token_info
+      responses:
+        200:
+          description: greeting response
+          schema:
+            type: object
+  /fail_auth:
+    get:
+      summary: Authentication will always fail
+      operationId: fakeapi.aiohttp_handlers.aiohttp_async_auth_exception
+      responses:
+        200:
+          description: response
+      security:
+        - api_key_fail: []

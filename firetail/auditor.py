@@ -2,7 +2,6 @@ import hashlib
 import json
 import logging
 import logging.config
-import sys
 import time
 
 import jwt
@@ -15,8 +14,7 @@ from .logger import get_stdout_logger
 class cloud_logger(object):
     def __init__(self,
                  app,
-                 url='https://ingest.eu-west-1.dev.firetail.app/ingest/request',
-                 api_key='5WqBxkOi3m6F1fDRryrR654xalAwz67815Rfe0ds',
+                 url='https://api.logging.eu-west-1.sandbox.firetail.app/logs/bulk',
                  debug=False,
                  custom_backend=False,
                  token=None,
@@ -28,7 +26,6 @@ class cloud_logger(object):
                  scrub_headers=['set-cookie', 'cookie', 'authorization', 'x-api-key', 'token', 'api-token', 'api-key'],
                  enrich_oauth=True
                  ):
-        self.api_key = api_key
         self.startThread = True
         self.custom_backend = custom_backend
         self.requests_session = requests.Session()
@@ -64,7 +61,6 @@ class cloud_logger(object):
                     'custom_backend': self.custom_backend,
                     'logs_drain_timeout': 5,
                     'url': self.url,
-                    'api_key': self.api_key,
                     'retries_no': 4,
                     'retry_timeout': 2,
                 }
@@ -119,6 +115,12 @@ class cloud_logger(object):
                     payload['oauth']['email'] = jwt_decoded['email']
         return payload
 
+    def format_headers(self, req_headers):
+        result = {}
+        for x, y in req_headers.items():
+            result[x] = [y]
+        return result
+
     def create(self, response, token, diff=-1, scrub_headers=None, debug=False):
         if debug:
             self.stdout_logger = get_stdout_logger(True)
@@ -130,39 +132,27 @@ class cloud_logger(object):
             logging.config.dictConfig(self.LOGGING)
             self.logger = logging.getLogger('firetailLogger')
         try:
-            failed_res_body = False
             response_data = response.get_json() if response.is_json else str(response.response[0].decode('utf-8'))
         except Exception:
             response_data = ""
-            failed_res_body = True
         payload = {
-            "version": "1.1",
+            "version": "1.0.0-alpha",
             "dateCreated": int(time.time() * 1000),
-            "execution_time": diff,
-            "source_code": sys.version,
-            "req": {
+            "executionTime": diff,
+            "request": {
                 "httpProtocol": request.environ.get('SERVER_PROTOCOL', "HTTP/1.1"),
-                "url": request.base_url,
-                "headers": dict(request.headers),
-                "path": request.path,
+                "uri": request.url,
+                "headers": self.format_headers(dict(request.headers)),
+                "resource":  request.url_rule.rule if request.url_rule is not None else request.path,
                 "method": request.method,
-                "oPath": request.url_rule.rule if request.url_rule is not None else request.path,
-                "fPath": request.full_path,
-                "args": dict(request.args),
                 "body": str(request.data),
-                "ip": request.remote_addr,
-                'pathParams': request.view_args
-
+                "ip": request.remote_addr
             },
-            "resp": {
-                "status_code": response.status_code,
-                "content_len": response.content_length,
-                "content_enc": response.content_encoding,
-                "failed_res_body": failed_res_body,
+            "response": {
+                "statusCode": response.status_code,
                 "body": response_data,
-                "headers": dict(response.headers),
-                "content_type": response.content_type
-            }
+                "headers": self.format_headers(dict(response.headers))
+            },
         }
         try:
             if self.token or self.custom_backend:

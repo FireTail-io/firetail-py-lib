@@ -8,20 +8,17 @@ PARAMETER_DEFINITIONS = {'myparam': {'in': 'path', 'type': 'integer'}}
 
 
 def test_standard_get_function():
-    function = Resolver().resolve_function_from_operation_id(
-        'firetail.FlaskApp.common_error_handler')
+    function = Resolver().resolve_function_from_operation_id('firetail.FlaskApp.common_error_handler')
     assert function == firetail.FlaskApp.common_error_handler
 
 
 def test_relative_get_function():
-    function = RelativeResolver('firetail').resolve_function_from_operation_id(
-        'firetail.FlaskApp.common_error_handler')
+    function = RelativeResolver('firetail').resolve_function_from_operation_id('firetail.FlaskApp.common_error_handler')
     assert function == firetail.FlaskApp.common_error_handler
 
 
 def test_resty_get_function():
-    function = RestyResolver('firetail').resolve_function_from_operation_id(
-        'firetail.FlaskApp.common_error_handler')
+    function = RestyResolver('firetail').resolve_function_from_operation_id('firetail.FlaskApp.common_error_handler')
     assert function == firetail.FlaskApp.common_error_handler
 
 
@@ -42,11 +39,9 @@ def test_bad_operation_id():
     with pytest.raises(ResolverError):
         Resolver().resolve_function_from_operation_id('ohai.I.do.not.exist')
     with pytest.raises(ResolverError):
-        RelativeResolver('firetail').resolve_function_from_operation_id(
-            'ohai.I.do.not.exist')
+        RelativeResolver('firetail').resolve_function_from_operation_id('ohai.I.do.not.exist')
     with pytest.raises(ResolverError):
-        RestyResolver('firetail').resolve_function_from_operation_id(
-            'ohai.I.do.not.exist')
+        RestyResolver('firetail').resolve_function_from_operation_id('ohai.I.do.not.exist')
 
 
 def test_standard_resolve_x_router_controller():
@@ -166,8 +161,7 @@ def test_resty_resolve_x_router_controller_without_operation_id():
                                   method='GET',
                                   path='/hello/{id}',
                                   path_parameters=[],
-                                  operation={
-                                      'x-swagger-router-controller': 'fakeapi.hello'},
+                                  operation={'x-swagger-router-controller': 'fakeapi.hello'},
                                   app_produces=['application/json'],
                                   app_consumes=['application/json'],
                                   app_security=[],
@@ -224,7 +218,6 @@ def test_resty_resolve_with_default_module_name_lowercase_verb():
                                   parameter_definitions=PARAMETER_DEFINITIONS,
                                   resolver=RestyResolver('fakeapi'))
     assert operation.operation_id == 'fakeapi.hello.get'
-
 
 def test_resty_resolve_with_default_module_name_lowercase_verb_nested():
     operation = Swagger2Operation(api=None,

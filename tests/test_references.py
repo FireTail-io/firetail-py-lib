@@ -48,7 +48,7 @@ PARAMETER_DEFINITIONS = {'myparam': {'in': 'path', 'type': 'integer'}}
 
 @pytest.fixture
 def api():
-    return mock.MagicMock(jsonifier=Jsonifier)
+  return mock.MagicMock(jsonifier=Jsonifier)
 
 
 def test_non_existent_reference(api):
