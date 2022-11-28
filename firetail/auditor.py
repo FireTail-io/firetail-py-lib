@@ -150,7 +150,7 @@ class cloud_logger(object):
             },
             "response": {
                 "statusCode": response.status_code,
-                "body": response_data,
+                "body": str(response_data),
                 "headers": self.format_headers(dict(response.headers))
             },
         }
