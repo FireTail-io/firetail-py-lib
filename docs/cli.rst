@@ -1,8 +1,8 @@
 Command-Line Interface
 ======================
-For convenience Firetail provides a command-line interface
+For convenience FireTail provides a command-line interface
 (CLI). This interface aims to be a starting point in developing or
-testing OpenAPI specifications with Firetail.
+testing OpenAPI specifications with FireTail.
 
 The available commands are:
 
@@ -13,10 +13,10 @@ All commands can run with -h or --help to list more information.
 Running an OpenAPI specification
 --------------------------------
 
-The subcommand ``run`` of Firetail's CLI makes it easy to run OpenAPI
+The subcommand ``run`` of FireTail's CLI makes it easy to run OpenAPI
 specifications directly even before any operation handler function gets
 implemented. This allows you to verify and inspect how your API will
-work with Firetail.
+work with FireTail.
 
 To run your specification, execute in your shell:
 
@@ -24,7 +24,7 @@ To run your specification, execute in your shell:
 
      $ firetail run your_api.yaml --stub --debug
 
-This command will tell Firetail to run the ``your_api.yaml``
+This command tells FireTail to run the ``your_api.yaml``
 specification file attaching a stub operation (``--stub``) to the
 unavailable operations/functions of your API and in debug mode
 (``--debug``).
