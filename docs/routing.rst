@@ -63,7 +63,7 @@ By default, FireTail strictly enforces the presence of a handler
 function for any path defined in your specification. Because of this, adding
 new paths without implementing a corresponding handler function will produce
 runtime errors and your application will not start. To allow new paths to be
-added to your specification, for exxample, in an API design first workflow, set the
+added to your specification, for example, in an API design first workflow, set the
 ``resolver_error`` to configure FireTail to provide an error response for
 paths that are not yet implemented:
 
