@@ -3,9 +3,8 @@ import asyncio
 from aiohttp import web
 from aiohttp_remotes.exceptions import RemoteError, TooManyHeaders
 from aiohttp_remotes.x_forwarded import XForwardedBase
-from yarl import URL
-
 from firetail import AioHttpApp
+from yarl import URL
 
 X_FORWARDED_PATH = "X-Forwarded-Path"
 

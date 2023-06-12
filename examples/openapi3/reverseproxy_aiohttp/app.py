@@ -6,12 +6,11 @@ example of aiohttp firetail running behind a path-altering reverse-proxy
 import json
 import logging
 
+import firetail
 from aiohttp import web
 from aiohttp_remotes.exceptions import RemoteError, TooManyHeaders
 from aiohttp_remotes.x_forwarded import XForwardedBase
 from yarl import URL
-
-import firetail
 
 X_FORWARDED_PATH = "X-Forwarded-Path"
 

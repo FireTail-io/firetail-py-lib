@@ -2,7 +2,6 @@ from unittest.mock import MagicMock
 
 import flask
 import pytest
-
 from firetail.decorators.metrics import UWSGIMetricsCollector
 from firetail.exceptions import ProblemException
 

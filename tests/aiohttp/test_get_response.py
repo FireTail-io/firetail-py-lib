@@ -2,7 +2,6 @@ import json
 
 import pytest
 from aiohttp import web
-
 from firetail.apis.aiohttp_api import AioHttpApi
 from firetail.lifecycle import FiretailResponse
 

@@ -5,7 +5,6 @@ from unittest import mock
 
 import pytest
 from conftest import TEST_FOLDER
-
 from firetail import AioHttpApp
 from firetail.exceptions import FiretailException
 

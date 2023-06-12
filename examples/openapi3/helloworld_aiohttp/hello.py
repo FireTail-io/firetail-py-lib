@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
-from aiohttp import web
-
 import firetail
+from aiohttp import web
 
 
 async def post_greeting(name):

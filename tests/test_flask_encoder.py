@@ -5,7 +5,6 @@ from decimal import Decimal
 
 import pytest
 from conftest import build_app_from_fixture
-
 from firetail.apps.flask_app import FlaskJSONEncoder
 
 SPECS = ["swagger.yaml", "openapi.yaml"]
