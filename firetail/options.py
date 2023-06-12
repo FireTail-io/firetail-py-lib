@@ -10,8 +10,6 @@ try:
 except ImportError:
     swagger_ui_2_path = swagger_ui_3_path = None
 
-from firetail.decorators.uri_parsing import AbstractURIParser
-
 logger = logging.getLogger("firetail.options")
 
 
@@ -131,8 +129,8 @@ class FiretailOptions:
 
     @property
     def uri_parser_class(self):
-        # type: () -> AbstractURIParser
         """
+        # type: () -> AbstractURIParser
         The class to use for parsing URIs into path and query parameters.
         Default: None
         """

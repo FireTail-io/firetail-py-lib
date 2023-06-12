@@ -6,7 +6,6 @@ Firetail requests / responses.
 import logging
 import pathlib
 import warnings
-from typing import Any
 
 import flask
 import werkzeug.exceptions

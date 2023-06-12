@@ -8,7 +8,6 @@ import inspect
 import keyword
 import logging
 import re
-from typing import Any
 
 import inflection
 
@@ -81,7 +80,6 @@ def parameter_to_arg(operation, function, pythonic_params=False,
 
     @functools.wraps(function)
     def wrapper(request):
-        # type: (FiretailRequest) -> Any
         logger.debug('Function Arguments: %s', arguments)
         kwargs = {}
 

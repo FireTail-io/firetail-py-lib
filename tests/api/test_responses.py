@@ -393,7 +393,7 @@ def test_streaming_response(simple_app):
 def test_oneof(simple_openapi_app):
     app_client = simple_openapi_app.app.test_client()
 
-    post_greeting = app_client.post(  # type: flask.Response
+    post_greeting = app_client.post(
         '/v1.0/oneof_greeting',
         data=json.dumps({"name": 3}),
         content_type="application/json"
@@ -403,7 +403,7 @@ def test_oneof(simple_openapi_app):
     greeting_reponse = json.loads(post_greeting.data.decode('utf-8', 'replace'))
     assert greeting_reponse['greeting'] == 'Hello 3'
 
-    post_greeting = app_client.post(  # type: flask.Response
+    post_greeting = app_client.post(
         '/v1.0/oneof_greeting',
         data=json.dumps({"name": True}),
         content_type="application/json"
@@ -413,7 +413,7 @@ def test_oneof(simple_openapi_app):
     greeting_reponse = json.loads(post_greeting.data.decode('utf-8', 'replace'))
     assert greeting_reponse['greeting'] == 'Hello True'
 
-    post_greeting = app_client.post(  # type: flask.Response
+    post_greeting = app_client.post(
         '/v1.0/oneof_greeting',
         data=json.dumps({"name": "jsantos"}),
         content_type="application/json"

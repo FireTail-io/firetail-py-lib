@@ -6,12 +6,8 @@ import collections
 import copy
 import functools
 import logging
-from typing import AnyStr, Union
 
-try:
-    from importlib.metadata import version
-except ImportError:
-    from importlib_metadata import version
+from importlib.metadata import version
 
 from jsonschema import Draft4Validator, ValidationError, draft4_format_checker
 from jsonschema.validators import extend
@@ -25,7 +21,6 @@ from ..exceptions import (
 )
 from ..http_facts import FORM_CONTENT_TYPES
 from ..json_schema import Draft4RequestValidator, Draft4ResponseValidator
-from ..lifecycle import FiretailResponse
 from ..utils import all_json, boolean, is_json_mimetype, is_null, is_nullable
 
 _jsonschema_3_or_newer = Version(version("jsonschema")) >= Version("3.0.0")
@@ -151,7 +146,7 @@ class RequestBodyValidator:
             if all_json(self.consumes):
                 data = request.json
 
-                empty_body = not(request.body or request.form or request.files)
+                empty_body = not (request.body or request.form or request.files)
                 if data is None and not empty_body and not self.is_null_value_valid:
                     try:
                         ctype_is_json = is_json_mimetype(request.headers.get("Content-Type", ""))
@@ -208,7 +203,6 @@ class RequestBodyValidator:
         return error_path_msg
 
     def validate_schema(self, data, url):
-        # type: (dict, AnyStr) -> Union[FiretailResponse, None]
         if self.is_null_value_valid and is_null(data):
             return None
 
@@ -224,7 +218,6 @@ class RequestBodyValidator:
             raise BadRequestProblem(detail="{message}{error_path_msg}".format(
                                message=exception.message,
                                error_path_msg=error_path_msg))
-
         return None
 
 
@@ -240,7 +233,6 @@ class ResponseBodyValidator:
         self.validator = ValidatorClass(schema, format_checker=draft4_format_checker)
 
     def validate_schema(self, data, url):
-        # type: (dict, AnyStr) -> Union[FiretailResponse, None]
         try:
             self.validator.validate(data)
         except ValidationError as exception:

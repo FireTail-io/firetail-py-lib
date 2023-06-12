@@ -11,7 +11,7 @@ from flask import g, request
 from .logger import get_stdout_logger
 
 
-class cloud_logger(object):
+class CloudLogger(object):
     def __init__(self,
                  app,
                  url='https://api.logging.eu-west-1.sandbox.firetail.app/logs/bulk',
