@@ -12,10 +12,6 @@ aiohttp_jinja2
 aiohttp
 aiohttp_remotes
 pytest-aiohttp
-inflection
-jsonschema
-clickclick
-werkzeug
 starlette
 a2wsgi
 swagger-ui-bundle
