@@ -14,7 +14,7 @@ from .logger import get_stdout_logger
 class cloud_logger(object):
     def __init__(self,
                  app,
-                 url='https://api.logging.eu-west-1.sandbox.firetail.app/logs/bulk',
+                 url='https://api.logging.eu-west-1.prod.firetail.app/logs/bulk',
                  debug=False,
                  custom_backend=False,
                  token=None,
