@@ -9,12 +9,12 @@ import uuid
 
 class JSONEncoder(json.JSONEncoder):
     """The default Firetail JSON encoder. Handles extra types compared to the
-    built-in :class:`json.JSONEncoder`.
+    built-in :class:`json.JSONEncoder`. # noqa RST304
 
-    -   :class:`datetime.datetime` and :class:`datetime.date` are
+    -   :class:`datetime.datetime` and :class:`datetime.date` are   # noqa RST304
         serialized to :rfc:`822` strings. This is the same as the HTTP
         date format.
-    -   :class:`uuid.UUID` is serialized to a string.
+    -   :class:`uuid.UUID` is serialized to a string.  # noqa RST304
     """
 
     def default(self, o):

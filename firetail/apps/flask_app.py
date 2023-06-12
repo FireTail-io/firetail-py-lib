@@ -26,7 +26,7 @@ class FlaskApp(AbstractApp):
         :param extra_files: additional files to be watched by the reloader, defaults to the swagger specs of added apis
         :type extra_files: list[str | pathlib.Path], optional
 
-        See :class:`~firetail.AbstractApp` for additional parameters.
+        See :class:`~firetail.AbstractApp` for additional parameters.  # noqa RST304
         """
         super().__init__(import_name, FlaskApi, server=server, **kwargs)
         self.extra_files = extra_files or []

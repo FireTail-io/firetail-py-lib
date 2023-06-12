@@ -6,7 +6,7 @@ Firetail requests / responses.
 import logging
 import pathlib
 import warnings
-from typing import Any
+from typing import Any  # noqa
 
 import flask
 import werkzeug.exceptions
@@ -144,7 +144,8 @@ class FlaskApi(AbstractAPI):
         If the returned object is a flask.Response then it will just
         pass the information needed to recreate it.
 
-        :type response: flask.Response | (flask.Response,) | (flask.Response, int) | (flask.Response, dict) | (flask.Response, int, dict)
+        :type response: flask.Response | (flask.Response,) |
+           (flask.Response, int) | (flask.Response, dict) | (flask.Response, int, dict)
         :rtype: FiretailResponse
         """
         return cls._get_response(response, mimetype=mimetype, extra_context={"url": flask.request.url})
@@ -181,7 +182,9 @@ class FlaskApi(AbstractAPI):
         return flask_response
 
     @classmethod
-    def _build_response(cls, mimetype, content_type=None, headers=None, status_code=None, data=None, extra_context=None):
+    def _build_response(
+            cls, mimetype, content_type=None, headers=None, status_code=None, data=None, extra_context=None
+    ):
         if cls._is_framework_response(data):
             return flask.current_app.make_response((data, status_code, headers))
 

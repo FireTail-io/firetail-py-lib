@@ -328,7 +328,9 @@ class AbstractAPI(metaclass=AbstractAPIMeta):
             if len_response == 2:
                 if isinstance(response[1], (int, Enum)):
                     data, status_code = response
-                    return cls._build_response(mimetype=mimetype, data=data, status_code=status_code, extra_context=extra_context)
+                    return cls._build_response(
+                        mimetype=mimetype, data=data, status_code=status_code, extra_context=extra_context
+                    )
                 else:
                     data, headers = response
                 return cls._build_response(mimetype=mimetype, data=data, headers=headers, extra_context=extra_context)

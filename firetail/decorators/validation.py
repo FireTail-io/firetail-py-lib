@@ -6,7 +6,7 @@ import collections
 import copy
 import functools
 import logging
-from typing import AnyStr, Union
+from typing import AnyStr, Union  # noqa
 
 try:
     from importlib.metadata import version
@@ -25,7 +25,7 @@ from ..exceptions import (
 )
 from ..http_facts import FORM_CONTENT_TYPES
 from ..json_schema import Draft4RequestValidator, Draft4ResponseValidator
-from ..lifecycle import FiretailResponse
+from ..lifecycle import FiretailResponse  # noqa
 from ..utils import all_json, boolean, is_json_mimetype, is_null, is_nullable
 
 _jsonschema_3_or_newer = Version(version("jsonschema")) >= Version("3.0.0")
@@ -151,7 +151,7 @@ class RequestBodyValidator:
             if all_json(self.consumes):
                 data = request.json
 
-                empty_body = not(request.body or request.form or request.files)
+                empty_body = not (request.body or request.form or request.files)
                 if data is None and not empty_body and not self.is_null_value_valid:
                     try:
                         ctype_is_json = is_json_mimetype(request.headers.get("Content-Type", ""))
