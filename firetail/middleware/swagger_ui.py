@@ -17,14 +17,13 @@ from firetail.utils import yamldumper
 
 from .base import AppMiddleware
 
-logger = logging.getLogger('firetail.middleware.swagger_ui')
+logger = logging.getLogger("firetail.middleware.swagger_ui")
 
 
-_original_scope: ContextVar[Scope] = ContextVar('SCOPE')
+_original_scope: ContextVar[Scope] = ContextVar("SCOPE")
 
 
 class SwaggerUIMiddleware(AppMiddleware):
-
     def __init__(self, app: ASGIApp) -> None:
         """Middleware that hosts a swagger UI.
 
@@ -35,11 +34,11 @@ class SwaggerUIMiddleware(AppMiddleware):
         self.router = Router(default=self.default_fn)
 
     def add_api(
-            self,
-            specification: t.Union[pathlib.Path, str, dict],
-            base_path: t.Optional[str] = None,
-            arguments: t.Optional[dict] = None,
-            **kwargs
+        self,
+        specification: t.Union[pathlib.Path, str, dict],
+        base_path: t.Optional[str] = None,
+        arguments: t.Optional[dict] = None,
+        **kwargs
     ) -> None:
         """Add an API to the router based on a OpenAPI spec.
 
@@ -47,8 +46,7 @@ class SwaggerUIMiddleware(AppMiddleware):
         :param base_path: Base path where to add this API.
         :param arguments: Jinja arguments to replace in the spec.
         """
-        api = SwaggerUIAPI(specification, base_path=base_path, arguments=arguments,
-                           default=self.default_fn, **kwargs)
+        api = SwaggerUIAPI(specification, base_path=base_path, arguments=arguments, default=self.default_fn, **kwargs)
         self.router.mount(api.base_path, app=api.router)
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
@@ -70,15 +68,12 @@ class SwaggerUIMiddleware(AppMiddleware):
 
 
 class SwaggerUIAPI(AbstractSwaggerUIAPI):
-
     def __init__(self, *args, default: ASGIApp, **kwargs):
         self.router = Router(default=default)
 
         super().__init__(*args, **kwargs)
 
-        self._templates = Jinja2Templates(
-            directory=str(self.options.openapi_console_ui_from_dir)
-        )
+        self._templates = Jinja2Templates(directory=str(self.options.openapi_console_ui_from_dir))
 
     @staticmethod
     def normalize_string(string):
@@ -156,12 +151,10 @@ class SwaggerUIAPI(AbstractSwaggerUIAPI):
         logger.debug("Adding swagger-ui: %s%s/", self.base_path, console_ui_path)
 
         for path in (
-                console_ui_path + "/",
-                console_ui_path + "/index.html",
+            console_ui_path + "/",
+            console_ui_path + "/index.html",
         ):
-            self.router.add_route(
-                methods=["GET"], path=path, endpoint=self._get_swagger_ui_home
-            )
+            self.router.add_route(methods=["GET"], path=path, endpoint=self._get_swagger_ui_home)
 
         if self.options.openapi_console_ui_config is not None:
             self.router.add_route(
