@@ -2,8 +2,9 @@
 import datetime
 import logging
 
-import firetail
 import orm
+
+import firetail
 from firetail import NoContent
 
 db_session = None

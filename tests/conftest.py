@@ -4,6 +4,7 @@ import pathlib
 import sys
 
 import pytest
+
 from firetail import App
 from firetail.security import FlaskSecurityHandlerFactory
 

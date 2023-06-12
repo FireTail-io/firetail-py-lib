@@ -1,10 +1,11 @@
 import logging
 from unittest.mock import MagicMock
 
-import firetail
 import pytest
 from click.testing import CliRunner
 from conftest import FIXTURES_FOLDER
+
+import firetail
 from firetail.cli import main
 
 

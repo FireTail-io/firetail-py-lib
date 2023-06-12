@@ -3,6 +3,7 @@ import sys
 import pytest
 import yaml
 from conftest import TEST_FOLDER
+
 from firetail import AioHttpApp
 
 try:

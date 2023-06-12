@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-import firetail
 import jsonschema
+
+import firetail
 from firetail.decorators.validation import RequestBodyValidator
 from firetail.json_schema import Draft4RequestValidator
 

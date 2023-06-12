@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 
 import pytest
 import requests
+
 from firetail.exceptions import (
     BadRequestProblem,
     FiretailException,

@@ -6,6 +6,7 @@ import types
 from unittest import mock
 
 import pytest
+
 from firetail.apis.flask_api import Jsonifier
 from firetail.exceptions import InvalidSpecification
 from firetail.json_schema import resolve_refs

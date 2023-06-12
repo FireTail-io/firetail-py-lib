@@ -1,8 +1,9 @@
 import math
 from unittest.mock import MagicMock
 
-import firetail.apps
 import pytest
+
+import firetail.apps
 from firetail import utils
 
 

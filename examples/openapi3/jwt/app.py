@@ -5,9 +5,10 @@ Basic example of a resource server
 
 import time
 
-import firetail
 from jose import JWTError, jwt
 from werkzeug.exceptions import Unauthorized
+
+import firetail
 
 JWT_ISSUER = 'io.firetail.firetail'
 JWT_SECRET = 'change_this'
