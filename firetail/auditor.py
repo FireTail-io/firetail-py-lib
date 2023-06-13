@@ -10,11 +10,13 @@ from flask import g, request
 
 from .logger import get_stdout_logger
 
+DEFAULT_LOG_ENDPOINT = "https://api.logging.eu-west-1.prod.firetail.app/logs/bulk"
+
 
 class cloud_logger(object):
     def __init__(self,
                  app,
-                 url='https://api.logging.eu-west-1.sandbox.firetail.app/logs/bulk',
+                 url=DEFAULT_LOG_ENDPOINT,
                  debug=False,
                  custom_backend=False,
                  token=None,

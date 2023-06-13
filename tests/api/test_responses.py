@@ -13,6 +13,7 @@ def test_app(simple_app):
 
     # by default the Swagger UI is enabled
     swagger_ui = app_client.get('/v1.0/ui/')  # type: flask.Response
+
     assert swagger_ui.status_code == 200
     assert b"Swagger UI" in swagger_ui.data
 

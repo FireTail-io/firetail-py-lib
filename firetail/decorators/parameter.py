@@ -8,7 +8,7 @@ import inspect
 import keyword
 import logging
 import re
-from typing import Any
+from typing import Any  # noqa
 
 import inflection
 

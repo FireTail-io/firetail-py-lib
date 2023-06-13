@@ -87,7 +87,9 @@ class SecureOperation:
 
                 if security_scheme['type'] == 'oauth2':
                     if oauth:
-                        logger.warning("... multiple OAuth2 security schemes in AND fashion not supported", extra=vars(self))
+                        logger.warning(
+                            "... multiple OAuth2 security schemes in AND fashion not supported", extra=vars(self)
+                        )
                         break
                     oauth = True
                     token_info_func = self._api.security_handler_factory.get_tokeninfo_func(security_scheme)
@@ -147,7 +149,9 @@ class SecureOperation:
                         )
 
                 else:
-                    logger.warning("... Unsupported security scheme type %s" % security_scheme['type'], extra=vars(self))
+                    logger.warning(
+                        "... Unsupported security scheme type %s" % security_scheme['type'], extra=vars(self)
+                    )
                     break
             else:
                 # No break encountered: no missing funcs
