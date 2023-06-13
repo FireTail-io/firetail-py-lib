@@ -21,7 +21,7 @@ class cloud_logger(object):
         debug=False,
         custom_backend=False,
         token=None,
-        backup_logs=True,
+        backup_logs=False,
         network_timeout=10.0,
         number_of_retries=4,
         retry_timeout=2,
