@@ -6,7 +6,7 @@ Base = declarative_base()
 
 
 class Pet(Base):
-    __tablename__ = 'pets'
+    __tablename__ = "pets"
     id = Column(String(20), primary_key=True)
     name = Column(String(100))
     animal_type = Column(String(20))
@@ -21,7 +21,7 @@ class Pet(Base):
             self.created = created
 
     def dump(self):
-        return {k: v for k, v in vars(self).items() if not k.startswith('_')}
+        return {k: v for k, v in vars(self).items() if not k.startswith("_")}
 
 
 def init_db(uri):

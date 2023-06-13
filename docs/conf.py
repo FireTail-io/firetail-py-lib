@@ -29,43 +29,43 @@
 # ones.
 import firetail
 
-extensions = ['autoapi.extension']
+extensions = ["autoapi.extension"]
 
-autoapi_type = 'python'
-autoapi_options = ['members',
-                   'inherited-members',
-                   'undoc-members',
-                   'show-inheritance',
-                   'show-module-summary',
-                   'special-members',
-                   'imported-members']
-autoapi_python_class_content = 'both'
-autoapi_dirs = [
-    '../firetail'
+autoapi_type = "python"
+autoapi_options = [
+    "members",
+    "inherited-members",
+    "undoc-members",
+    "show-inheritance",
+    "show-module-summary",
+    "special-members",
+    "imported-members",
 ]
+autoapi_python_class_content = "both"
+autoapi_dirs = ["../firetail"]
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # The suffix of source filenames.
-source_suffix = '.rst'
+source_suffix = ".rst"
 
 # The encoding of source files.
 # source_encoding = 'utf-8-sig'
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = "index"
 
 # General information about the project.
-project = 'Firetail'
-copyright = '2022, Point Security Inc DBA FireTail (TM)'
+project = "Firetail"
+copyright = "2022, Point Security Inc DBA FireTail (TM)"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = firetail.__version__.rsplit('.', 1)[0]
+version = firetail.__version__.rsplit(".", 1)[0]
 # The full version, including alpha/beta/rc tags.
 release = firetail.__version__
 
@@ -81,7 +81,7 @@ release = firetail.__version__
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build']
+exclude_patterns = ["_build"]
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -99,7 +99,7 @@ exclude_patterns = ['_build']
 # show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = "sphinx"
 
 # A list of ignored prefixes for module index sorting.
 # modindex_common_prefix = []
@@ -197,7 +197,7 @@ except:
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Firetaildoc'
+htmlhelp_basename = "Firetaildoc"
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -205,10 +205,8 @@ htmlhelp_basename = 'Firetaildoc'
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     # 'papersize': 'letterpaper',
-
     # The font size ('10pt', '11pt' or '12pt').
     # 'pointsize': '10pt',
-
     # Additional stuff for the LaTeX preamble.
     # 'preamble': '',
 }
@@ -217,8 +215,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    ('index', 'Firetail.tex', 'Firetail Documentation',
-     'Point Security Inc DBA FireTail (TM)', 'manual'),
+    ("index", "Firetail.tex", "Firetail Documentation", "Point Security Inc DBA FireTail (TM)", "manual"),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -246,10 +243,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    ('index', 'firetail', 'Firetail Documentation',
-     ['Point Security Inc DBA FireTail (TM)'], 1)
-]
+man_pages = [("index", "firetail", "Firetail Documentation", ["Point Security Inc DBA FireTail (TM)"], 1)]
 
 # If true, show URL addresses after external links.
 # man_show_urls = False
@@ -261,9 +255,15 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'Firetail', 'Firetail Documentation',
-     'Point Security Inc DBA FireTail (TM)', 'Firetail', 'One line description of project.',
-     'Miscellaneous'),
+    (
+        "index",
+        "Firetail",
+        "Firetail Documentation",
+        "Point Security Inc DBA FireTail (TM)",
+        "Firetail",
+        "One line description of project.",
+        "Miscellaneous",
+    ),
 ]
 
 # Documents to append as an appendix to all manuals.

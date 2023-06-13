@@ -22,10 +22,10 @@ class FiretailOptions:
         self._options = {}
         self.oas_version = oas_version
         if self.oas_version >= (3, 0, 0):
-            self.openapi_spec_name = '/openapi.json'
+            self.openapi_spec_name = "/openapi.json"
             self.swagger_ui_local_path = swagger_ui_3_path
         else:
-            self.openapi_spec_name = '/swagger.json'
+            self.openapi_spec_name = "/swagger.json"
             self.swagger_ui_local_path = swagger_ui_2_path
 
         if options:
@@ -56,11 +56,10 @@ class FiretailOptions:
 
         Default: True
         """
-        deprecated_option = self._options.get('swagger_json', True)
-        serve_spec = self._options.get('serve_spec', deprecated_option)
-        if 'swagger_json' in self._options:
-            deprecation_warning = ("The 'swagger_json' option is deprecated. "
-                                   "Please use 'serve_spec' instead")
+        deprecated_option = self._options.get("swagger_json", True)
+        serve_spec = self._options.get("serve_spec", deprecated_option)
+        if "swagger_json" in self._options:
+            deprecation_warning = "The 'swagger_json' option is deprecated. " "Please use 'serve_spec' instead"
             logger.warning(deprecation_warning)
         return serve_spec
 
@@ -73,10 +72,9 @@ class FiretailOptions:
 
         Default: True
         """
-        if (self._options.get('swagger_ui', True) and
-                self.openapi_console_ui_from_dir is None):
+        if self._options.get("swagger_ui", True) and self.openapi_console_ui_from_dir is None:
             return False
-        return self._options.get('swagger_ui', True)
+        return self._options.get("swagger_ui", True)
 
     @property
     def openapi_spec_path(self):
@@ -86,7 +84,7 @@ class FiretailOptions:
 
         Default: /openapi.json for openapi3, otherwise /swagger.json
         """
-        return self._options.get('openapi_spec_path', self.openapi_spec_name)
+        return self._options.get("openapi_spec_path", self.openapi_spec_name)
 
     @property
     def openapi_console_ui_path(self):
@@ -96,7 +94,7 @@ class FiretailOptions:
 
         Default: /ui
         """
-        return self._options.get('swagger_url', '/ui')
+        return self._options.get("swagger_url", "/ui")
 
     @property
     def openapi_console_ui_from_dir(self):
@@ -107,7 +105,7 @@ class FiretailOptions:
 
         Default: Firetail's vendored version of the OpenAPI Console UI.
         """
-        return self._options.get('swagger_path', self.swagger_ui_local_path)
+        return self._options.get("swagger_path", self.swagger_ui_local_path)
 
     @property
     def openapi_console_ui_config(self):
@@ -117,7 +115,7 @@ class FiretailOptions:
 
         Default: None
         """
-        return self._options.get('swagger_ui_config', None)
+        return self._options.get("swagger_ui_config", None)
 
     @property
     def openapi_console_ui_index_template_variables(self):
@@ -127,7 +125,7 @@ class FiretailOptions:
 
         Default: {}
         """
-        return self._options.get('swagger_ui_template_arguments', {})
+        return self._options.get("swagger_ui_template_arguments", {})
 
     @property
     def uri_parser_class(self):
@@ -136,7 +134,7 @@ class FiretailOptions:
         The class to use for parsing URIs into path and query parameters.
         Default: None
         """
-        return self._options.get('uri_parser_class', None)
+        return self._options.get("uri_parser_class", None)
 
 
 def filter_values(dictionary):

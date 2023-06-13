@@ -6,8 +6,8 @@ from flask.views import MethodView
 
 
 class PetsView(MethodView):
-    """ Create Pets service
-    """
+    """Create Pets service"""
+
     method_decorators = []
     pets = {}
 
@@ -17,11 +17,11 @@ class PetsView(MethodView):
         tag = body.get("tag")
         count = len(self.pets)
         pet = {}
-        pet['id'] = count + 1
+        pet["id"] = count + 1
         pet["tag"] = tag
         pet["name"] = name
-        pet['last_updated'] = datetime.datetime.now()
-        self.pets[pet['id']] = pet
+        pet["last_updated"] = datetime.datetime.now()
+        self.pets[pet["id"]] = pet
         return pet, 201
 
     def put(self, petId):
@@ -32,7 +32,7 @@ class PetsView(MethodView):
         pet = self.pets.get(petId, {"id": id_})
         pet["name"] = name
         pet["tag"] = tag
-        pet['last_updated'] = datetime.datetime.now()
+        pet["last_updated"] = datetime.datetime.now()
         self.pets[id_] = pet
         return self.pets[id_], 201
 
