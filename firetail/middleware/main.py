@@ -9,17 +9,12 @@ from firetail.middleware.swagger_ui import SwaggerUIMiddleware
 
 
 class FiretailMiddleware:
-
     default_middlewares = [
         ExceptionMiddleware,
         SwaggerUIMiddleware,
     ]
 
-    def __init__(
-            self,
-            app: ASGIApp,
-            middlewares: t.Optional[t.List[t.Type[ASGIApp]]] = None
-    ):
+    def __init__(self, app: ASGIApp, middlewares: t.Optional[t.List[t.Type[ASGIApp]]] = None):
         """High level Firetail middleware that manages a list o middlewares wrapped around an
         application.
 
@@ -32,8 +27,7 @@ class FiretailMiddleware:
         self.app, self.apps = self._apply_middlewares(app, middlewares)
 
     @staticmethod
-    def _apply_middlewares(app: ASGIApp, middlewares: t.List[t.Type[ASGIApp]]) \
-            -> t.Tuple[ASGIApp, t.Iterable[ASGIApp]]:
+    def _apply_middlewares(app: ASGIApp, middlewares: t.List[t.Type[ASGIApp]]) -> t.Tuple[ASGIApp, t.Iterable[ASGIApp]]:
         """Apply all middlewares to the provided app.
 
         :param app: App to wrap in middlewares.
@@ -49,11 +43,11 @@ class FiretailMiddleware:
         return app, reversed(apps)
 
     def add_api(
-            self,
-            specification: t.Union[pathlib.Path, str, dict],
-            base_path: t.Optional[str] = None,
-            arguments: t.Optional[dict] = None,
-            **kwargs
+        self,
+        specification: t.Union[pathlib.Path, str, dict],
+        base_path: t.Optional[str] = None,
+        arguments: t.Optional[dict] = None,
+        **kwargs
     ) -> None:
         """Add an API to the underlying routing middleware based on a OpenAPI spec.
 
@@ -63,8 +57,7 @@ class FiretailMiddleware:
         """
         for app in self.apps:
             if isinstance(app, AppMiddleware):
-                app.add_api(specification, base_path=base_path,
-                            arguments=arguments, **kwargs)
+                app.add_api(specification, base_path=base_path, arguments=arguments, **kwargs)
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         await self.app(scope, receive, send)

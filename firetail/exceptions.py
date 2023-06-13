@@ -15,8 +15,7 @@ class FiretailException(Exception):
 
 
 class ProblemException(FiretailException):
-    def __init__(self, status=400, title=None, detail=None, type=None,
-                 instance=None, headers=None, ext=None):
+    def __init__(self, status=400, title=None, detail=None, type=None, instance=None, headers=None, ext=None):
         """
         This exception holds arguments that are going to be passed to the
         `firetail.problem` function to generate a proper response.
@@ -32,14 +31,22 @@ class ProblemException(FiretailException):
     def to_problem(self):
         warnings.warn(
             "'to_problem' is planned to be removed in a future release. "
-            "Call firetail.problem.problem(..) instead to maintain the existing error response.", DeprecationWarning)
-        return problem(status=self.status, title=self.title, detail=self.detail,
-                       type=self.type, instance=self.instance, headers=self.headers,
-                       ext=self.ext)
+            "Call firetail.problem.problem(..) instead to maintain the existing error response.",
+            DeprecationWarning,
+        )
+        return problem(
+            status=self.status,
+            title=self.title,
+            detail=self.detail,
+            type=self.type,
+            instance=self.instance,
+            headers=self.headers,
+            ext=self.ext,
+        )
 
 
 class ResolverError(LookupError):
-    def __init__(self, reason='Unknown reason', exc_info=None):
+    def __init__(self, reason="Unknown reason", exc_info=None):
         """
         :param reason: Reason why the resolver failed.
         :type reason: str
@@ -51,10 +58,10 @@ class ResolverError(LookupError):
         self.exc_info = exc_info
 
     def __str__(self):  # pragma: no cover
-        return f'<ResolverError: {self.reason}>'
+        return f"<ResolverError: {self.reason}>"
 
     def __repr__(self):  # pragma: no cover
-        return f'<ResolverError: {self.reason}>'
+        return f"<ResolverError: {self.reason}>"
 
 
 class InvalidSpecification(FiretailException, ValidationError):
@@ -62,7 +69,7 @@ class InvalidSpecification(FiretailException, ValidationError):
 
 
 class NonConformingResponse(ProblemException):
-    def __init__(self, reason='Unknown Reason', message=None):
+    def __init__(self, reason="Unknown Reason", message=None):
         """
         :param reason: Reason why the response did not conform to the specification
         :type reason: str
@@ -72,32 +79,28 @@ class NonConformingResponse(ProblemException):
         self.message = message
 
     def __str__(self):  # pragma: no cover
-        return f'<NonConformingResponse: {self.reason}>'
+        return f"<NonConformingResponse: {self.reason}>"
 
     def __repr__(self):  # pragma: no cover
-        return f'<NonConformingResponse: {self.reason}>'
+        return f"<NonConformingResponse: {self.reason}>"
 
 
 class AuthenticationProblem(ProblemException):
-
     def __init__(self, status, title, detail):
         super().__init__(status=status, title=title, detail=detail)
 
 
 class ResolverProblem(ProblemException):
-
     def __init__(self, status, title, detail):
         super().__init__(status=status, title=title, detail=detail)
 
 
 class BadRequestProblem(ProblemException):
-
-    def __init__(self, title='Bad Request', detail=None):
+    def __init__(self, title="Bad Request", detail=None):
         super().__init__(status=400, title=title, detail=detail)
 
 
 class UnsupportedMediaTypeProblem(ProblemException):
-
     def __init__(self, title="Unsupported Media Type", detail=None):
         super().__init__(status=415, title=title, detail=detail)
 
@@ -138,10 +141,12 @@ class ExtraParameterProblem(ProblemException):
         # This keep backwards compatibility with the old returns
         if detail is None:
             if self.extra_query:
-                detail = "Extra {parameter_type} parameter(s) {extra_params} not in spec"\
-                    .format(parameter_type='query', extra_params=', '.join(self.extra_query))
+                detail = "Extra {parameter_type} parameter(s) {extra_params} not in spec".format(
+                    parameter_type="query", extra_params=", ".join(self.extra_query)
+                )
             elif self.extra_formdata:
-                detail = "Extra {parameter_type} parameter(s) {extra_params} not in spec"\
-                    .format(parameter_type='formData', extra_params=', '.join(self.extra_formdata))
+                detail = "Extra {parameter_type} parameter(s) {extra_params} not in spec".format(
+                    parameter_type="formData", extra_params=", ".join(self.extra_formdata)
+                )
 
         super().__init__(title=title, detail=detail, **kwargs)
