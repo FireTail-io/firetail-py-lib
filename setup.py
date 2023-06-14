@@ -26,7 +26,7 @@ install_requires = [
     "PyJWT>=2.3.0",
     "requests>=2.27,<3",
     "inflection>=0.3.1,<0.6",
-    "werkzeug>=2.2.1,<3",
+    "werkzeug>=2.2.2,<3",
     "starlette>=0.15,<1",
 ]
 
