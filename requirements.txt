@@ -3,7 +3,7 @@ clickclick==1.2
 flask[async]==2.2
 inflection==0.3.1
 jsonschema==4.0.1
-PyJWT==2.3.0
+PyJWT==2.4.0
 PyYAML==5.1
 requests==2.27
 starlette==0.15
