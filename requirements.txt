@@ -4,7 +4,7 @@ flask[async]==2.2
 inflection==0.3.1
 jsonschema==4.0.1
 PyJWT==2.4.0
-PyYAML==5.1
+PyYAML==5.4
 requests==2.27
 starlette==0.15
 werkzeug==2.2.3
