@@ -5,7 +5,7 @@ inflection==0.3.1
 jsonschema==4.0.1
 PyJWT==2.4.0
 PyYAML==5.1
-requests==2.27
+requests==2.31.0
 starlette==0.15
 werkzeug==2.2.3
 aiohttp_jinja2
