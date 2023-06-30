@@ -27,7 +27,7 @@ install_requires = [
     "requests>=2.31,<3",
     "inflection>=0.3.1,<0.6",
     "werkzeug>=2.2.2,<3",
-    "starlette>=0.15,<1",
+    "starlette>=0.27,<1",
 ]
 
 swagger_ui_require = "swagger-ui-bundle>=0.0.2,<0.1"
