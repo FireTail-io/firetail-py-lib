@@ -22,7 +22,7 @@ version = read_version("firetail")
 install_requires = [
     "clickclick>=1.2,<21",
     "jsonschema>=4.0.1,<5",
-    "PyYAML>=5.4,<7",
+    "PyYAML>=6.0.1,<7",
     "PyJWT>=2.4.0",
     "requests>=2.31,<3",
     "inflection>=0.3.1,<0.6",
@@ -33,7 +33,7 @@ install_requires = [
 swagger_ui_require = "swagger-ui-bundle>=0.0.2,<0.1"
 
 flask_require = [
-    "flask[async]>=2.2,<3",
+    "flask[async]>=2.2.5,<3.0",
     "a2wsgi>=1.4,<2",
 ]
 
