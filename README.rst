@@ -54,7 +54,7 @@ Firetail
    :alt: License
 
 FireTail is a framework that automagically handles HTTP requests by utilizing the OpenAPI Specification (formerly known as Swagger Spec) of your API described in YAML format. 
-Unlike many tools that generate specifications from Python code, FireTail enables you to write an OpenAPI specification. FireTail then looks after the mapping of the endpoints to your Python functions. 
+Unlike many tools that generate specifications from Python code, FireTail enables you to write an OpenAPI specification, then FireTail handles the mapping of the endpoints to your Python functions. 
 You can describe your REST API in as much detail as you want; FireTail guarantees that it will work as you specified.
 
 FireTail features:
@@ -73,9 +73,9 @@ FireTail features:
 Why FireTail
 --------------
 
-With FireTail, you write the spec first. Subsequently, FireTail then calls your Python code, handling the mapping from the specification to the code. This approach encourages the creation so that all of your developers can understand your API’s functionality, even before a single line of code is written.
+With FireTail, you write the spec first. Subsequently, FireTail then calls your Python code, handling the mapping from the specification to the code. This approach encourages you to write the specification so that all of your developers can understand your API’s functionality, even before a single line of code is written.
 
-If your APIs serve multiple teams, you can use Firetail to easily send them the documentation of your API, ensuring adherence to the specification you have written.  This sets FireTail apart from frameworks like Hug_, which generates specifications *after* code has been written. Some disadvantages of generating specifications based on code is their tendency to lack detail or mix your documentation with the application's code logic.
+If your APIs serve multiple teams, you can use Firetail to easily send them the documentation of your API, ensuring adherence to the specification you have written. This sets FireTail apart from frameworks like Hug_, which generates specifications *after* code has been written. Some disadvantages of generating specifications based on code is their tendency to lack detail or mix your documentation with the application's code logic.
 
 .. Other Sources/Mentions
 .. ----------------------
@@ -97,7 +97,7 @@ What's in FireTail 1.0:
 - Errors that previously raised `SwaggerValidationError` now raise the `InvalidSpecification` exception.
   All spec validation errors should be wrapped with `InvalidSpecification`.
 - Support for nullable/x-nullable, readOnly and writeOnly/x-writeOnly has been added to the standard json schema validator.
-- Custom validators can now be specified on API level (instead of app level).
+- Custom validators can now be specified on an API level (instead of on an app level).
 - Added support for basic authentication and apikey authentication
 - If unsupported security requirements are defined or ``x-tokenInfoFunc``/``x-tokenInfoUrl`` is missing, FireTail now denies requests instead of allowing access without security-check.
 - Accessing ``firetail.request.user`` / ``flask.request.user`` is no longer supported, use ``firetail.context['user']`` instead.
