@@ -62,7 +62,7 @@ docs_require = [
 
 class PyTest(TestCommand):
 
-    user_options = [('cov-html=', None, 'Generate junit html report')]
+    user_options = [('cov-html=', None, 'Generate unit html report')]
 
     def initialize_options(self):
         TestCommand.initialize_options(self)
