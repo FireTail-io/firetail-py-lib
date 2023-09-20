@@ -1,6 +1,6 @@
 Firetail 
 ===========
-.. _Firetail's Documentation Page: https://firetail.readthedocs.org/en/latest/
+.. _FireTail's Documentation Page: https://firetail.readthedocs.org/en/latest/
 .. _Connexion: https://github.com/spec-first/connexion
 .. _Flask: https://flask.pocoo.org/
 .. _issues waffle board: https://waffle.io/zalando/connexion
@@ -53,38 +53,29 @@ Firetail
    :target: https://raw.githubusercontent.com/FireTail-io/firetail-py-lib/main/LICENSE.txt
    :alt: License
 
-Firetail (fork of Connexion_) is a framework that automagically handles HTTP requests based on `OpenAPI Specification`_
-(formerly known as Swagger Spec) of your API described in `YAML format`_. Firetail allows you to
-write an OpenAPI specification, then maps the endpoints to your Python functions; this makes it
-unique, as many tools generate the specification based on your Python code. You can describe your
-REST API in as much detail as you want; then Firetail guarantees that it will work as you
-specified.
+FireTail is a framework that automagically handles HTTP requests by utilizing the OpenAPI Specification (formerly known as Swagger Spec) of your API described in YAML format. 
+Unlike many tools that generate specifications from Python code, FireTail enables you to write an OpenAPI specification, then FireTail handles the mapping of the endpoints to your Python functions. 
+You can describe your REST API in as much detail as you want; FireTail guarantees that it will work as you specified.
 
-Firetail Features:
+FireTail features:
 --------------------
 
-- Validates requests and endpoint parameters automatically, based on
-  your specification
-- Provides a Web Swagger Console UI so that the users of your API can
-  have live documentation and even call your API's endpoints
-  through it
-- Handles OAuth 2 token-based authentication
-- Supports API versioning
-- Supports automatic serialization of payloads. If your
-  specification defines that an endpoint returns JSON, Firetail will
-  automatically serialize the return value for you and set the right
-  content type in the HTTP header.
+- Automated validation of requests and endpoint parameters based on your specification.
+- A Web Swagger Console UI that allows users of your API to have 
+  live documentation and even call your API's endpoints
+  through it.
+- Handles OAuth 2 token-based authentication.
+- Supports API versioning.
+- Automatic payload serialization: If your specification defines that an endpoint
+  returns JSON, FireTail automatically serializes the return value and sets the 
+  right content type in the HTTP header.
 
-Why Firetail
+Why FireTail
 --------------
 
-With Firetail, you write the spec first. Firetail then calls your Python
-code, handling the mapping from the specification to the code. This
-incentivizes you to write the specification so that all of your
-developers can understand what your API does, even before you write a
-single line of code.
+With FireTail, you write the spec first. Subsequently, FireTail then calls your Python code, handling the mapping from the specification to the code. This approach encourages you to write the specification so that all of your developers can understand your API’s functionality, even before a single line of code is written.
 
-If multiple teams depend on your APIs, you can use Firetail to easily send them the documentation of your API. This guarantees that your API will follow the specification that you wrote. This is a different process from that offered by frameworks such as Hug_, which generates a specification *after* you've written the code. Some disadvantages of generating specifications based on code is that they often end up lacking details or mix your documentation with the code logic of your application.
+If your APIs serve multiple teams, you can use Firetail to easily send them the documentation of your API, ensuring adherence to the specification you have written. This sets FireTail apart from frameworks like Hug_, which generates specifications *after* code has been written. Some disadvantages of generating specifications based on code is their tendency to lack detail or mix your documentation with the application's code logic.
 
 .. Other Sources/Mentions
 .. ----------------------
@@ -92,24 +83,24 @@ If multiple teams depend on your APIs, you can use Firetail to easily send them 
 .. - Zalando RESTful API guidelines with `API First`_
 .. - Blog post: `Crafting effective Microservices in Python`_
 
-Whats in Firetail 1.0:
+What's in FireTail 1.0:
 ------------------------
-- App and Api options must be provided through the "options" argument (``old_style_options`` have been removed).
+- App and API options must be provided through the "options" argument (``old_style_options`` have been removed).
 - You must specify a form content-type in 'consumes' in order to consume form data.
 - The `Operation` interface has been formalized in the `AbstractOperation` class.
 - The `Operation` class has been renamed to `Swagger2Operation`.
 - Array parameter deserialization now follows the Swagger 2.0 spec more closely.
   In situations when a query parameter is passed multiple times, and the collectionFormat is either csv or pipes, the right-most value will be used.
   For example, `?q=1,2,3&q=4,5,6` will result in `q = [4, 5, 6]`.
-  The old behavior is available by setting the collectionFormat to `multi`, or by importing `decorators.uri_parsing.AlwaysMultiURIParser` and passing `parser_class=AlwaysMultiURIParser` to your Api.
+  The old behavior is available by setting the collectionFormat to `multi`, or by importing `decorators.uri_parsing.AlwaysMultiURIParser` and passing `parser_class=AlwaysMultiURIParser` to your API.
 - The spec validator library has changed from `swagger-spec-validator` to `openapi-spec-validator`.
 - Errors that previously raised `SwaggerValidationError` now raise the `InvalidSpecification` exception.
   All spec validation errors should be wrapped with `InvalidSpecification`.
 - Support for nullable/x-nullable, readOnly and writeOnly/x-writeOnly has been added to the standard json schema validator.
-- Custom validators can now be specified on api level (instead of app level).
+- Custom validators can now be specified on an API level (instead of on an app level).
 - Added support for basic authentication and apikey authentication
-- If unsupported security requirements are defined or ``x-tokenInfoFunc``/``x-tokenInfoUrl`` is missing, firetail now denies requests instead of allowing access without security-check.
-- Accessing ``firetail.request.user`` / ``flask.request.user`` is no longer supported, use ``firetail.context['user']`` instead
+- If unsupported security requirements are defined or ``x-tokenInfoFunc``/``x-tokenInfoUrl`` is missing, FireTail now denies requests instead of allowing access without security-check.
+- Accessing ``firetail.request.user`` / ``flask.request.user`` is no longer supported, use ``firetail.context['user']`` instead.
 
 How to Use
 ==========
@@ -145,19 +136,19 @@ path of your application (e.g ``swagger/``). Then run:
 See the `Connexion Pet Store Example Application`_ for a sample
 specification.
 
-Now you're able to run and use Firetail!
+Now you're able to run and use FireTail!
 
 
 OAuth 2 Authentication and Authorization
 ----------------------------------------
 
-Firetail supports one of the three OAuth 2 handling methods. (See
-"TODO" below.) With Firetail, the API security definition **must**
+FireTail supports one of the three OAuth 2 handling methods. (See
+"TODO" below.) With FireTail, the API security definition **must**
 include a 'x-tokenInfoUrl' or 'x-tokenInfoFunc (or set ``TOKENINFO_URL``
 or ``TOKENINFO_FUNC`` env var respectively). 'x-tokenInfoUrl' must contain an
 URL to validate and get the `token information`_ and 'x-tokenInfoFunc must
 contain a reference to a function used to obtain the token info. When both 'x-tokenInfoUrl'
-and 'x-tokenInfoFunc' are used, Firetail will prioritize the function method. Firetail expects to
+and 'x-tokenInfoFunc' are used, FireTail will prioritize the function method. FireTail expects to
 receive the OAuth token in the ``Authorization`` header field in the
 format described in `rfc6750`_ section 2.1. This aspect
 represents a significant difference from the usual OAuth flow.
@@ -165,7 +156,7 @@ represents a significant difference from the usual OAuth flow.
 Dynamic Rendering of Your Specification
 ---------------------------------------
 
-Firetail uses Jinja2_ to allow specification parameterization through the ``arguments`` parameter. You can define specification arguments for the application either globally (via the ``firetail.App`` constructor) or for each specific API (via the firetail ion.App#add_api`` method):
+FireTail uses Jinja2_ to allow specification parameterization through the ``arguments`` parameter. You can define specification arguments for the application either globally (via the ``firetail.App`` constructor) or for each specific API (via the firetail ion.App#add_api`` method):
 
 .. code-block:: python
 
@@ -179,7 +170,7 @@ When a value is provided both globally and on the API, the API value will take p
 Endpoint Routing to Your Python Views
 -------------------------------------
 
-Firetail uses the ``operationId`` from each `Operation Object`_ to
+FireTail uses the ``operationId`` from each `Operation Object`_ to
 identify which Python function should handle each URL.
 
 **Explicit Routing**:
@@ -205,12 +196,12 @@ operation definition, making ``operationId`` relative:
           x-swagger-router-controller: myapp.api
           operationId: hello_world
 
-Keep in mind that Firetail follows how `HTTP methods work in Flask`_ and therefore HEAD requests will be handled by the ``operationId`` specified under GET in the specification. If both methods are supported, ``firetail.request.method`` can be used to determine which request was made.
+Keep in mind that FireTail follows how `HTTP methods work in Flask`_ and therefore HEAD requests will be handled by the ``operationId`` specified under GET in the specification. If both methods are supported, ``firetail.request.method`` can be used to determine which request was made.
 
 Automatic Routing
 -----------------
 
-To customize this behavior, Firetail can use alternative
+To customize this behavior, FireTail can use alternative
 ``Resolvers``--for example, ``RestyResolver``. The ``RestyResolver``
 will compose an ``operationId`` based on the path and HTTP method of
 the endpoints in your specification:
@@ -251,7 +242,7 @@ the endpoints in your specification:
 Automatic Parameter Handling
 ----------------------------
 
-Firetail automatically maps the parameters defined in your endpoint specification to arguments of your Python views as named parameters, and, whenever possible, with value casting. Simply define the endpoint's parameters with the same names as your views arguments.
+FireTail automatically maps the parameters defined in your endpoint specification to arguments of your Python views as named parameters, and, whenever possible, with value casting. Simply define the endpoint's parameters with the same names as your views arguments.
 
 As an example, say you have an endpoint specified as:
 
@@ -278,7 +269,7 @@ And the view function:
         # do something
         return 'You send the message: {}'.format(message), 200
 
-In this example, Firetail automatically recognizes that your view
+In this example, FireTail automatically recognizes that your view
 function expects an argument named ``message`` and assigns the value
 of the endpoint parameter ``message`` to your view function.
 
@@ -335,13 +326,13 @@ available type castings are:
 +--------------+-------------+
 
 If you use the ``array`` type In the Swagger definition, you can define the
-``collectionFormat`` so that it won't be recognized. Firetail currently
+``collectionFormat`` so that it won't be recognized. FireTail currently
 supports collection formats "pipes" and "csv". The default format is "csv".
 
-Firetail is opinionated about how the URI is parsed for ``array`` types.
+FireTail is opinionated about how the URI is parsed for ``array`` types.
 The default behavior for query parameters that have been defined multiple
 times is to use the right-most value. For example, if you provide a URI with
-the the query string ``?letters=a,b,c&letters=d,e,f``, firetail will set
+the the query string ``?letters=a,b,c&letters=d,e,f``, FireTail will set
 ``letters = ['d', 'e', 'f']``.
 
 You can override this behavior by specifying the URI parser in the app or
@@ -363,7 +354,7 @@ There are a handful of URI parsers included with connection.
 | default: OpenAPI 3.0 | parameter. Query parameters are parsed from left to right, so if a query  |
 |                      | parameter is defined twice, then the right-most definition will take      |
 |                      | precedence. For example, if you provided a URI with the query string      |
-|                      | ``?letters=a,b,c&letters=d,e,f``, and ``style: simple``, then firetail    |
+|                      | ``?letters=a,b,c&letters=d,e,f``, and ``style: simple``, then FireTail    |
 |                      | will set ``letters = ['d', 'e', 'f']``. For additional information see    |
 |                      | `OpenAPI 3.0 Style Values`_.                                              |
 +----------------------+---------------------------------------------------------------------------+
@@ -373,14 +364,14 @@ There are a handful of URI parsers included with connection.
 |                      | if a query parameter is defined twice, then the right-most definition     |
 |                      | wins. For example, if you provided a URI with the query string            |
 |                      | ``?letters=a,b,c&letters=d,e,f``, and ``collectionFormat: csv``, then     |
-|                      | firetail will set ``letters = ['d', 'e', 'f']``                           |
+|                      | FireTail will set ``letters = ['d', 'e', 'f']``                           |
 +----------------------+---------------------------------------------------------------------------+
 | FirstValueURIParser  | This parser behaves like the Swagger2URIParser, except that it prefers    |
 |                      | the first defined value. For example, if you provided a URI with the query|
 |                      | string ``?letters=a,b,c&letters=d,e,f`` and ``collectionFormat: csv``     |
-|                      | hen firetail will set ``letters = ['a', 'b', 'c']``                       |
+|                      | then FireTail will set ``letters = ['a', 'b', 'c']``                       |
 +----------------------+---------------------------------------------------------------------------+
-| AlwaysMultiURIParser | This parser is backwards compatible with Firetail 1.x. It joins together  |
+| AlwaysMultiURIParser | This parser is backwards compatible with FireTail 1.x. It joins together  |
 |                      | multiple instances of the same query parameter.                           |
 +----------------------+---------------------------------------------------------------------------+
 
@@ -388,7 +379,7 @@ There are a handful of URI parsers included with connection.
 Parameter validation
 ^^^^^^^^^^^^^^^^^^^^
 
-Firetail can apply strict parameter validation for query and form data
+FireTail can apply strict parameter validation for query and form data
 parameters.  When this is enabled, requests that include parameters not defined
 in the swagger spec return a 400 error.  You can enable it when adding the API
 to your application:
@@ -437,7 +428,7 @@ can provide it when adding the API to your application:
 
 Swagger JSON
 ------------
-Firetail makes the OpenAPI/Swagger specification in JSON format
+FireTail makes the OpenAPI/Swagger specification in JSON format
 available from either ``swagger.json`` (for OpenAPI 2.0) or
 ``openapi.json`` (for OpenAPI 3.x.x) at the base path of the API.
 For example, if your base path was ``1.0``, then your spec would be
@@ -467,7 +458,7 @@ When specifying HTTPS as the scheme in the API YAML file, all the URIs
 in the served Swagger UI are HTTPS endpoints. The problem: The default
 server that runs is a "normal" HTTP server. This means that the
 Swagger UI cannot be used to play with the API. What is the correct
-way to start a HTTPS server when using Firetail?
+way to start a HTTPS server when using FireTail?
 
 One way, `described by Flask`_, looks like this:
 
@@ -481,7 +472,7 @@ One way, `described by Flask`_, looks like this:
    app.run(host='127.0.0.1', port='12344',
            debug=False/True, ssl_context=context)
 
-However, Firetail doesn't provide an ssl_context parameter. This is
+However, FireTail doesn't provide an ssl_context parameter. This is
 because Flask doesn't, either--but it uses ``**kwargs`` to send the
 parameters to the underlying `werkzeug`_ server.
 
@@ -518,7 +509,7 @@ In order to do this, you should specify the following option:
    options = {'swagger_path': '/path/to/swagger_ui/'}
    app = firetail.App(__name__, specification_dir='openapi/', options=options)
 
-If you wish to provide your own swagger-ui distro, note that firetail
+If you wish to provide your own swagger-ui distro, note that FireTail
 expects a jinja2 file called ``swagger_ui/index.j2`` in order to load the
 correct ``swagger.json`` by default. Your ``index.j2`` file can use the
 ``openapi_spec_url`` jinja variable for this purpose:
@@ -540,7 +531,7 @@ installing firetail[swagger-ui], and can be enabled like this:
 Server Backend
 --------------
 
-By default Firetail uses the Flask_ server. For asynchronous
+By default FireTail uses the Flask_ server. For asynchronous
 applications, you can also use Tornado_ as the HTTP server. To do
 this, set your server to ``tornado``:
 
@@ -575,7 +566,7 @@ See the `uWSGI documentation`_ for more information.
 
 Documentation
 =============
-Additional information is available at `Firetail's Documentation Page`_.
+Additional information is available at `FireTail's Documentation Page`_.
 
 Changes
 =======
@@ -584,7 +575,7 @@ A full changelog is maintained on the `GitHub releases page`_.
 
 .. _GitHub releases page: https://github.com/FireTail-io/firetail-py-lib/releases
 
-Contributing to Firetail/TODOs
+Contributing to FireTail/TODOs
 ================================
 
 We welcome your ideas, issues, and pull requests. Just follow the
