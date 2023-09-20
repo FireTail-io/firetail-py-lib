@@ -17,3 +17,4 @@ venv/
 src/
 *.un~
 *.DS_Store
+*.sublime-workspace
