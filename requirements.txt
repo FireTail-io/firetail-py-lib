@@ -7,7 +7,7 @@ PyJWT==2.4.0
 PyYAML==6.0.1
 requests==2.31.0
 starlette==0.27.0
-werkzeug==2.2.3
+werkzeug==3.0.1
 aiohttp_jinja2
 aiohttp
 aiohttp_remotes
