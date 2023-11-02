@@ -36,6 +36,8 @@ class FlaskApi(AbstractAPI):
     def _set_blueprint(self):
         logger.debug("Creating API blueprint: %s", self.base_path)
         endpoint = flask_utils.flaskify_endpoint(self.base_path)
+        if endpoint == "":
+            endpoint = "base"
         self.blueprint = flask.Blueprint(
             endpoint, __name__, url_prefix=self.base_path, template_folder=str(self.options.openapi_console_ui_from_dir)
         )
@@ -219,7 +221,7 @@ class FlaskApi(AbstractAPI):
         :rtype: FiretailRequest
         """
         context_dict = {}
-        setattr(flask._request_ctx_stack.top, "firetail_context", context_dict)
+        setattr(flask.globals.request_ctx, "firetail_context", context_dict)
         flask_request = flask.request
         request = FiretailRequest(
             flask_request.url,
@@ -249,7 +251,7 @@ class FlaskApi(AbstractAPI):
 
 
 def _get_context():
-    return getattr(flask._request_ctx_stack.top, "firetail_context")
+    return getattr(flask.globals.request_ctx, "firetail_context")
 
 
 context = LocalProxy(_get_context)

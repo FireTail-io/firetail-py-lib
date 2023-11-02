@@ -11,18 +11,7 @@ for you and set the right content type in the HTTP header.
 
 If the endpoint produces a single non-JSON mimetype then Firetail will
 automatically set the right content type in the HTTP header.
-
-Customizing JSON encoder
 ^^^^^^^^^^^^^^^^^^^^^^^^
-
-Firetail allows you to customize the `JSONEncoder` class in the Flask app
-instance `json_encoder` (`firetail.App:app`). If you wanna reuse the
-Firetail's date-time serialization, inherit your custom encoder from
-`firetail.apps.flask_app.FlaskJSONProvider`.
-
-For more information on the `JSONEncoder`, see the `Flask documentation`_.
-
-.. _Flask Documentation: https://flask.palletsprojects.com/en/2.0.x/api/#flask.json.JSONEncoder
 
 Returning status codes
 ----------------------

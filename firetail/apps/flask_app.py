@@ -1,9 +1,9 @@
 """
 This module defines a FlaskApp, a Firetail application to wrap a Flask application.
 """
-
 import logging
 import pathlib
+from json import JSONEncoder
 from types import FunctionType  # NOQA
 
 import flask
@@ -12,7 +12,6 @@ from flask import signals
 
 from ..apis.flask_api import FlaskApi
 from ..exceptions import ProblemException
-from ..jsonifier import wrap_default
 from ..problem import problem
 from .abstract import AbstractApp
 
@@ -32,7 +31,6 @@ class FlaskApp(AbstractApp):
 
     def create_app(self):
         app = flask.Flask(self.import_name, **self.server_args)
-        app.json = FlaskJSONProvider(app)
         app.url_map.converters["float"] = NumberConverter
         app.url_map.converters["int"] = IntegerConverter
         return app
@@ -145,14 +143,6 @@ class FlaskApp(AbstractApp):
             http_server.serve_forever()
         else:
             raise Exception(f"Server {self.server} not recognized")
-
-
-class FlaskJSONProvider(flask.json.provider.DefaultJSONProvider):
-    """Custom JSONProvider which adds firetail defaults on top of Flask's"""
-
-    @wrap_default
-    def default(self, o):
-        return super().default(o)
 
 
 class NumberConverter(werkzeug.routing.BaseConverter):
