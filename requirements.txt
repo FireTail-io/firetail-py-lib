@@ -1,13 +1,13 @@
 a2wsgi==1.4
 clickclick==1.2
-flask[async]==2.2.5
+flask[async]==2.3.3
 inflection==0.3.1
 jsonschema==4.0.1
 PyJWT==2.4.0
 PyYAML==6.0.1
 requests==2.31.0
 starlette==0.27.0
-werkzeug==2.2.3
+werkzeug==3.0.1
 aiohttp_jinja2
 aiohttp
 aiohttp_remotes
