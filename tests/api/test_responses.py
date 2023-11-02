@@ -2,8 +2,9 @@ import json
 from struct import unpack
 
 import yaml
-from firetail.apps.flask_app import FlaskJSONEncoder
 from werkzeug.test import Client, EnvironBuilder
+
+from firetail.apps.flask_app import FlaskJSONProvider
 
 
 def test_app(simple_app):
@@ -242,11 +243,11 @@ def test_nested_additional_properties(simple_openapi_app):
 
 
 def test_custom_encoder(simple_app):
-    class CustomEncoder(FlaskJSONEncoder):
+    class CustomEncoder(FlaskJSONProvider):
         def default(self, o):
             if o.__class__.__name__ == "DummyClass":
                 return "cool result"
-            return FlaskJSONEncoder.default(self, o)
+            return FlaskJSONProvider.default(self, o)
 
     flask_app = simple_app.app
     flask_app.json_encoder = CustomEncoder

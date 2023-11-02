@@ -5,25 +5,26 @@ from decimal import Decimal
 
 import pytest
 from conftest import build_app_from_fixture
-from firetail.apps.flask_app import FlaskJSONEncoder
+
+from firetail.apps.flask_app import FlaskJSONProvider
 
 SPECS = ["swagger.yaml", "openapi.yaml"]
 
 
 def test_json_encoder():
-    s = json.dumps({1: 2}, cls=FlaskJSONEncoder)
+    s = json.dumps({1: 2}, cls=FlaskJSONProvider)
     assert '{"1": 2}' == s
 
-    s = json.dumps(datetime.date.today(), cls=FlaskJSONEncoder)
+    s = json.dumps(datetime.date.today(), cls=FlaskJSONProvider)
     assert len(s) == 12
 
-    s = json.dumps(datetime.datetime.utcnow(), cls=FlaskJSONEncoder)
+    s = json.dumps(datetime.datetime.utcnow(), cls=FlaskJSONProvider)
     assert s.endswith('Z"')
 
-    s = json.dumps(Decimal(1.01), cls=FlaskJSONEncoder)
+    s = json.dumps(Decimal(1.01), cls=FlaskJSONProvider)
     assert s == "1.01"
 
-    s = json.dumps(math.expm1(1e-10), cls=FlaskJSONEncoder)
+    s = json.dumps(math.expm1(1e-10), cls=FlaskJSONProvider)
     assert s == "1.00000000005e-10"
 
 
@@ -35,7 +36,7 @@ def test_json_encoder_datetime_with_timezone():
         def dst(self, dt):
             return datetime.timedelta(0)
 
-    s = json.dumps(datetime.datetime.now(DummyTimezone()), cls=FlaskJSONEncoder)
+    s = json.dumps(datetime.datetime.now(DummyTimezone()), cls=FlaskJSONProvider)
     assert s.endswith('+00:00"')
 
 

@@ -12,7 +12,6 @@ from starlette.templating import Jinja2Templates
 from starlette.types import ASGIApp, Receive, Scope, Send
 
 from firetail.apis import AbstractSwaggerUIAPI
-from firetail.jsonifier import JSONEncoder, Jsonifier
 from firetail.utils import yamldumper
 
 from .base import AppMiddleware
@@ -198,7 +197,3 @@ class SwaggerUIAPI(AbstractSwaggerUIAPI):
             media_type="application/json",
             content=self.jsonifier.dumps(self.options.openapi_console_ui_config),
         )
-
-    @classmethod
-    def _set_jsonifier(cls):
-        cls.jsonifier = Jsonifier(cls=JSONEncoder)
