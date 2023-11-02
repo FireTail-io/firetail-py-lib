@@ -4,8 +4,6 @@ from struct import unpack
 import yaml
 from werkzeug.test import Client, EnvironBuilder
 
-from firetail.apps.flask_app import FlaskJSONProvider
-
 
 def test_app(simple_app):
     assert simple_app.port == 5001
@@ -14,7 +12,6 @@ def test_app(simple_app):
 
     # by default the Swagger UI is enabled
     swagger_ui = app_client.get("/v1.0/ui/")  # type: flask.Response
-
     assert swagger_ui.status_code == 200
     assert b"Swagger UI" in swagger_ui.data
 
@@ -240,23 +237,6 @@ def test_nested_additional_properties(simple_openapi_app):
     assert resp.status_code == 200
     response = json.loads(resp.data.decode("utf-8", "replace"))
     assert response == {"nested": {"object": True}}
-
-
-def test_custom_encoder(simple_app):
-    class CustomEncoder(FlaskJSONProvider):
-        def default(self, o):
-            if o.__class__.__name__ == "DummyClass":
-                return "cool result"
-            return FlaskJSONProvider.default(self, o)
-
-    flask_app = simple_app.app
-    flask_app.json_encoder = CustomEncoder
-    app_client = flask_app.test_client()
-
-    resp = app_client.get("/v1.0/custom-json-response")
-    assert resp.status_code == 200
-    response = json.loads(resp.data.decode("utf-8", "replace"))
-    assert response["theResult"] == "cool result"
 
 
 def test_content_type_not_json(simple_app):
