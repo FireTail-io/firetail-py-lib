@@ -516,7 +516,7 @@ def test_get_unicode_request(simple_app):
 
 def test_cookie_param(simple_app):
     app_client = simple_app.app.test_client()
-    app_client.set_cookie("localhost", "test_cookie", "hello")
+    app_client.set_cookie("test_cookie", "hello")
     response = app_client.get("/v1.0/test-cookie-param")
     assert response.status_code == 200
     assert response.json == {"cookie_value": "hello"}
