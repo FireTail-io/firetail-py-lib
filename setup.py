@@ -28,12 +28,13 @@ install_requires = [
     "inflection>=0.3.1,<0.6",
     "werkzeug>=2.2.2,<3",
     "starlette>=0.27,<1",
+    "packaging>=23.2",
 ]
 
 swagger_ui_require = "swagger-ui-bundle>=0.0.2,<0.1"
 
 flask_require = [
-    "flask[async]>=2.2.5,<3.0",
+    "flask[async]==2.2.5",
     "a2wsgi>=1.4,<2",
 ]
 
