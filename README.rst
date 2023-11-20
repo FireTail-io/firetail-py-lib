@@ -369,7 +369,7 @@ There are a handful of URI parsers included with connection.
 | FirstValueURIParser  | This parser behaves like the Swagger2URIParser, except that it prefers    |
 |                      | the first defined value. For example, if you provided a URI with the query|
 |                      | string ``?letters=a,b,c&letters=d,e,f`` and ``collectionFormat: csv``     |
-|                      | then FireTail will set ``letters = ['a', 'b', 'c']``                       |
+|                      | then FireTail will set ``letters = ['a', 'b', 'c']``                      |
 +----------------------+---------------------------------------------------------------------------+
 | AlwaysMultiURIParser | This parser is backwards compatible with FireTail 1.x. It joins together  |
 |                      | multiple instances of the same query parameter.                           |
