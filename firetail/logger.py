@@ -1,5 +1,9 @@
 import logging
 import sys
+from threading import Lock
+
+logger_names_with_handlers_lock = Lock()
+logger_names_with_handlers = set()
 
 
 def get_logger(debug):
@@ -14,7 +18,12 @@ def get_stdout_logger(debug):
 
 def __get_logger(debug, name, handler=None):
     logger = logging.getLogger(name)
-    logger.setLevel(logging.DEBUG if debug else logging.INFO)
-    if handler:
-        logger.addHandler(handler)
+
+    with logger_names_with_handlers_lock:
+        if name not in logger_names_with_handlers:
+            logger.setLevel(logging.DEBUG if debug else logging.INFO)
+            if handler:
+                logger.addHandler(handler)
+            logger_names_with_handlers.add(name)
+
     return logger
