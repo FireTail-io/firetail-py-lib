@@ -14,6 +14,14 @@ class FiretailException(Exception):
     pass
 
 
+class AuthzNotPopulated(Unauthorized):
+    pass
+
+
+class AuthzFailed(Unauthorized):
+    pass
+
+
 class ProblemException(FiretailException):
     def __init__(self, status=400, title=None, detail=None, type=None, instance=None, headers=None, ext=None):
         """

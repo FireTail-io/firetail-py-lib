@@ -6,9 +6,10 @@ import asyncio
 import functools
 import logging
 
+from flask import request
 from jsonschema import ValidationError
 
-from ..exceptions import NonConformingResponseBody, NonConformingResponseHeaders
+from ..exceptions import NonConformingResponseBody, NonConformingResponseHeaders, AuthzNotPopulated, AuthzFailed
 from ..utils import all_json, has_coroutine
 from .decorator import BaseDecorator
 from .validation import ResponseBodyValidator
@@ -63,7 +64,31 @@ class ResponseValidator(BaseDecorator):
                 pretty_list = ", ".join(missing_keys)
                 msg = ("Keys in header don't match response specification. " "Difference: {}").format(pretty_list)
                 raise NonConformingResponseHeaders(message=msg)
+        # Now we know the response is in the correct format, we can check authz
+        self.validate_response_authz(response_definition, data)
         return True
+
+    def validate_response_authz(self, response_definition, data):
+        try:
+            authz_items = response_definition["x-firetail-authz"]
+            request_data_lookup = authz_items["authenticated-principal-path"]
+            response_data_loookup = authz_items["resource-authorized-principal-path"]
+        except KeyError:
+            # no authz on this resp def.
+            return True
+        try:
+            request_authz_data = request.firetail_authz
+        except AttributeError:
+            # we have authz in our specification, but the authz params are not being auth set in the app layer.
+            raise AuthzNotPopulated(
+                "No Authz data returned from our app layer - flask must populate IDs to compare " "in Authz"
+            )
+        # use spec data to get from the request data.from and compare to the data returned.
+        auth_data = request_authz_data[request_data_lookup]
+        resp_obj_data = data[response_data_loookup]
+        if auth_data == resp_obj_data:
+            return True
+        raise AuthzFailed()
 
     def is_json_schema_compatible(self, response_schema: dict) -> bool:
         """
