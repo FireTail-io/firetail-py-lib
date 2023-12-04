@@ -85,10 +85,17 @@ class ResponseValidator(BaseDecorator):
             )
         # use spec data to get from the request data.from and compare to the data returned.
         auth_data = request_authz_data[request_data_lookup]
-        resp_obj_data = data[response_data_loookup]
+        resp_obj_data = self.extract_item(data, response_data_loookup)
         if auth_data == resp_obj_data:
             return True
         raise AuthzFailed()
+
+    def extract_item(self, data, response_data_lookup):
+        items = response_data_lookup.split(".")
+        dc = data.copy()
+        for i in items:
+            dc = dc[i]
+        return dc
 
     def is_json_schema_compatible(self, response_schema: dict) -> bool:
         """
