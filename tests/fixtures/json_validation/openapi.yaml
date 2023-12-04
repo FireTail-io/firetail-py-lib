@@ -47,6 +47,47 @@ paths:
       responses:
         200:
           description: Success
+  /authzEnd:
+    get:
+      operationId: fakeapi.hello.get_user_authz
+      responses:
+        200:
+          description: Success
+          x-firetail-authz:
+            authenticated-principal-path: "user_id"
+            resource-authorized-principal-path: "user_id"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /authzEndFails:
+    get:
+      operationId: fakeapi.hello.get_user_authz_fails
+      responses:
+        200:
+          description: Success
+          x-firetail-authz:
+            authenticated-principal-path: "user_id"
+            resource-authorized-principal-path: "user_id"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /authzEndNotSet:
+    get:
+      operationId: fakeapi.hello.get_user_authz_not_set
+      responses:
+        200:
+          description: Success
+          x-firetail-authz:
+            authenticated-principal-path: "user_id"
+            resource-authorized-principal-path: "user_id"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
 
   /user:
     get:

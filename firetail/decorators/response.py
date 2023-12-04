@@ -6,6 +6,7 @@ import asyncio
 import functools
 import logging
 
+import ipdb
 from flask import request
 from jsonschema import ValidationError
 
@@ -84,9 +85,8 @@ class ResponseValidator(BaseDecorator):
                 "No Authz data returned from our app layer - flask must populate IDs to compare " "in Authz"
             )
         # use spec data to get from the request data.from and compare to the data returned.
-        auth_data = request_authz_data[request_data_lookup]
         resp_obj_data = self.extract_item(data, response_data_loookup)
-        if auth_data == resp_obj_data:
+        if request_authz_data == resp_obj_data:
             return True
         raise AuthzFailed()
 

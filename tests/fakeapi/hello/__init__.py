@@ -553,6 +553,20 @@ def get_user():
     return {"user_id": 7, "name": "max"}
 
 
+def get_user_authz():
+    request.firetail_authz = 7
+    return {"user_id": 7, "name": "max"}
+
+
+def get_user_authz_fails():
+    request.firetail_authz = 8
+    return {"user_id": 7, "name": "max"}
+
+
+def get_user_authz_not_set():
+    return {"user_id": 7, "name": "max"}
+
+
 def get_user_with_password():
     return {"user_id": 7, "name": "max", "password": "5678"}
 

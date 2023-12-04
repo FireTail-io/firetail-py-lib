@@ -3,11 +3,12 @@ import pathlib
 
 import pytest
 from conftest import build_app_from_fixture
+from jsonschema.validators import _utils, extend
+
 from firetail import App
 from firetail.decorators.validation import RequestBodyValidator
 from firetail.json_schema import Draft4RequestValidator
 from firetail.spec import Specification
-from jsonschema.validators import _utils, extend
 
 SPECS = ["swagger.yaml", "openapi.yaml"]
 
@@ -44,6 +45,36 @@ def test_validator_map(json_validation_spec_dir, spec):
         "/v1.0/minlength", data=json.dumps({"foo": ""}), content_type="application/json"
     )  # type: flask.Response
     assert res.status_code == 400
+
+
+@pytest.mark.parametrize("spec", SPECS)
+def test_validator_map_ft_authz_success(json_validation_spec_dir, spec):
+    app = App(__name__, specification_dir=json_validation_spec_dir)
+    app.add_api(spec, validate_responses=True)
+    app_client = app.app.test_client()
+
+    res = app_client.get("/v1.0/authzEnd")  # type: flask.Response
+    assert res.status_code == 200
+
+
+@pytest.mark.parametrize("spec", SPECS)
+def test_validator_map_ft_authz_fail(json_validation_spec_dir, spec):
+    app = App(__name__, specification_dir=json_validation_spec_dir)
+    app.add_api(spec, validate_responses=True)
+    app_client = app.app.test_client()
+
+    res = app_client.get("/v1.0/authzEndFails")  # type: flask.Response
+    assert res.status_code == 401  # unauthorized because of authz
+
+
+@pytest.mark.parametrize("spec", SPECS)
+def test_validator_map_ft_authz_not_set(json_validation_spec_dir, spec):
+    app = App(__name__, specification_dir=json_validation_spec_dir)
+    app.add_api(spec, validate_responses=True)
+    app_client = app.app.test_client()
+
+    res = app_client.get("/v1.0/authzEndFails")  # type: flask.Response
+    assert res.status_code == 401  # unauthorized because of authz
 
 
 @pytest.mark.parametrize("spec", SPECS)
