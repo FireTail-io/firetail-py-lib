@@ -65,7 +65,7 @@ paths:
       responses:
         200:
           description: User object
-          x-firetail-authz:
+          x-ft-security:
             authenticated-principal-path: "user_id"
             resource-authorized-principal-path: "user_id"
           schema:
@@ -76,7 +76,7 @@ paths:
       responses:
         200:
           description: User object
-          x-firetail-authz:
+          x-ft-security:
             authenticated-principal-path: "user_id"
             resource-authorized-principal-path: "user_id"
           schema:
@@ -87,7 +87,7 @@ paths:
       responses:
         200:
           description: User object
-          x-firetail-authz:
+          x-ft-security:
             authenticated-principal-path: "user_id"
             resource-authorized-principal-path: "user_id"
           schema:

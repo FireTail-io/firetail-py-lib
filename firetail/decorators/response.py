@@ -70,7 +70,7 @@ class ResponseValidator(BaseDecorator):
 
     def validate_response_authz(self, response_definition, data):
         try:
-            authz_items = response_definition["x-firetail-authz"]
+            authz_items = response_definition["x-ft-security"]
             request_data_lookup = authz_items["authenticated-principal-path"]
             response_data_loookup = authz_items["resource-authorized-principal-path"]
         except KeyError:

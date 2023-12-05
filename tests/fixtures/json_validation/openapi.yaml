@@ -53,7 +53,7 @@ paths:
       responses:
         200:
           description: Success
-          x-firetail-authz:
+          x-ft-security:
             authenticated-principal-path: "user_id"
             resource-authorized-principal-path: "user_id"
           content:
@@ -66,7 +66,7 @@ paths:
       responses:
         200:
           description: Success
-          x-firetail-authz:
+          x-ft-security:
             authenticated-principal-path: "user_id"
             resource-authorized-principal-path: "user_id"
           content:
@@ -80,7 +80,7 @@ paths:
       responses:
         200:
           description: Success
-          x-firetail-authz:
+          x-ft-security:
             authenticated-principal-path: "user_id"
             resource-authorized-principal-path: "user_id"
           content:
