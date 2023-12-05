@@ -91,6 +91,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+  /authzEndExtraFuncFail:
+    get:
+      operationId: fakeapi.hello.get_user_authz_extra_func_fails
+      responses:
+        200:
+          description: Success
+          x-ft-security:
+            authenticated-principal-path: "user_id"
+            resource-authorized-principal-path: "user_id"
+            access-resolver: "name_check"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
   /authzEndFails:
     get:
       operationId: fakeapi.hello.get_user_authz_fails

@@ -567,9 +567,19 @@ def name_check(*args, **kwargs):
     return True
 
 
+def fail_this():
+    raise Exception("Custom auth fail!")
+
+
 def get_user_authz_extra_func():
     request.firetail_authz = {"user_id": 7}
     request.name_check = name_check
+    return {"user_id": 7, "name": "max"}
+
+
+def get_user_authz_extra_func_fails():
+    request.firetail_authz = {"user_id": 7}
+    request.name_check = fail_this
     return {"user_id": 7, "name": "max"}
 
 
