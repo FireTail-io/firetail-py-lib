@@ -2,10 +2,9 @@
 import datetime
 import uuid
 
-from flask import jsonify, redirect, send_file
-
 from firetail import NoContent, ProblemException, context, request
 from firetail.exceptions import OAuthProblem
+from flask import jsonify, redirect, send_file
 
 
 class DummyClass:

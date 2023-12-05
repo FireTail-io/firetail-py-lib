@@ -3,7 +3,6 @@ from pathlib import Path
 
 import aiohttp
 import pytest
-
 from firetail import AioHttpApp
 
 try:

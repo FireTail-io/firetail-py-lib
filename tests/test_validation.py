@@ -2,7 +2,6 @@ from unittest.mock import MagicMock
 
 import flask
 import pytest
-
 from firetail.apis.flask_api import FlaskApi
 from firetail.decorators.validation import ParameterValidator
 from firetail.exceptions import BadRequestProblem

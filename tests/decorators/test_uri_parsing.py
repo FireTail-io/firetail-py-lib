@@ -1,12 +1,11 @@
 import pytest
-from werkzeug.datastructures import MultiDict
-
 from firetail.decorators.uri_parsing import (
     AlwaysMultiURIParser,
     FirstValueURIParser,
     OpenAPIURIParser,
     Swagger2URIParser,
 )
+from werkzeug.datastructures import MultiDict
 
 QUERY1 = MultiDict([("letters", "a"), ("letters", "b,c"), ("letters", "d,e,f")])
 QUERY2 = MultiDict([("letters", "a"), ("letters", "b|c"), ("letters", "d|e|f")])
