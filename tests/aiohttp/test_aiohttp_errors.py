@@ -2,6 +2,7 @@ import asyncio
 
 import aiohttp.test_utils
 import pytest
+
 from firetail import AioHttpApp
 from firetail.apis.aiohttp_api import HTTPStatus
 

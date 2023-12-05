@@ -2,8 +2,9 @@ import json
 from struct import unpack
 
 import yaml
-from firetail.apps.flask_app import FlaskJSONEncoder
 from werkzeug.test import Client, EnvironBuilder
+
+from firetail.apps.flask_app import FlaskJSONEncoder
 
 
 def test_app(simple_app):

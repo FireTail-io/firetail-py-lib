@@ -5,6 +5,7 @@ import jinja2
 import pytest
 import yaml
 from conftest import TEST_FOLDER, build_app_from_fixture
+
 from firetail import App
 from firetail.exceptions import InvalidSpecification
 from firetail.http_facts import METHODS

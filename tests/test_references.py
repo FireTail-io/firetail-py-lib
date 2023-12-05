@@ -1,6 +1,7 @@
 from unittest import mock
 
 import pytest
+
 from firetail.apis.flask_api import Jsonifier
 from firetail.json_schema import RefResolutionError, resolve_refs
 

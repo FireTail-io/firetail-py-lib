@@ -1,5 +1,6 @@
-import firetail.apps
 import pytest
+
+import firetail.apps
 from firetail.exceptions import ResolverError
 from firetail.operations import Swagger2Operation
 from firetail.resolver import RelativeResolver, Resolver, RestyResolver
