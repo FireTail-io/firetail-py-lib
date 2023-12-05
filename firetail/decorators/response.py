@@ -61,7 +61,7 @@ class ResponseValidator(BaseDecorator):
             missing_keys = required_header_keys - header_keys
             if missing_keys:
                 pretty_list = ", ".join(missing_keys)
-                msg = ("Keys in header don't match response specification. " "Difference: {}").format(pretty_list)
+                msg = "Keys in header don't match response specification. Difference: {}".format(pretty_list)
                 raise NonConformingResponseHeaders(message=msg)
         # Now we know the response is in the correct format, we can check authz
         self.validate_response_authz(response_definition, data)
