@@ -72,22 +72,42 @@ class ResponseValidator(BaseDecorator):
         try:
             authz_items = response_definition["x-ft-security"]
             request_data_lookup = authz_items["authenticated-principal-path"]
-            response_data_loookup = authz_items["resource-authorized-principal-path"]
+            response_data_lookup = authz_items["resource-authorized-principal-path"]
+            lookup_type = authz_items.get("resource-content-format", "object")
+            custom_resolver = authz_items.get("access-resolver")
         except KeyError:
             # no authz on this resp def.
             return True
         try:
-            request_authz_data = request.firetail_authz
+            request_authz_data = request.firetail_authz[request_data_lookup]
         except AttributeError:
             # we have authz in our specification, but the authz params are not being auth set in the app layer.
             raise AuthzNotPopulated(
-                "No Authz data returned from our app layer - flask must populate IDs to compare " "in Authz"
+                "No Authz data returned from our app layer - flask must populate IDs to compare in Authz"
             )
+        except KeyError:
+            # we have incorrect authz being set in the app
+            raise AuthzNotPopulated("Authz data does not contain expected key for authz to be evaluated")
+
         # use spec data to get from the request data.from and compare to the data returned.
-        resp_obj_data = self.extract_item(data, response_data_loookup)
-        if request_authz_data == resp_obj_data:
-            return True
-        raise AuthzFailed()
+        if lookup_type == "object":
+            # we just check the single structure returned.
+            if request_authz_data != self.extract_item(data, response_data_lookup):
+                raise AuthzFailed()
+        elif lookup_type == "list":
+            # we must check many items.
+            for item in data:
+                if request_authz_data != self.extract_item(item, response_data_lookup):
+                    raise AuthzFailed()
+        if custom_resolver:
+            # we must get custom_resolver from the request object.
+            try:
+                res_func = getattr(request, custom_resolver)
+                res_func(data, request_data_lookup, response_data_lookup, lookup_type)
+            except Exception:
+                # just fail on any users exception here.
+                raise AuthzFailed()
+        return True
 
     def extract_item(self, data, response_data_lookup):
         items = response_data_lookup.split(".")

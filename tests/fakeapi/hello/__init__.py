@@ -554,12 +554,12 @@ def get_user():
 
 
 def get_user_authz():
-    request.firetail_authz = 7
+    request.firetail_authz = {"user_id": 7}
     return {"user_id": 7, "name": "max"}
 
 
 def get_user_authz_fails():
-    request.firetail_authz = 8
+    request.firetail_authz = {"user_id": 8}
     return {"user_id": 7, "name": "max"}
 
 
