@@ -553,8 +553,23 @@ def get_user():
     return {"user_id": 7, "name": "max"}
 
 
+def get_user_list():
+    request.firetail_authz = {"user_id": 7}
+    return [{"user_id": 7, "name": "max"}, {"user_id": 7, "name": "min"}]
+
+
 def get_user_authz():
     request.firetail_authz = {"user_id": 7}
+    return {"user_id": 7, "name": "max"}
+
+
+def name_check(*args, **kwargs):
+    return True
+
+
+def get_user_authz_extra_func():
+    request.firetail_authz = {"user_id": 7}
+    request.name_check = name_check
     return {"user_id": 7, "name": "max"}
 
 

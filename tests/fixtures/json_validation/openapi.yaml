@@ -60,6 +60,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+  /authzEndList:
+    get:
+      operationId: fakeapi.hello.get_user_list
+      responses:
+        200:
+          description: Success
+          x-ft-security:
+            authenticated-principal-path: "user_id"
+            resource-authorized-principal-path: "user_id"
+            resource-content-format: "list"
+          content:
+            application/json:
+              schema:
+                type: array
+                additionalProperties: true
+                items:
+                  $ref: '#/components/schemas/User'
+  /authzEndExtraFunc:
+    get:
+      operationId: fakeapi.hello.get_user_authz_extra_func
+      responses:
+        200:
+          description: Success
+          x-ft-security:
+            authenticated-principal-path: "user_id"
+            resource-authorized-principal-path: "user_id"
+            access-resolver: "name_check"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
   /authzEndFails:
     get:
       operationId: fakeapi.hello.get_user_authz_fails

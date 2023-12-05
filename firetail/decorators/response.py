@@ -45,7 +45,6 @@ class ResponseValidator(BaseDecorator):
 
         response_definition = self.operation.response_definition(str(status_code), content_type)
         response_schema = self.operation.response_schema(str(status_code), content_type)
-
         if self.is_json_schema_compatible(response_schema):
             v = ResponseBodyValidator(response_schema, validator=self.validator)
             try:
@@ -99,6 +98,7 @@ class ResponseValidator(BaseDecorator):
             for item in data:
                 if request_authz_data != self.extract_item(item, response_data_lookup):
                     raise AuthzFailed()
+
         if custom_resolver:
             # we must get custom_resolver from the request object.
             try:

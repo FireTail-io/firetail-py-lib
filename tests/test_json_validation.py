@@ -58,6 +58,37 @@ def test_validator_map_ft_authz_success(json_validation_spec_dir, spec):
 
 
 @pytest.mark.parametrize("spec", SPECS)
+def test_validator_map_ft_authz_list_success(json_validation_spec_dir, spec):
+    app = App(__name__, specification_dir=json_validation_spec_dir)
+    app.add_api(spec, validate_responses=True)
+    app_client = app.app.test_client()
+
+    res = app_client.get("/v1.0/authzEndList")  # type: flask.Response
+
+    assert res.status_code == 200
+
+
+@pytest.mark.parametrize("spec", SPECS)
+def test_validator_map_ft_authz_success_extra_auth(json_validation_spec_dir, spec):
+    app = App(__name__, specification_dir=json_validation_spec_dir)
+    app.add_api(spec, validate_responses=True)
+    app_client = app.app.test_client()
+
+    res = app_client.get("/v1.0/authzEndExtraFunc")  # type: flask.Response
+    assert res.status_code == 200
+
+
+@pytest.mark.parametrize("spec", SPECS)
+def x_test_validator_map_ft_authz_fails_extra_auth(json_validation_spec_dir, spec):
+    app = App(__name__, specification_dir=json_validation_spec_dir)
+    app.add_api(spec, validate_responses=True)
+    app_client = app.app.test_client()
+
+    res = app_client.get("/v1.0/authzEndExtraFuncFails")  # type: flask.Response
+    assert res.status_code == 200
+
+
+@pytest.mark.parametrize("spec", SPECS)
 def test_validator_map_ft_authz_fail(json_validation_spec_dir, spec):
     app = App(__name__, specification_dir=json_validation_spec_dir)
     app.add_api(spec, validate_responses=True)
