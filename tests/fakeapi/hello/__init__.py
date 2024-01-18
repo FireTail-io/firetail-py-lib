@@ -553,6 +553,45 @@ def get_user():
     return {"user_id": 7, "name": "max"}
 
 
+def get_user_list():
+    request.firetail_authz = {"user_id": 7}
+    return [{"user_id": 7, "name": "max"}, {"user_id": 7, "name": "min"}]
+
+
+def get_user_authz():
+    request.firetail_authz = {"user_id": 7}
+    return {"user_id": 7, "name": "max"}
+
+
+def name_check(*args, **kwargs):
+    return True
+
+
+def fail_this():
+    raise Exception("Custom auth fail!")
+
+
+def get_user_authz_extra_func():
+    request.firetail_authz = {"user_id": 7}
+    request.name_check = name_check
+    return {"user_id": 7, "name": "max"}
+
+
+def get_user_authz_extra_func_fails():
+    request.firetail_authz = {"user_id": 7}
+    request.name_check = fail_this
+    return {"user_id": 7, "name": "max"}
+
+
+def get_user_authz_fails():
+    request.firetail_authz = {"user_id": 8}
+    return {"user_id": 7, "name": "max"}
+
+
+def get_user_authz_not_set():
+    return {"user_id": 7, "name": "max"}
+
+
 def get_user_with_password():
     return {"user_id": 7, "name": "max", "password": "5678"}
 

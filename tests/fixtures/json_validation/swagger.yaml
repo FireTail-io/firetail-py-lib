@@ -59,6 +59,78 @@ paths:
           description: User object
           schema:
             $ref: '#/definitions/User'
+  /authzEnd:
+    get:
+      operationId: fakeapi.hello.get_user_authz
+      responses:
+        200:
+          description: User object
+          x-ft-security:
+            authenticated-principal-path: "user_id"
+            resource-authorized-principal-path: "user_id"
+          schema:
+            $ref: '#/definitions/User'
+  /authzEndList:
+    get:
+      operationId: fakeapi.hello.get_user_list
+      responses:
+        200:
+          description: User object
+          x-ft-security:
+            authenticated-principal-path: "user_id"
+            resource-authorized-principal-path: "user_id"
+            resource-content-format: "list"
+          schema:
+            type: array
+            additionalProperties: true
+            items:
+              $ref: '#/definitions/User'
+  /authzEndExtraFunc:
+    get:
+      operationId: fakeapi.hello.get_user_authz_extra_func
+      responses:
+        200:
+          description: User object
+          x-ft-security:
+            authenticated-principal-path: "user_id"
+            resource-authorized-principal-path: "user_id"
+            access-resolver: "name_check"
+          schema:
+            $ref: '#/definitions/User'
+  /authzEndExtraFuncFail:
+    get:
+      operationId: fakeapi.hello.get_user_authz_extra_func_fails
+      responses:
+        200:
+          description: User object
+          x-ft-security:
+            authenticated-principal-path: "user_id"
+            resource-authorized-principal-path: "user_id"
+            access-resolver: "name_check"
+          schema:
+            $ref: '#/definitions/User'
+  /authzEndFails:
+    get:
+      operationId: fakeapi.hello.get_user_authz_fails
+      responses:
+        200:
+          description: User object
+          x-ft-security:
+            authenticated-principal-path: "user_id"
+            resource-authorized-principal-path: "user_id"
+          schema:
+            $ref: '#/definitions/User'
+  /authzEndNotSet:
+    get:
+      operationId: fakeapi.hello.get_user_authz_not_set
+      responses:
+        200:
+          description: User object
+          x-ft-security:
+            authenticated-principal-path: "user_id"
+            resource-authorized-principal-path: "user_id"
+          schema:
+            $ref: '#/definitions/User'
   /user_with_password:
     get:
       operationId: fakeapi.hello.get_user_with_password
