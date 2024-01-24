@@ -5,19 +5,19 @@ Response Serialization
 ----------------------
 If the endpoint returns a `Response` object this response will be used as is.
 
-Otherwise, and by default and if the specification defines that an endpoint
-produces only JSON, firetail will automatically serialize the return value
-for you and set the right content type in the HTTP header.
+Otherwise, by default and if the specification defines that an endpoint
+produces only JSON, FireTail automatically serializes the return value
+for you and sets the right content type in the HTTP header.
 
-If the endpoint produces a single non-JSON mimetype then Firetail will
-automatically set the right content type in the HTTP header.
+If the endpoint produces a single non-JSON mimetype then FireTail
+automatically sets the right content type in the HTTP header.
 
 Customizing JSON encoder
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-Firetail allows you to customize the `JSONEncoder` class in the Flask app
-instance `json_encoder` (`firetail.App:app`). If you wanna reuse the
-Firetail's date-time serialization, inherit your custom encoder from
+FireTail allows you to customize the `JSONEncoder` class in the Flask app
+instance `json_encoder` (`firetail.App:app`). If you want to reuse the
+FireTail's date-time serialization, inherit your custom encoder from
 `firetail.apps.flask_app.FlaskJSONProvider`.
 
 For more information on the `JSONEncoder`, see the `Flask documentation`_.
@@ -30,7 +30,9 @@ There are two ways of returning a specific status code.
 
 One way is to return a `Response` object that will be used unchanged.
 
-The other is returning it as a second return value in the response. For example
+The other is returning it as a second return value in the response. 
+
+For example:
 
 .. code-block:: python
 
@@ -44,9 +46,9 @@ There are two ways to return headers from your endpoints.
 One way is to return a `Response` object that will be used unchanged.
 
 The other is returning a dict with the header values as the third return value
-in the response:
+in the response.
 
-For example
+For example:
 
 .. code-block:: python
 
@@ -56,7 +58,7 @@ For example
 
 Response Validation
 -------------------
-While, by default Firetail doesn't validate the responses it's possible to
+By default FireTail doesn't validate the responses it's possible to
 do so by opting in when adding the API:
 
 .. code-block:: python
@@ -67,7 +69,7 @@ do so by opting in when adding the API:
     app.add_api('my_api.yaml', validate_responses=True)
     app.run(port=8080)
 
-This will validate all the responses using `jsonschema` and is specially useful
+This validates all the responses using `jsonschema` and is specially useful
 during development.
 
 
@@ -89,7 +91,7 @@ the validation, you can override the default class with:
 
 Error Handling
 --------------
-By default firetail error messages are JSON serialized according to
+By default FireTail error messages are JSON serialized according to
 `Problem Details for HTTP APIs`_
 
 Application can return errors using ``firetail.problem``.

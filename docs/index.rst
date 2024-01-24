@@ -3,22 +3,22 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Firetail's documentation!
+Welcome to FireTail's documentation!
 =====================================
 
-Firetail is a framework on top of Flask_ that automagically handles
+FireTail is a framework on top of Flask_ that automagically handles
 HTTP requests defined using `OpenAPI`_ (formerly known
 as Swagger), supporting both `v2.0`_ and `v3.0`_ of the specification. 
 
-Firetail allows you to write these specifications, then maps the
+FireTail allows you to write these specifications, then maps the
 endpoints to your Python functions. This is what makes it unique from
 other tools that generate the specification based on your Python
 code. You are free to describe your REST API with as much detail as
-you want and then Firetail guarantees that it will work as
-you specified. We built Firetail this way in order to:
+you want and then FireTail guarantees that it will work as
+you specified. We built FireTail this way in order to:
 
-- Simplify the development process
-- Reduce misinterpretation about what an API is going to look like
+- Simplify the development process.
+- Reduce misinterpretation about what an API is going to look like.
 
 Contents:
 
