@@ -77,7 +77,7 @@ class FlaskApp(AbstractApp):
 
     def add_api(self, specification, **kwargs):
         api = super().add_api(specification, **kwargs)
-        self.app.register_blueprint(api.blueprint)
+        self.app.register_blueprint(api.blueprint, **kwargs.get('options', {}))
         if isinstance(specification, (str, pathlib.Path)):
             self.extra_files.append(self.specification_dir / specification)
         return api
