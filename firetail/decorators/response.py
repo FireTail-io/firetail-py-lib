@@ -115,11 +115,16 @@ class ResponseValidator(BaseDecorator):
         return True
 
     def extract_item(self, data, response_data_lookup):
-        items = response_data_lookup.split(".")
-        dc = data.copy()
-        for i in items:
-            dc = dc[i]
-        return dc
+        try:
+            items = response_data_lookup.split(".")
+            dc = data.copy()
+            for i in items:
+                dc = dc[i]
+            return dc
+        except KeyError:
+            raise AuthzNotPopulated("Authz data does not contain expected key for authz to be evaluated")
+        except Exception:
+            raise AuthzFailed()
 
     def is_json_schema_compatible(self, response_schema: dict) -> bool:
         """
