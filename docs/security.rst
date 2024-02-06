@@ -4,8 +4,8 @@ Security
 OAuth 2 Authentication and Authorization
 ----------------------------------------
 
-Firetail supports one of the three OAuth 2 handling methods.
-With Firetail, the API security definition **must** include a
+FireTail supports one of the three OAuth 2 handling methods.
+With FireTail, the API security definition **must** include a
 ``x-tokenInfoFunc`` or set ``TOKENINFO_FUNC`` env var.
 
 ``x-tokenInfoFunc`` must contain a reference to a function
@@ -24,8 +24,10 @@ or set ``SCOPEVALIDATE_FUNC`` env var, otherwise default scope validation functi
 
 
 The recommended approach is to return a dict which complies with
-`RFC 7662 <rfc7662_>`_. Note that you have to validate the ``active``
-or ``exp`` fields etc. yourself.
+`RFC 7662 <rfc7662_>`_. 
+
+**Note**: You have to validate the ``active``
+or ``exp`` fields yourself.
 
 The Token Info response will be passed in the ``token_info`` argument to the handler
 function. The ``sub`` property of the Token Info response will be passed in the ``user``
@@ -33,11 +35,11 @@ argument to the handler function.
 
 Deprecated features, retained for backward compatibility:
 
-- As alternative to ``x-tokenInfoFunc``, you can set ``x-tokenInfoUrl`` or
+- As an alternative to ``x-tokenInfoFunc``, you can set ``x-tokenInfoUrl`` or
   ``TOKENINFO_URL`` env var. It must contain a URL to validate and get the token
   information which complies with `RFC 6749 <rfc6749_>`_.
-  When both ``x-tokenInfoUrl`` and ``x-tokenInfoFunc`` are used, Firetail
-  will prioritize the function method. Firetail expects the authorization
+  When both ``x-tokenInfoUrl`` and ``x-tokenInfoFunc`` are used, FireTail
+  will prioritize the function method. FireTail expects the authorization
   server to receive the OAuth token in the ``Authorization`` header field in the
   format described in `RFC 6750 <rfc6750_>`_ section 2.1. This aspect represents
   a significant difference from the usual OAuth flow.
@@ -46,7 +48,7 @@ Deprecated features, retained for backward compatibility:
 
 You can find a `minimal OAuth example application`_ showing the use of
 ``x-tokenInfoUrl``, and `another OAuth example`_ showing the use of
-``x-tokenInfoFunc`` in Firetail's "examples" folder.
+``x-tokenInfoFunc`` in FireTail's "examples" folder.
 
 .. _minimal OAuth example application: https://github.com/FireTail-io/firetail-py-lib/tree/main/examples/swagger2/oauth2
 .. _another OAuth example: https://github.com/FireTail-io/firetail-py-lib/tree/main/examples/swagger2/oauth2_local_tokeninfo
@@ -54,12 +56,12 @@ You can find a `minimal OAuth example application`_ showing the use of
 Basic Authentication
 --------------------
 
-With Firetail, the API security definition **must** include a
+With FireTail, the API security definition **must** include a
 ``x-basicInfoFunc`` or set ``BASICINFO_FUNC`` env var. It uses the same
 semantics as for ``x-tokenInfoFunc``, but the function accepts three
 parameters: username, password and required_scopes.
 
-You can find a `minimal Basic Auth example application`_ in Firetail's "examples" folder.
+You can find a `minimal Basic Auth example application`_ in FireTail's "examples" folder.
 
 .. _oauth scope: https://oauth.net/2/scope/
 .. _minimal Basic Auth example application: https://github.com/FireTail-io/firetail-py-lib/tree/main/examples/openapi3/basicauth
@@ -67,26 +69,26 @@ You can find a `minimal Basic Auth example application`_ in Firetail's "examples
 ApiKey Authentication
 ---------------------
 
-With Firetail, the API security definition **must** include a
+With FireTail, the API security definition **must** include a
 ``x-apikeyInfoFunc`` or set ``APIKEYINFO_FUNC`` env var. It uses the same
 semantics as for ``x-basicInfoFunc``, but the function accepts two
 parameters: apikey and required_scopes.
 
-You can find a `minimal API Key example application`_ in Firetail's "examples" folder.
+You can find a `minimal API Key example application`_ in FireTail's "examples" folder.
 
 Bearer Authentication (JWT)
 ---------------------------
 
-With Firetail, the API security definition **must** include a
+With FireTail, the API security definition **must** include a
 ``x-bearerInfoFunc`` or set ``BEARERINFO_FUNC`` env var. It uses the same
 semantics as for ``x-tokenInfoFunc``, but the function accepts one parameter: token.
 
-You can find a `minimal JWT example application`_ in Firetail's "examples/openapi3" folder.
+You can find a `minimal JWT example application`_ in FireTail's "examples/openapi3" folder.
 
 Multiple Authentication Schemes
 -------------------------------
 
-With Firetail, it is also possible to combine multiple authentication schemes
+With FireTail, it is also possible to combine multiple authentication schemes
 as described in the `OpenAPI specification`_. When multiple authentication
 schemes are combined using logical AND, the ``token_info`` argument will
 consist of a dictionary mapping the names of the security scheme to their
@@ -100,7 +102,7 @@ Deploying Authentication
 ------------------------
 
 Some production hosting environments, such as Apache with modwsgi, do not by default pass
-authentication headers to WSGI applications.  Therefore, to allow firetail to handle
+authentication headers to WSGI applications.  Therefore, to allow FireTail to handle
 authentication, you will need to enable passthrough.
 
 Instructions for `enabling authentication passthrough in modwsgi`_ are available as
@@ -127,7 +129,7 @@ One way, `described by Flask`_, looks like this:
    app.run(host='127.0.0.1', port='12344',
            debug=False/True, ssl_context=context)
 
-However, Firetail doesn't provide an ssl_context parameter. This is
+However, FireTail doesn't provide an ssl_context parameter. This is
 because Flask doesn't, either--but it uses ``**kwargs`` to send the
 parameters to the underlying `werkzeug`_ server.
 
