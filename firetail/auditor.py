@@ -140,14 +140,7 @@ class cloud_logger(object):
             logging.config.dictConfig(self.LOGGING)
             self.logger = logging.getLogger("firetailLogger")
         try:
-            if response.is_json:
-                try:
-                    response_data = json.dumps(response.get_json())
-                except:
-                    response_data = str(response.get_json())
-
-            else:
-                response_data = str(response.response[0].decode("utf-8"))
+            response_data = response.get_data(as_text=True)
         except Exception:
             response_data = ""
         payload = {
