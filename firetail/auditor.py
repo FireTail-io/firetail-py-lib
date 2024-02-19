@@ -26,7 +26,15 @@ class cloud_logger(object):
         number_of_retries=4,
         retry_timeout=2,
         logs_drain_timeout=5,
-        scrub_headers=["set-cookie", "cookie", "authorization", "x-api-key", "token", "api-token", "api-key"],
+        scrub_headers=[
+            "set-cookie",
+            "cookie",
+            "authorization",
+            "x-api-key",
+            "token",
+            "api-token",
+            "api-key",
+        ],
         enrich_oauth=True,
     ):
         self.startThread = True
@@ -49,7 +57,12 @@ class cloud_logger(object):
         self.LOGGING = {
             "version": 1,
             "disable_existing_loggers": False,
-            "formatters": {"firetailFormat": {"format": '{"additional_field": "value"}', "validate": False}},
+            "formatters": {
+                "firetailFormat": {
+                    "format": '{"additional_field": "value"}',
+                    "validate": False,
+                }
+            },
             "handlers": {
                 "firetail": {
                     "class": "firetail.handlers.FiretailHandler",
@@ -98,7 +111,10 @@ class cloud_logger(object):
 
         if self.oauth and self.enrich_oauth:
             try:
-                jwt_decoded = jwt.decode(self.auth_token, options={"verify_signature": False, "verify_exp": False})
+                jwt_decoded = jwt.decode(
+                    self.auth_token,
+                    options={"verify_signature": False, "verify_exp": False},
+                )
             except jwt.exceptions.DecodeError:
                 self.oauth = False
             if self.oauth:
@@ -124,7 +140,7 @@ class cloud_logger(object):
             logging.config.dictConfig(self.LOGGING)
             self.logger = logging.getLogger("firetailLogger")
         try:
-            response_data = response.get_json() if response.is_json else str(response.response[0].decode("utf-8"))
+            response_data = response.get_data(as_text=True)
         except Exception:
             response_data = ""
         payload = {
@@ -137,12 +153,13 @@ class cloud_logger(object):
                 "headers": self.format_headers(dict(request.headers)),
                 "resource": request.url_rule.rule if request.url_rule is not None else request.path,
                 "method": request.method,
-                "body": str(request.data),
+                "body": request.get_data(as_text=True),
+
                 "ip": request.remote_addr,
             },
             "response": {
                 "statusCode": response.status_code,
-                "body": str(response_data),
+                "body": response_data,
                 "headers": self.format_headers(dict(response.headers)),
             },
         }
