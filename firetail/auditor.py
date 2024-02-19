@@ -153,7 +153,8 @@ class cloud_logger(object):
                 "headers": self.format_headers(dict(request.headers)),
                 "resource": request.url_rule.rule if request.url_rule is not None else request.path,
                 "method": request.method,
-                "body": request.data,
+                "body": request.get_data(as_text=True),
+
                 "ip": request.remote_addr,
             },
             "response": {
