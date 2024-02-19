@@ -113,6 +113,12 @@ class cloud_logger(object):
             result[x] = [y]
         return result
 
+    def dump_json_payload(self, payload) -> str:
+        try:
+            return json.dumps(payload, cls=str)
+        except:
+            return str(payload)
+
     def create(self, response, token, diff=-1, scrub_headers=None, debug=False):
         if debug:
             self.stdout_logger = get_stdout_logger(True)
@@ -124,7 +130,14 @@ class cloud_logger(object):
             logging.config.dictConfig(self.LOGGING)
             self.logger = logging.getLogger("firetailLogger")
         try:
-            response_data = response.get_json() if response.is_json else str(response.response[0].decode("utf-8"))
+            if response.is_json:
+                try:
+                    response_data = json.dumps(response.get_json())
+                except:
+                    response_data = str(response.get_json())
+
+            else:
+                response_data = str(response.response[0].decode("utf-8"))
         except Exception:
             response_data = ""
         payload = {
@@ -137,12 +150,12 @@ class cloud_logger(object):
                 "headers": self.format_headers(dict(request.headers)),
                 "resource": request.url_rule.rule if request.url_rule is not None else request.path,
                 "method": request.method,
-                "body": str(request.data),
+                "body": request.data,
                 "ip": request.remote_addr,
             },
             "response": {
                 "statusCode": response.status_code,
-                "body": str(response_data),
+                "body": response_data,
                 "headers": self.format_headers(dict(response.headers)),
             },
         }
