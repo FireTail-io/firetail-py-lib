@@ -2,18 +2,18 @@ Exception Handling
 ==================
 Rendering Exceptions through the Flask Handler
 ----------------------------------------------
-Flask by default contains an exception handler, which firetail's app can proxy
-to with the ``add_error_handler`` method. You can hook either on status codes
+By default, Flask contains an exception handler, which FireTail's app can proxy
+to with the ``add_error_handler`` method. You can either hook on status codes
 or on a specific exception type.
 
-Firetail is moving from returning flask responses on errors to throwing exceptions
+FireTail is moving from returning flask responses on errors to throwing exceptions
 that are a subclass of ``firetail.problem``. So far exceptions thrown in the OAuth
 decorator have been converted.
 
 Flask Error Handler Example
 ---------------------------
 
-The goal here is to make the api returning the 404 status code
+The goal here is to make the API returning the 404 status code
 when there is a NotFoundException (instead of 500)
 
 .. code-block:: python
@@ -24,7 +24,7 @@ when there is a NotFoundException (instead of 500)
         assert response.status_code == 404
 
 
-Firstly, it's possible to declare what Exception must be handled
+Firstly, it's possible to declare what Exception must be handled:
 
 .. code-block:: python
 
@@ -88,7 +88,7 @@ and we know the API will return 404 status code.
 
 Default Exception Handling
 --------------------------
-By default firetail exceptions are JSON serialized according to
+By default, FireTail exceptions are JSON serialized according to
 `Problem Details for HTTP APIs`_
 
 Application can return errors using ``firetail.problem`` or exceptions that inherit from both
@@ -106,8 +106,8 @@ exception
 
 Examples of Custom Rendering Exceptions
 ---------------------------------------
-To custom render an exception when you boot your firetail application you can hook into a custom
-exception and render it in some sort of custom format. For example
+To custom render an exception when you boot your FireTail application you can hook into a custom
+exception and render it in some sort of custom format. For example:
 
 
 .. code-block:: python
@@ -124,23 +124,24 @@ exception and render it in some sort of custom format. For example
 
 Custom Exceptions
 -----------------
-There are several exception types in firetail that contain extra information to help you render appropriate
+There are several exception types in FireTail that contain extra information to help you render appropriate
 messages to your user beyond the default description and status code:
 
 OAuthProblem
 ^^^^^^^^^^^^
-This exception is thrown when there is some sort of validation issue with the Authorisation Header
+This exception is thrown when there is some sort of validation issue with the Authorisation Header.
 
 OAuthResponseProblem
 ^^^^^^^^^^^^^^^^^^^^
 This exception is thrown when there is a validation issue from your OAuth 2 Server. It contains a
-``token_response`` property which contains the full http response from the OAuth 2 Server
+``token_response`` property which contains the full http response from the OAuth 2 Server.
 
 OAuthScopeProblem
 ^^^^^^^^^^^^^^^^^
 This scope indicates the OAuth 2 Server did not generate a token with all the scopes required. This
-contains 3 properties
-- ``required_scopes`` - The scopes that were required for this endpoint
-- ``token_scopes`` - The scopes that were granted for this endpoint
+contains 3 properties:
+
+- ``required_scopes`` - The scopes that were required for this endpoint.
+- ``token_scopes`` - The scopes that were granted for this endpoint.
 
 

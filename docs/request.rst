@@ -1,6 +1,6 @@
 Request Handling
 ================
-Firetail validates incoming requests for conformance with the schemas
+FireTail validates incoming requests for conformance with the schemas
 described in swagger specification.
 
 Request parameters will be provided to the handler functions as keyword
@@ -13,12 +13,12 @@ Request Validation
 Both the request body and parameters are validated against the specification,
 using `jsonschema`_.
 
-If the request doesn't match the specification firetail will return a 400
+If the request doesn't match the specification FireTail will return a 400
 error.
 
 Automatic Parameter Handling
 ----------------------------
-Firetail automatically maps the parameters defined in your endpoint
+FireTail automatically maps the parameters defined in your endpoint
 specification to arguments of your Python views as named parameters
 and with value casting whenever possible. All you need to do is define
 the endpoint's parameters with matching names with your views arguments.
@@ -48,11 +48,11 @@ And the view function:
         # do something
         return 'You send the message: {}'.format(message), 200
 
-In this example Firetail will automatically identify that your view
+In this example FireTail will automatically identify that your view
 function expects an argument named `message` and will assign the value
 of the endpoint parameter `message` to your view function.
 
-Firetail will also use default values if they are provided.
+FireTail will also use default values if they are provided.
 
 If you want to use a parameter name that collides with a Python built-in,
 you can enable the `pythonic_params` option:
@@ -62,7 +62,7 @@ you can enable the `pythonic_params` option:
     app = firetail.FlaskApp(__name__)
     app.add_api('api.yaml', ..., pythonic_params=True)
 
-With this option enabled, Firetail firstly converts *CamelCase* names
+With this option enabled, FireTail firstly converts *CamelCase* names
 to *snake_case*. Secondly it looks to see if the name matches a known built-in
 and if it does it appends an underscore to the name.
 
@@ -117,7 +117,7 @@ And the view function:
 
 Type casting
 ^^^^^^^^^^^^
-Whenever possible Firetail will try to parse your argument values and
+Whenever possible FireTail will try to parse your argument values and
 do type casting to related Python natives values. The current
 available type castings are:
 
@@ -146,13 +146,13 @@ available type castings are:
 
 In the `OpenAPI 2.0 Specification`_ if you use the ``array`` type,
 you can define the ``collectionFormat`` to set the deserialization behavior.
-Firetail currently supports "pipes" and "csv" as collection formats.
+FireTail currently supports "pipes" and "csv" as collection formats.
 The default format is "csv".
 
-Firetail is opinionated about how the URI is parsed for ``array`` types.
+FireTail is opinionated about how the URI is parsed for ``array`` types.
 The default behavior for query parameters that have been defined multiple
-times is to join them all together. For example, if you provide a URI with
-the the query string ``?letters=a,b,c&letters=d,e,f``, firetail will set
+times is to join them all together. For example, if you provide a URI with 
+the query string ``?letters=a,b,c&letters=d,e,f``, firetail will set
 ``letters = ['a', 'b', 'c', 'd', 'e', 'f']``.
 
 You can override this behavior by specifying the URI parser in the app or
@@ -203,7 +203,7 @@ There are a handful of URI parsers included with connection.
 Parameter validation
 ^^^^^^^^^^^^^^^^^^^^
 
-Firetail can apply strict parameter validation for query and form data
+FireTail can apply strict parameter validation for query and form data
 parameters.  When this is enabled, requests that include parameters not defined
 in the swagger spec return a 400 error.  You can enable it when adding the API
 to your application:
@@ -218,7 +218,7 @@ Nullable parameters
 
 Sometimes your API should explicitly accept `nullable parameters`_. However
 OpenAPI specification currently does `not support`_ officially a way to serve
-this use case, Firetail adds the `x-nullable` vendor extension to parameter
+this use case, FireTail adds the `x-nullable` vendor extension to parameter
 definitions. Its usage would be:
 
 .. code-block:: yaml
@@ -231,7 +231,7 @@ definitions. Its usage would be:
            x-nullable: true
            required: true
 
-It is supported by Firetail in all parameter types: `body`, `query`,
+It is supported by FireTail in all parameter types: `body`, `query`,
 `formData`, and `path`. Nullable values are the strings `null` and `None`.
 
 .. warning:: Be careful on nullable parameters for sensitive data where the
