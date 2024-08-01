@@ -99,7 +99,7 @@ class cloud_logger(object):
     def get_ttl_hash(seconds=600):
         return round(time.time() / seconds)
 
-    @lru_cache
+    @lru_cache(maxsize=128)
     def decode_token(token, ttl_hash=None):
         return jwt.decode(
             token,
@@ -111,25 +111,23 @@ class cloud_logger(object):
         auth_token = None
         clean_headers = self.scrub_headers
 
-        if req_headers := payload["req"].get("headers"):
-            for k, v in req_headers.items():
-                if k.lower() in clean_headers and ("authorization", "bearer ") in k.lower():
-                    oauth = True
-                    auth_token = v.split(" ")[1] if " " in v else None
+        for k, v in payload["req"].get("headers", {}).items():
+            if k.lower() == "authorization" and "bearer " in v.lower():
+                oauth = True
+                auth_token = v.split(" ")[1] if " " in v else None
+            if k.lower() in self.scrub_headers:
                 payload["req"]["headers"][k] = "{SANITIZED_HEADER:" + self.sha1_hash(v) + "}"
 
-        if res_headers := payload["res"].get("headers"):
-            for k, v in res_headers.items():
-                if k.lower() in clean_headers:
-                    payload["res"]["headers"][k] = "{SANITIZED_HEADER:" + self.sha1_hash(v) + "}"
+        for k, v in payload["res"].get("headers", {}).items():
+            if k.lower() in self.scrub_headers:
+                payload["res"]["headers"][k] = "{SANITIZED_HEADER:" + self.sha1_hash(v) + "}"
 
-        if auth_token and oauth and self.enrich_oauth:
+        if auth_token not in [None, ""] and oauth and self.enrich_oauth:
             try:
                 jwt_decoded = self.decode_token(auth_token, ttl_hash=self.get_ttl_hash())
-            except jwt.exceptions.DecodeError:
-                oauth = False
-            if oauth:
                 payload["oauth"] = {"sub": jwt_decoded["sub"]}
+            except jwt.exceptions.DecodeError:
+                pass
         return payload
 
     def format_headers(self, req_headers):
