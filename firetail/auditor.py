@@ -110,16 +110,16 @@ class cloud_logger(object):
         oauth = False
         auth_token = None
 
-        for k, v in payload["req"].get("headers", {}).items():
+        for k, v in payload["request"].get("headers", {}).items():
             if k.lower() == "authorization" and "bearer " in v.lower():
                 oauth = True
                 auth_token = v.split(" ")[1] if " " in v else None
             if k.lower() in self.scrub_headers:
-                payload["req"]["headers"][k] = "{SANITIZED_HEADER:" + self.sha1_hash(v) + "}"
+                payload["request"]["headers"][k] = "{SANITIZED_HEADER:" + self.sha1_hash(v) + "}"
 
-        for k, v in payload["res"].get("headers", {}).items():
+        for k, v in payload["response"].get("headers", {}).items():
             if k.lower() in self.scrub_headers:
-                payload["res"]["headers"][k] = "{SANITIZED_HEADER:" + self.sha1_hash(v) + "}"
+                payload["response"]["headers"][k] = "{SANITIZED_HEADER:" + self.sha1_hash(v) + "}"
 
         if auth_token not in [None, ""] and oauth and self.enrich_oauth:
             try:
