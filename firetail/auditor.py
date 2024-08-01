@@ -3,7 +3,6 @@ import json
 import logging
 import logging.config
 import time
-from functools import lru_cache
 
 import jwt
 import requests
@@ -94,10 +93,6 @@ class cloud_logger(object):
     def sha_hash(value):
         hash_object = hashlib.sha256(value.encode("utf-8"))
         return "sha256:" + hash_object.hexdigest()
-
-    @staticmethod
-    def get_ttl_hash(seconds=600):
-        return round(time.time() / seconds)
 
     @staticmethod
     def decode_token(auth_token):
