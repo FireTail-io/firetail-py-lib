@@ -109,7 +109,6 @@ class cloud_logger(object):
     def clean_pii(self, payload):
         oauth = False
         auth_token = None
-        clean_headers = self.scrub_headers
 
         for k, v in payload["req"].get("headers", {}).items():
             if k.lower() == "authorization" and "bearer " in v.lower():
