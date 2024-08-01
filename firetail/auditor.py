@@ -3,6 +3,7 @@ import json
 import logging
 import logging.config
 import time
+from functools import lru_cache
 
 import jwt
 import requests
@@ -42,7 +43,6 @@ class cloud_logger(object):
         self.requests_session = requests.Session()
         self.url = url
         self.token = token
-        self.auth_token = None
         self.logs_drain_timeout = logs_drain_timeout
         self.stdout_logger = get_stdout_logger(debug)
         self.backup_logs = backup_logs
@@ -90,37 +90,43 @@ class cloud_logger(object):
     def set_token(self, token_secret):
         self.token = token_secret
 
-    def sha1_hash(self, value):
+    @staticmethod
+    def sha1_hash(value):
         hash_object = hashlib.sha1(value.encode("utf-8"))
         return "sha1:" + hash_object.hexdigest()
 
-    def clean_pii(self, payload):
-        clean_headers = self.scrub_headers
-        if "req" in payload and "headers" in payload["req"]:
-            for k, v in payload["req"]["headers"].items():
-                if k.lower() in clean_headers:
-                    if k.lower() == "authorization" and "bearer " in v.lower():
-                        self.oauth = True
-                        v = v.split(" ")[1]
-                        self.auth_token = v
-                    payload["req"]["headers"][k] = self.sha1_hash(v)
-        if "res" in payload and "headers" in payload["res"]:
-            for k, v in payload["res"]["headers"].items():
-                if k.lower() in clean_headers:
-                    payload["req"]["headers"][k] = self.sha1_hash(v)
+    @staticmethod
+    def get_ttl_hash(seconds=600):
+        return round(time.time() / seconds)
 
-        if self.oauth and self.enrich_oauth:
+    @lru_cache(maxsize=128)
+    def decode_token(token, ttl_hash=None):
+        return jwt.decode(
+            token,
+            options={"verify_signature": False, "verify_exp": False},
+        )
+
+    def clean_pii(self, payload):
+        oauth = False
+        auth_token = None
+
+        for k, v in payload["req"].get("headers", {}).items():
+            if k.lower() == "authorization" and "bearer " in v.lower():
+                oauth = True
+                auth_token = v.split(" ")[1] if " " in v else None
+            if k.lower() in self.scrub_headers:
+                payload["req"]["headers"][k] = "{SANITIZED_HEADER:" + self.sha1_hash(v) + "}"
+
+        for k, v in payload["res"].get("headers", {}).items():
+            if k.lower() in self.scrub_headers:
+                payload["res"]["headers"][k] = "{SANITIZED_HEADER:" + self.sha1_hash(v) + "}"
+
+        if auth_token not in [None, ""] and oauth and self.enrich_oauth:
             try:
-                jwt_decoded = jwt.decode(
-                    self.auth_token,
-                    options={"verify_signature": False, "verify_exp": False},
-                )
-            except jwt.exceptions.DecodeError:
-                self.oauth = False
-            if self.oauth:
+                jwt_decoded = self.decode_token(auth_token, ttl_hash=self.get_ttl_hash())
                 payload["oauth"] = {"sub": jwt_decoded["sub"]}
-                if "email" in jwt_decoded:
-                    payload["oauth"]["email"] = jwt_decoded["email"]
+            except jwt.exceptions.DecodeError:
+                pass
         return payload
 
     def format_headers(self, req_headers):
@@ -154,7 +160,6 @@ class cloud_logger(object):
                 "resource": request.url_rule.rule if request.url_rule is not None else request.path,
                 "method": request.method,
                 "body": request.get_data(as_text=True),
-
                 "ip": request.remote_addr,
             },
             "response": {
