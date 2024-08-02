@@ -3,7 +3,6 @@ import json
 import logging
 import logging.config
 import time
-from functools import lru_cache
 
 import jwt
 import requests
@@ -91,18 +90,14 @@ class cloud_logger(object):
         self.token = token_secret
 
     @staticmethod
-    def sha1_hash(value):
-        hash_object = hashlib.sha1(value.encode("utf-8"))
-        return "sha1:" + hash_object.hexdigest()
+    def sha_hash(value):
+        hash_object = hashlib.sha256(value.encode("utf-8"))
+        return "sha256:" + hash_object.hexdigest()
 
     @staticmethod
-    def get_ttl_hash(seconds=600):
-        return round(time.time() / seconds)
-
-    @lru_cache(maxsize=128)
-    def decode_token(token, ttl_hash=None):
+    def decode_token(auth_token):
         return jwt.decode(
-            token,
+            auth_token.encode(),
             options={"verify_signature": False, "verify_exp": False},
         )
 
@@ -110,21 +105,24 @@ class cloud_logger(object):
         oauth = False
         auth_token = None
 
-        for k, v in payload["req"].get("headers", {}).items():
-            if k.lower() == "authorization" and "bearer " in v.lower():
+        if auth_header := request.headers.get("Authorization", request.headers.get("authorization")):
+
+            if "bearer " in auth_header.lower():
                 oauth = True
-                auth_token = v.split(" ")[1] if " " in v else None
-            if k.lower() in self.scrub_headers:
-                payload["req"]["headers"][k] = "{SANITIZED_HEADER:" + self.sha1_hash(v) + "}"
+                auth_token = auth_header.split(" ")[1] if " " in auth_header else None
 
-        for k, v in payload["res"].get("headers", {}).items():
+        for k, v in payload["request"].get("headers", {}).items():
             if k.lower() in self.scrub_headers:
-                payload["res"]["headers"][k] = "{SANITIZED_HEADER:" + self.sha1_hash(v) + "}"
+                payload["request"]["headers"][k] = ["{SANITIZED_HEADER:" + self.sha_hash(item) + "}" for item in v]
 
+        for k, v in payload["response"].get("headers", {}).items():
+            if k.lower() in self.scrub_headers:
+
+                payload["response"]["headers"][k] = ["{SANITIZED_HEADER:" + self.sha_hash(item) + "}" for item in v]
         if auth_token not in [None, ""] and oauth and self.enrich_oauth:
             try:
-                jwt_decoded = self.decode_token(auth_token, ttl_hash=self.get_ttl_hash())
-                payload["oauth"] = {"sub": jwt_decoded["sub"]}
+                jwt_decoded = self.decode_token(auth_token)
+                payload["oauth"] = {"subject": jwt_decoded["sub"]}
             except jwt.exceptions.DecodeError:
                 pass
         return payload
