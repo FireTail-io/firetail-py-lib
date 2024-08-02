@@ -105,7 +105,8 @@ class cloud_logger(object):
         oauth = False
         auth_token = None
 
-        if auth_header := request.headers.get("Authorization"):
+        if auth_header := request.headers.get("Authorization", request.headers.get("authorization")):
+
             if "bearer " in auth_header.lower():
                 oauth = True
                 auth_token = auth_header.split(" ")[1] if " " in auth_header else None
