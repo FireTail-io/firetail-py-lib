@@ -121,7 +121,17 @@ class SecureOperation:
 
                         sec_req_funcs[scheme_name] = self._api.security_handler_factory.verify_basic(basic_info_func)
                     elif scheme == "bearer":
-                        bearer_info_func = self._api.security_handler_factory.get_bearerinfo_func(security_scheme)
+                        unwrapped_bearer_info_func = self._api.security_handler_factory.get_bearerinfo_func(
+                            security_scheme
+                        )
+                        bearer_info_func = (
+                            unwrapped_bearer_info_func
+                            if "required_scopes" not in unwrapped_bearer_info_func.__code__.co_varnames
+                            else lambda *args, **kwargs: unwrapped_bearer_info_func(
+                                *args, **{**kwargs, "required_scopes": required_scopes}
+                            )
+                        )
+
                         if not bearer_info_func:
                             logger.warning("... x-bearerInfoFunc missing", extra=vars(self))
                             break
