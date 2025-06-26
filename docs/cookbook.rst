@@ -1,16 +1,16 @@
-Firetail Cookbook
+FireTail Cookbook
 ==================
 
 This section aims to be a cookbook of possible solutions for specific
-use cases of Firetail.
+use cases of FireTail.
 
 Wildcard path parameters
 ------------------------
 
-Path parameters cannot contain slashes by default, but sometimes it's useful
-to have a path parameter which takes the full remainder of the HTTP path
-including slashes, e.g. to allow parsing "my/deep/path" from
-"/pages/my/deep/path". Firetail supports parsing such path remainders
+By default, path parameters cannot contain slashes, but sometimes it's useful
+to have a path parameter that takes the full remainder of the HTTP path
+including slashes, for example, to allow parsing "my/deep/path" from
+"/pages/my/deep/path". FireTail supports parsing such path remainders
 by using ``format: path``:
 
 .. code-block:: yaml
@@ -31,16 +31,16 @@ by using ``format: path``:
 Custom type format
 ------------------
 
-It is possible to define custom type formats that are going to be used
-by the Firetail payload validation on request parameters and response
+It is possible to define custom type formats that will be used
+by the FireTail payload validation on request parameters and response
 payloads of your API.
 
-Let's say your API deals with Products and you want to define a field
+For example, if your API deals with Products and you want to define a field
 `price_label` that has a "money" format value. You can create a format
 checker function and register that to be used to validate values of
 the "money" format.
 
-Example of a possible schema of Product having an attribute with
+Below is an example of a possible schema of Product having an attribute with the
 "money" format that would be defined in your OpenAPI specification:
 
 .. code-block:: yaml
@@ -67,15 +67,15 @@ Then we create a format checker function for that type of value:
             return True
         return MONEY_RE.match(val)
 
-The format checker function is expected to return `True` when the
-value matches the expected format and return `False` when it
-doesn't. Also is important to verify if the type of the value you are
-trying to validate is compatible with the format. In our example we
+The format checker function returns `True` when the
+value matches the expected format and returns `False` when it
+doesn't. Also, it is important to verify if the type of the value you are
+trying to validate is compatible with the format. In our example, we
 check if the `val` is of type "string" before performing any further
 checking.
 
-The final step to make it work is registering our `is_money` function
-to the format "money" in json_schema library. For that, we can use the
+The final step is registering our `is_money` function
+to the format "money" in the json_schema library. For that, we can use the
 draft4 format checker decorator.
 
 .. code-block:: python
@@ -87,7 +87,7 @@ draft4 format checker decorator.
         ...
 
 This is all you need to have validation for that format in your
-Firetail application. Keep in mind that the format checkers should be
+FireTail application. Keep in mind that the format checkers should be
 defined and registered before you run your application server. A full
 example can be found at
 https://gist.github.com/rafaelcaricio/6e67286a522f747405a7299e6843cd93
@@ -96,7 +96,7 @@ https://gist.github.com/rafaelcaricio/6e67286a522f747405a7299e6843cd93
 CORS Support
 ------------
 
-CORS_ (Cross-origin resource sharing) is not built into Firetail, but you can use the `flask-cors`_ library
+CORS_ (Cross-origin resource sharing) is not built into FireTail, but you can use the `flask-cors`_ library
 to set CORS headers:
 
 .. code-block:: python
@@ -120,9 +120,9 @@ to set CORS headers:
 Logging
 ------------
 
-You can customize logging accessing the `_flask-logger` directly
-or configuring the logger via dictConfig.
-Remember that you should configure logging for your project as soon
+You can customize logging by accessing the `_flask-logger` directly
+or configuring the logger using dictConfig.
+Remember to configure logging for your project as soon
 as possible when the program starts or you'll get the default configuration.
 
 .. code-block:: python
