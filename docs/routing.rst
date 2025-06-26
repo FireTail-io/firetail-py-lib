@@ -4,7 +4,7 @@ Routing
 Endpoint Routing to Your Python Views
 -------------------------------------
 
-Firetail uses the ``operationId`` from each `Operation Object`_ to
+FireTail uses the ``operationId`` from each `Operation Object`_ to
 identify which Python function should handle each URL.
 
 **Explicit Routing**:
@@ -31,7 +31,7 @@ definition, making ``operationId`` relative:
           x-swagger-router-controller: myapp.api
           operationId: hello_world
 
-NOTE: If you are using an OpenAPI spec, you should use ``x-openapi-router-controller`` 
+**Note**: If you are using an OpenAPI spec, you should use ``x-openapi-router-controller`` 
 in your operation definition, making ``operationId`` relative:
 
 .. code-block:: yaml
@@ -54,17 +54,17 @@ instead of repeating the same ``x-swagger-router-controller`` or
     app.add_api('swagger.yaml', resolver=RelativeResolver('api'))
 
 
-Keep in mind that Firetail follows how `HTTP methods work in Flask`_
+Keep in mind that FireTail follows how `HTTP methods work in Flask`_
 and therefore HEAD requests will be handled by the ``operationId`` specified
 under GET in the specification. If both methods are supported,
 ``firetail.request.method`` can be used to determine which request was made.
 
-By default, Firetail strictly enforces the presence of a handler
+By default, FireTail strictly enforces the presence of a handler
 function for any path defined in your specification. Because of this, adding
 new paths without implementing a corresponding handler function will produce
 runtime errors and your application will not start. To allow new paths to be
-added to your specification, e.g. in an API design first workflow, set the
-``resolver_error`` to configure Firetail to provide an error response for
+added to your specification, for example, in an API design first workflow, set the
+``resolver_error`` to configure FireTail to provide an error response for
 paths that are not yet implemented:
 
 .. code-block:: python
@@ -77,7 +77,7 @@ paths that are not yet implemented:
 Automatic Routing
 -----------------
 
-To customize this behavior, Firetail can use alternative
+To customize this behavior, FireTail can use alternative
 ``Resolvers``—for example, ``RestyResolver``. The ``RestyResolver``
 will compose an ``operationId`` based on the path and HTTP method of
 the endpoints in your specification:
@@ -121,15 +121,16 @@ the endpoints in your specification:
 ``RestyResolver`` will give precedence to any ``operationId``
 encountered in the specification. It will also respect
 ``x-swagger-router-controller`` and ``x-openapi-router-controller``.
-You may import and extend ``firetail.resolver.Resolver`` to implement your own
+You can import and extend ``firetail.resolver.Resolver`` to implement your own
 ``operationId`` (and function) resolution algorithm.
-Note that when using multiple parameters in the path, they will be
+
+**Note**: When using multiple parameters in the path, they will be
 collected and all passed to the endpoint handlers.
 
 Automatic Routing with MethodViewResolver
 -------------------------------------------
 
-``MethodViewResolver`` is an customised Resolver based on ``RestyResolver``
+``MethodViewResolver`` is a customized Resolver based on ``RestyResolver``
 to take advantage of MethodView structure of building Flask APIs.
 The ``MethodViewResolver`` will compose an ``operationId`` based on the path and HTTP method of
 the endpoints in your specification. The path will be based on the path you provide in the app.add_api and the path provided in the URL endpoint (specified in the swagger or openapi3).
@@ -141,7 +142,7 @@ the endpoints in your specification. The path will be based on the path you prov
     app = firetail.FlaskApp(__name__)
     app.add_api('swagger.yaml', resolver=MethodViewResolver('api'))
 
-And associated YAML
+And associated YAML:
 
 .. code-block:: yaml
 
@@ -163,8 +164,8 @@ And associated YAML
           # Implied operationId: api.FooView.delete
 
 
-The structure expects a Class to exists inside the directory ``api`` that conforms to the naming ``<<Classname with Capitalised name>>View``.
-In the above yaml the necessary MethodView implementation is as follows:
+The structure expects a Class to exist inside the directory ``api`` that conforms to the naming ``<<Classname with Capitalised name>>View``.
+In the above YAML the necessary MethodView implementation is as follows:
 
 .. code-block:: python
 
@@ -223,7 +224,7 @@ In the above yaml the necessary MethodView implementation is as follows:
         # NOTE: we need to wrap it with list for Python 3 as dict_values is not JSON serializable
         return list(self.pets.values())[0:limit]
 
-and a __init__.py file to make the Class visible in the api directory.
+and a __init__.py file to make the Class visible in the API directory.
 
 .. code-block:: Python
 
@@ -232,7 +233,7 @@ and a __init__.py file to make the Class visible in the api directory.
 ``MethodViewResolver`` will give precedence to any ``operationId``
 encountered in the specification. It will also respect
 ``x-swagger-router-controller`` and ``x-openapi-router-controller``.
-You may import and extend ``firetail.resolver.MethodViewResolver`` to implement
+You can import and extend ``firetail.resolver.MethodViewResolver`` to implement
 your own ``operationId`` (and function) resolution algorithm.
 
 Parameter Name Sanitation
@@ -240,34 +241,34 @@ Parameter Name Sanitation
 
 The names of query and form parameters, as well as the name of the body
 parameter are sanitized by removing characters that are not allowed in Python
-symbols. I.e. all characters that are not letters, digits or the underscore are
-removed, and finally characters are removed from the front until a letter or an
-under-score is encountered. As an example:
+symbols. That is, all characters that are not letters, digits or an underscore are
+removed. Characters are removed from the front until a letter or an
+underscore is encountered. For example:
 
 .. code-block:: python
 
     >>> re.sub('^[^a-zA-Z_]+', '', re.sub('[^0-9a-zA-Z_]', '', '$top'))
     'top'
 
-Without this sanitation it would e.g. be impossible to implement an
+For example, without this sanitation it would be impossible to implement an
 `OData
 <http://www.odata.org>`_ API.
 
-You can also convert *CamelCase* parameters to *snake_case* automatically using `pythonic_params` option:
+You can also convert *CamelCase* parameters to *snake_case* automatically using a `pythonic_params` option:
 
 .. code-block:: python
 
     app = firetail.FlaskApp(__name__)
     app.add_api('api.yaml', ..., pythonic_params=True)
 
-With this option enabled, Firetail firstly converts *CamelCase* names
+With this option enabled, FireTail firstly converts *CamelCase* names
 to *snake_case*. Secondly it looks to see if the name matches a known built-in
 and if it does it appends an underscore to the name.
 
 Parameter Variable Converters
 -----------------------------
 
-Firetail supports Flask's ``int``, ``float``, and ``path`` route parameter
+FireTail supports Flask's ``int``, ``float``, and ``path`` route parameter
 `variable converters
 <http://flask.pocoo.org/docs/0.12/quickstart/#variable-rules>`_.
 Specify a route parameter's type as ``integer`` or ``number`` or its type as
@@ -285,8 +286,8 @@ Specify a route parameter's type as ``integer`` or ``number`` or its type as
           type: string
           format: path
 
-will create an equivalent Flask route ``/greeting/<path:name>``, allowing
-requests to include forward slashes in the ``name`` url variable.
+This creates an equivalent Flask route ``/greeting/<path:name>``, allowing
+requests to include forward slashes in the ``name`` URL variable.
 
 API Versioning and basePath
 ---------------------------
@@ -295,7 +296,7 @@ Setting a base path is useful for versioned APIs. An example of
 a base path would be the ``1.0`` in ``http://MYHOST/1.0/hello_world``.
 
 If you are using OpenAPI 3.x.x, you set your base URL path in the
-servers block of the specification. You can either specify a full
+server's block of the specification. You can either specify a full
 URL, or just a relative path.
 
 .. code-block:: yaml
@@ -340,7 +341,7 @@ You can choose another path through options:
 
 Swagger JSON
 ------------
-Firetail makes the OpenAPI/Swagger specification in JSON format
+FireTail makes the OpenAPI/Swagger specification in JSON format
 available from ``swagger.json`` in the base path of the API.
 
 You can disable the Swagger JSON at the application level:
