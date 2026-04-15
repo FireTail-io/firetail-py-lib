@@ -182,12 +182,14 @@ class AbstractSecurityHandlerFactory(abc.ABC):
             raise OAuthProblem(description="Invalid authorization header")
         return auth_type.lower(), value
 
+    BEARER_AUTH_TYPES = {"bearer", "accesstoken", "access_token"}
+
     def verify_oauth(self, token_info_func, scope_validate_func, required_scopes):
         check_oauth_func = self.check_oauth_func(token_info_func, scope_validate_func)
 
         def wrapper(request):
             auth_type, token = self.get_auth_header_value(request)
-            if auth_type != "bearer":
+            if auth_type not in self.BEARER_AUTH_TYPES:
                 return self.no_value
 
             return check_oauth_func(request, token, required_scopes=required_scopes)
@@ -273,7 +275,7 @@ class AbstractSecurityHandlerFactory(abc.ABC):
 
         def wrapper(request):
             auth_type, token = self.get_auth_header_value(request)
-            if auth_type != "bearer":
+            if auth_type not in self.BEARER_AUTH_TYPES:
                 return self.no_value
             return check_bearer_func(request, token)
 
