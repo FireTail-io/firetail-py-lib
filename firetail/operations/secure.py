@@ -120,7 +120,7 @@ class SecureOperation:
                             break
 
                         sec_req_funcs[scheme_name] = self._api.security_handler_factory.verify_basic(basic_info_func)
-                    elif scheme == "bearer":
+                    elif scheme in ("bearer", "accesstoken"):
                         unwrapped_bearer_info_func = self._api.security_handler_factory.get_bearerinfo_func(
                             security_scheme
                         )
