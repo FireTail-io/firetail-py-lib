@@ -11,25 +11,25 @@ jobs:
     name: Build and publish Python 🐍 distributions 📦 to PyPI and TestPyPI
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v4
 
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v1
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.9
+          python-version: 3.11
 
       - name: Update version
         run: sed -i "s/__version__ = .*/__version__ = '${{github.ref_name}}'/" */__init__.py
 
       - name: Build a binary wheel and a source tarball
         run: |
-          pip install --upgrade pip 
-          pip install wheel
-          python setup.py sdist bdist_wheel
+          pip install --upgrade pip
+          pip install build
+          python -m build
 
       - name: Publish distribution 📦 to Test PyPI
         if: github.event_name == 'push'
-        uses: pypa/gh-action-pypi-publish@v1.5.0
+        uses: pypa/gh-action-pypi-publish@v1.12.4
         with:
           user: __token__
           password: ${{ secrets.TEST_PYPIP_TOKEN }}
@@ -37,7 +37,7 @@ jobs:
 
       - name: Publish distribution 📦 to PyPI if triggered by release
         if: github.event_name == 'release'
-        uses: pypa/gh-action-pypi-publish@v1.5.0
+        uses: pypa/gh-action-pypi-publish@v1.12.4
         with:
           user: __token__
           password: ${{ secrets.PYPIP_TOKEN }}
